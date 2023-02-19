@@ -1,8 +1,96 @@
-﻿@{
+﻿@model WebAppForMORecSys.Controllers.HomeController.MainViewModel
+@{
     ViewData["Title"] = "Home Page";
 }
+<form asp-controller="Home" asp-action="Index" method="get">
+    <div class="form-floating mb-3">
+        <div id="input-textsearch-group" class="input-group">
+            <input class="form-control rounded m-3" aria-required="true" name="search" placeholder="Search" />
+            <!--<span asp-validation-for="Input.Email" class="text-danger"></span>-->            
+            <input type="image" src="@Url.Content("~/Resources/Images/search.png")" border="0" alt="Submit" />
+        </div>
+        <div class="input-group" id="input-range-group">
+            @{ int index = 0;}
+            @foreach (var metric in Model.Metrics){
+                string id = "range" + index;
+                int averageValue = 100 / Model.Metrics.Count;
+                string valueAsNumber = id + ".valueAsNumber";
+                <div class="range-wrap">
+                    <label for="@id">@metric.Name</label>
+                    <input class="custom-range range" type="range" min="0" max="100" name="@id" id="@id" value="@averageValue" oninput="changeValues(this.value, @index)"
+                       onchange="changeValues(this.value, @index)" />
+                    
+                    <output class="bubble"></output>                
+                    
+                </div>
+                index++;
+            }
+        </div>
+    </div>
+</form>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<script>
+    function getSumOfRangeValues(){
+        let inputranges = document.getElementById("input-range-group").getElementsByTagName('input');
+        let length = inputranges.length;
+        let sum = 0;
+        for (let i = 0; i < length; i++) {            
+            sum+= parseInt(inputranges[i].value)
+        }
+        return sum;
+    }
+    function getRandomInt(max) {
+        return Math.floor(Math.random() * max);
+    }
+    function changeValues(value, index){
+        let inputranges = document.getElementById("input-range-group").getElementsByTagName('input');
+        let length = inputranges.length;
+        let sum = getSumOfRangeValues();
+        let overflow = sum - 100;
+        if (overflow > 0) {
+            for (let i = 0; i < length; i++) {            
+                if (i==index) continue;
+                let current_value = parseInt(inputranges[i].value);
+                let subtract = (overflow * current_value / 100) | 0;
+                inputranges[i].value = current_value - subtract;
+            }
+            while (getSumOfRangeValues() > 100) {
+                i = getRandomInt(length)
+                if (i==index) continue;
+                if (parseInt(inputranges[i].value)>0){
+                    inputranges[i].value = parseInt(inputranges[i].value) - 1;
+                }                                
+            }
+        }
+        setBubbles();
+
+    }
+
+    function setBubbles(){
+        const allRanges = document.querySelectorAll(".range-wrap");
+        allRanges.forEach(wrap => {
+              const range = wrap.querySelector(".range");
+              const bubble = wrap.querySelector(".bubble");
+
+              range.addEventListener("input", () => {
+                setBubble(range, bubble);
+              });
+              setBubble(range, bubble);
+        });
+    }
+
+    setBubbles();
+
+    function setBubble(range, bubble) {
+          const val = range.value;
+          const min = range.min ? range.min : 0;
+          const max = range.max ? range.max : 100;
+          const newVal = Number(((val - min) * 100) / (max - min));
+          bubble.innerHTML = val;
+
+     // Sorta magic numbers based on size of the native UI thumb
+     bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
+}
+
+</script>
+
