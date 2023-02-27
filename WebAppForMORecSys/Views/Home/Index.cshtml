@@ -1,33 +1,53 @@
-﻿@model WebAppForMORecSys.Controllers.HomeController.MainViewModel
+﻿@model WebAppForMORecSys.Models.HomeViewsModels.MainViewModel
 @{
     ViewData["Title"] = "Home Page";
 }
-<form asp-controller="Home" asp-action="Index" method="get">
-    <div class="form-floating mb-3">
-        <div id="input-textsearch-group" class="input-group">
-            <input class="form-control rounded m-3" aria-required="true" name="search" placeholder="Search" />
-            <!--<span asp-validation-for="Input.Email" class="text-danger"></span>-->            
-            <input type="image" src="@Url.Content("~/Resources/Images/search.png")" border="0" alt="Submit" />
-        </div>
-        <div class="input-group" id="input-range-group">
-            @{ int index = 0;}
-            @foreach (var metric in Model.Metrics){
-                string id = "range" + index;
-                int averageValue = 100 / Model.Metrics.Count;
-                string valueAsNumber = id + ".valueAsNumber";
-                <div class="range-wrap">
-                    <label for="@id">@metric.Name</label>
-                    <input class="custom-range range" type="range" min="0" max="100" name="@id" id="@id" value="@averageValue" oninput="changeValues(this.value, @index)"
-                       onchange="changeValues(this.value, @index)" />
+
+<div id="mySidebar" class="sidebar">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    
+</div>
+<div id="main">
+    <button class="openbtn" onclick="openNav()">&#9776; Open Sidebar</button>
+    
+    <form asp-controller="Home" asp-action="Index" method="get">
+        <div class="form-floating mb-3">
+            <div id="input-textsearch-group" class="input-group">
+                <input class="form-control rounded m-3" aria-required="true" name="search" placeholder="Search" />
+                <!--<span asp-validation-for="Input.Email" class="text-danger"></span>-->            
+                <input type="image" src="@Url.Content("~/Resources/Images/search.png")" border="0" alt="Submit" />
+            </div>
+            <div class="input-group" id="input-range-group">
+                @{ int index = 0;}
+                @foreach (var metric in Model.Metrics){
+                    string id = "range" + index;
+                    int averageValue = 100 / Model.Metrics.Count;
+                    string valueAsNumber = id + ".valueAsNumber";
+                    <div class="range-wrap">
+                        <label for="@id">@metric.Name</label>
+                        <input class="custom-range range" type="range" min="0" max="100" name="@id" id="@id" value="@averageValue" oninput="changeValues(this.value, @index)"
+                           onchange="changeValues(this.value, @index)" />
                     
-                    <output class="bubble"></output>                
+                        <output class="bubble"></output>                
                     
-                </div>
-                index++;
-            }
+                    </div>
+                    index++;
+                }
+            </div>
         </div>
+    </form>
+    @{
+        int itemsInRow = 4;
+        int count = 0;
+    }
+    <div style="width:100%">
+    @foreach (var item in Model.Items)
+    {
+            @Html.Partial("MoviePreview", new Movie(item))
+
+    }
     </div>
-</form>
+</div>
 
 <script>
     function getSumOfRangeValues(){
@@ -91,6 +111,16 @@
      // Sorta magic numbers based on size of the native UI thumb
      bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
 }
+/* Set the width of the sidebar to 250px and the left margin of the page content to 250px */
+function openNav() {
+  document.getElementById("mySidebar").style.width = "250px";
+  document.getElementById("main").style.marginLeft = "250px";
+}
 
+/* Set the width of the sidebar to 0 and the left margin of the page content to 0 */
+function closeNav() {
+  document.getElementById("mySidebar").style.width = "0";
+  document.getElementById("main").style.marginLeft = "0";
+}
 </script>
 

@@ -8,11 +8,11 @@ namespace WebAppForMORecSys.Models
 
         public string UserName { get; set; }
 
-        public String JSONBlockRules { get; set; }
+        public string? JSONBlockRules { get; set; }
 
-        public String JSONFilter { get; set; }
+        public string? JSONFilter { get; set; }
 
-        public String SearchHistory { get; set; }
+        public string? SearchHistory { get; set; }
 
         public List<UserMetric> UserMetricList { get; set; }
 
@@ -21,5 +21,10 @@ namespace WebAppForMORecSys.Models
         public List<Interaction> Interactions { get; set; }
 
         public Account account;
+
+        public User()
+        {
+            
+        }
     }
 }

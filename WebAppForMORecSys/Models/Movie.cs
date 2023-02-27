@@ -1,25 +1,32 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Nodes;
-
+using WebAppForMORecSys.Controllers;
 
 namespace WebAppForMORecSys.Models
 {
     public class Movie : Item
     {
         public string Director => getPropertyStringValueFromJSON("Director");
-        public string Scriptwriter => getPropertyStringValueFromJSON("Scriptwriter");
         public string[] Actors => getPropertyListValueFromJSON("Actors");
         public DateTime ReleaseDate => DateTime.Parse(getPropertyStringValueFromJSON("ReleaseDate"));
-        public int[] Genres => Array.ConvertAll(getPropertyListValueFromJSON("Genres"), s => int.Parse(s));
+        public string[] Genres => getPropertyListValueFromJSON("Genres");
 
 
         public string getPropertyStringValueFromJSON(string property)
         {
-            JsonObject? Params = (JsonObject?)JsonObject.Parse(JSONParams);
-            JsonNode jsonNode; 
-            if(Params != null && Params.TryGetPropertyValue(property, out jsonNode))
+            try
             {
-                return jsonNode.ToString();
+                if (JSONParams == null) return null;
+                JsonObject? Params = (JsonObject?)JsonObject.Parse(JSONParams);
+                JsonNode jsonNode;
+                if (Params != null && Params.TryGetPropertyValue(property, out jsonNode))
+                {
+                    return jsonNode.ToString();
+                }
+            }
+            catch(Exception e)
+            {
+                var x = e.Message;
             }
             return null;
         }
@@ -29,9 +36,26 @@ namespace WebAppForMORecSys.Models
             string stringResult = getPropertyStringValueFromJSON(property);
             if (stringResult !=null)
             {
+                stringResult = stringResult.Replace("[", "").Replace("]","").Replace("\"", "").Replace(" ", "")
+                    .Replace(Environment.NewLine, "");
                 return stringResult.Split(',');
             }
             return new string[0];
+        }
+        public Movie(Item item)
+        {
+            this.Id = item.Id;
+            this.ImageURL = item.ImageURL;
+            this.Name= item.Name;
+            this.Interactions = item.Interactions;
+            this.Ratings= item.Ratings;
+            this.Description = item.Description;
+            this.ShortDescription= item.ShortDescription;
+            this.JSONParams = item.JSONParams;
+        }
+        public static List<Movie> GetAll()
+        {
+            return Item.GetAll().Select(i=> new Movie(i)).ToList();
         }
     }
 }

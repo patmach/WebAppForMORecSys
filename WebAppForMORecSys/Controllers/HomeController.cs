@@ -1,91 +1,44 @@
-﻿using CsvHelper;
-using CsvHelper.Configuration;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
+using System.IO;
 using System.Diagnostics;
-using System.Globalization;
+
 using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Models;
+using WebAppForMORecSys.ParseHelpers;
+using System.Text.RegularExpressions;
+using WebAppForMORecSys.Models.HomeViewsModels;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 
 namespace WebAppForMORecSys.Controllers
 {
+    
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        private class MovieMap : ClassMap<Movie>
-        {
-            public MovieMap()
-            {
-                Map(p => p.Id).Convert(args => int.Parse(args.Row.GetField("movieId")));
-                Map(p => p.Name).Index(1);
-                Map(p => p.JSONParams).Index(2);
-            }
-        }
-
-        private class Link
-        {
-           
-            public string Id { get; set; }
-            public string IMBDID { get; set; }
-            public string TMBDID { get; set; }
-            public Link()
-            {
-
-            }
-
-        }
-        private class LinkMap : ClassMap<Link>
-        {
-            public LinkMap()
-            {
-                Map(p => p.Id).Index(0);
-                Map(p => p.IMBDID).Index(1);
-                Map(p => p.TMBDID).Index(2);
-            }
-        }
-
+       
         public HomeController(ApplicationDbContext context)
         {
+        
             _context = context;
-            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
+            Item.context= context;
+            
+            var ratings = CSVParsingMethods.ParseRatings();
+            int partLength = 100000;
+            for (int i = 0; i < ratings.Count / partLength; i++)
             {
-                HasHeaderRecord = true,
-            };
-            List<Movie> movies = new List<Movie>();
-            using (var reader = new StreamReader("Resources/Movielens/movies.csv"))
-            using (var csv = new CsvReader(reader, configuration))
-            {
-                csv.Context.RegisterClassMap<MovieMap>();
-                movies = csv.GetRecords<Movie>().ToList();
-            }
-            movies.ForEach(x => { x.JSONParams = "Genres: [" + x.JSONParams + ']'; });
-
-            List<Link> links = new List<Link>();
-            using (var reader = new StreamReader("Resources/Movielens/links.csv"))
-            using (var csv = new CsvReader(reader, configuration))
-            {
-                csv.Context.RegisterClassMap<LinkMap>();
-                links = csv.GetRecords<Link>().ToList();
+                var part = ratings.Skip(partLength * i).Take(partLength).ToList();
+                context.AddRange(part);
+                context.SaveChanges();
             }
             
-
         }
 
-        public class MainViewModel
-        {
-            public List<Metric> Metrics { get; set; }
-            public List<Item> Items { get; set; }
-
-            public MainViewModel()
-            {
-                this.Metrics = new List<Metric>();
-                this.Items = new List<Item>();
-            }
-        }
+       
         public async Task<IActionResult> Index(string search)
         {
             if (_context.Items == null)
@@ -98,7 +51,7 @@ namespace WebAppForMORecSys.Controllers
             viewModel.Metrics = await metrics.ToListAsync();
             viewModel.Metrics = new List<Metric> { new Metric { Name = "Relevance" },
                 new Metric { Name = "Novelty" }, new Metric { Name = "Diversity" } };//DELETE Later
-            var items = from item in _context.Items
+            var items = from item in _context.Items where item.Id < 100
                          select item;
             List<Item> items1;
             List<Item> items2;
@@ -129,5 +82,6 @@ namespace WebAppForMORecSys.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+        
     }
 }

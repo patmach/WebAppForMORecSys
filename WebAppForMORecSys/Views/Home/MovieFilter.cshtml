@@ -1,0 +1,16 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model WebAppForMORecSys.Models.Movie
+<form asp-controller="Home" asp-action="Index" method="post">
+    <label for="">Director</label>
+    <select class="form-select" aria-label="Default select example">
+        <option selected>Not selected</option>
+        @foreach (var item in new List<string>())
+        {
+            
+        }
+    </select>
+</form>
