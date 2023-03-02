@@ -17,7 +17,7 @@ namespace WebAppForMORecSys.ParseHelpers
                 HasHeaderRecord = true,
             };
             List<Item> movies = new List<Item>();
-            using (var reader = new StreamReader("Resources/Movielens/movies.csv"))
+            using (var reader = new StreamReader("Resources/Movielens25m/movies.csv"))
             using (var csv = new CsvReader(reader, configuration))
             {
                 csv.Context.RegisterClassMap<MovieMap>();
@@ -35,7 +35,7 @@ namespace WebAppForMORecSys.ParseHelpers
                 HasHeaderRecord = true,
             };
             List<Link> links = new List<Link>();
-            using (var reader = new StreamReader("Resources/Movielens/links.csv"))
+            using (var reader = new StreamReader("Resources/Movielens25m/links.csv"))
             using (var csv = new CsvReader(reader, configuration))
             {
                 csv.Context.RegisterClassMap<LinkMap>();
@@ -50,7 +50,7 @@ namespace WebAppForMORecSys.ParseHelpers
                 HasHeaderRecord = true,
             };
             List<Rating> ratings = new List<Rating>();
-            using (var reader = new StreamReader("Resources/Movielens/ratings.csv"))
+            using (var reader = new StreamReader("Resources/Movielens25m/ratings.csv"))
             using (var csv = new CsvReader(reader, configuration))
             {
                 csv.Context.RegisterClassMap<RatingMap>();
@@ -99,14 +99,14 @@ namespace WebAppForMORecSys.ParseHelpers
             Map(p => p.ItemID).Convert(args => int.Parse(args.Row.GetField("movieId")));
             Map(p => p.RatingScore).Convert(args => 
                 (byte)(2*double.Parse(args.Row.GetField("rating"), CultureInfo.InvariantCulture)));
-            Map(p => p.Date).Convert(args => JavaTimeStampToDateTime(long.Parse(args.Row.GetField("timestamp"))));
+            Map(p => p.Date).Convert(args => UnixTimeStampToDateTime(long.Parse(args.Row.GetField("timestamp"))));
 
         }
-        public static DateTime JavaTimeStampToDateTime(long javaTimeStamp)
+        public static DateTime UnixTimeStampToDateTime(long unixTimeStamp)
         {
             // Java timestamp is milliseconds past epoch
             DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            dateTime = dateTime.AddMilliseconds(javaTimeStamp).ToLocalTime();
+            dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
             return dateTime;
         }
     }

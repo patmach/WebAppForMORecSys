@@ -1,4 +1,4 @@
-An error occurred while saving the entity changes. See the inner exception for details.
+01.03.2023 19:50:48An error occurred while saving the entity changes. See the inner exception for details.
 Inner exception:Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
 
 ST:   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.Execute(IRelationalConnection connection)
@@ -9,7 +9,7 @@ ST:   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.Exe
    at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.Execute[TState,TResult](TState state, Func`3 operation, Func`3 verifySucceeded)
    at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChanges(Boolean acceptAllChangesOnSuccess)
    at Microsoft.EntityFrameworkCore.DbContext.SaveChanges(Boolean acceptAllChangesOnSuccess)
-   at WebAppForMORecSys.Controllers.HomeController..ctor(ApplicationDbContext context) in D:\Users\patri\source\repos\WebAppForMORecSys\WebAppForMORecSys\Controllers\HomeController.cs:line 81
+   at WebAppForMORecSys.ParseHelpers.MovielensLoader.LoadMovielensData(ApplicationDbContext context) in D:\Users\patri\source\repos\WebAppForMORecSys\WebAppForMORecSys\LoaderHelpers\MovielensLoader.cs:line 70
 
  Inner ST:   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
    at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)

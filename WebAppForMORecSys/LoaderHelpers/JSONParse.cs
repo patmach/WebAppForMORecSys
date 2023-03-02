@@ -31,7 +31,7 @@ namespace WebAppForMORecSys.ParseHelpers
             if (image!= null)
                 movie.ImageURL = "https://image.tmdb.org/t/p/w500/" + image.ToString();
             if (releaseDate!= null) 
-                movie.JSONParams = movie.JSONParams + ",\nreleaseDate:\"" + releaseDate + '"';
+                movie.JSONParams = movie.JSONParams + ",\n\"ReleaseDate\":\"" + releaseDate + '"';
 
         }
         public static void AddCastToMovie(string response, Item movie)
@@ -48,7 +48,7 @@ namespace WebAppForMORecSys.ParseHelpers
                 JArray directorObject = crewArr.Filter("job", "Director");
                 string director = directorObject?.First?.GetValue<string>("name");
                 if (director != null)
-                    movie.JSONParams = movie.JSONParams + (",\ndirector:\"" + director + '"');                
+                    movie.JSONParams = movie.JSONParams + (",\n\"Director\":\"" + director.Replace("\"","") + '"');                
             }
             if(cast!= null)
             {
@@ -58,10 +58,14 @@ namespace WebAppForMORecSys.ParseHelpers
                 foreach (var castName in castNames)
                 {
                     castNamesSB.Append("\"");
-                    castNamesSB.Append(castName);
+                    castNamesSB.Append(castName.Replace("\"",""));
                     castNamesSB.Append("\",");
                 }
-                movie.JSONParams = movie.JSONParams + (",\nactors:[" + castNamesSB.ToString() + "]");
+                if (castNamesSB.Length > 0)
+                {
+                    castNamesSB.Length--;
+                }
+                movie.JSONParams = movie.JSONParams + (",\n\"Actors\":[" + castNamesSB.ToString()+ "]");
             }
 
         }

@@ -26,16 +26,6 @@ namespace WebAppForMORecSys.Controllers
         
             _context = context;
             Item.context= context;
-            
-            var ratings = CSVParsingMethods.ParseRatings();
-            int partLength = 100000;
-            for (int i = 0; i < ratings.Count / partLength; i++)
-            {
-                var part = ratings.Skip(partLength * i).Take(partLength).ToList();
-                context.AddRange(part);
-                context.SaveChanges();
-            }
-            
         }
 
        
