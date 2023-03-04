@@ -20,7 +20,7 @@ namespace WebAppForMORecSys.ParseHelpers
 
         public static void LoadMovielensData(ApplicationDbContext context)
         {
-           /* List<Item> movies = CSVParsingMethods.ParseMovies();            
+            List<Item> movies = CSVParsingMethods.ParseMovies();            
             var links = CSVParsingMethods.ParseLinks();
             string apiKey = System.IO.File.ReadAllText("apikeyTMBD.txt");
             
@@ -32,7 +32,7 @@ namespace WebAppForMORecSys.ParseHelpers
             }
             try
             {
-                movies.ForEach(m => { m.JSONParams = m.JSONParams.Replace("\n", ""); });
+                movies.ForEach(m => { m.JSONParams = '{' + m.JSONParams.Replace("\n", "") + '}'; });
                 using (var writer = new StreamWriter("moviesloaded.csv"))
                 using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
                 {
@@ -43,25 +43,25 @@ namespace WebAppForMORecSys.ParseHelpers
             {
                 PrintError(ex);
             }
-            */
+            
             context.Database.OpenConnection();
             try
-            {/*
+            {
                 context.Database.ExecuteSql($"SET IDENTITY_INSERT dbo.Items ON;");
                 context.AddRange(movies);
                 context.SaveChanges();
                 context.Database.ExecuteSql($"SET IDENTITY_INSERT dbo.Items OFF;");
-                */
 
 
-                /*var users = ratings.DistinctBy(r=>r.UserID).Select(r => new User { Id = r.UserID, UserName = "movielensUser" + r.UserID });
+                var ratings = CSVParsingMethods.ParseRatings();
+
+                var users = ratings.DistinctBy(r=>r.UserID).Select(r => new User { Id = r.UserID, UserName = "movielensUser" + r.UserID });
               
                 context.Database.ExecuteSql($"SET IDENTITY_INSERT dbo.Users ON;");
                 context.AddRange(users);
                 context.SaveChanges();
                 
-                context.Database.ExecuteSql($"SET IDENTITY_INSERT dbo.Users OFF;");*/
-                var ratings = CSVParsingMethods.ParseRatings();
+                context.Database.ExecuteSql($"SET IDENTITY_INSERT dbo.Users OFF;");
                 int partLength = 100000;
                 for (int i = 204; i <= ratings.Count / partLength; i++)
                 {

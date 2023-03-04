@@ -30,11 +30,11 @@ html {
     #logo-holder .text {
         position: absolute;
         overflow: hidden;
-        text-overflow:ellipsis;
+        text-overflow: ellipsis;
         top: 0;
         left: 0;
         opacity: 0;
-        background-color: lightskyblue;
+        background-color: #0d6efd;
         color: black;
     }
 
@@ -86,7 +86,7 @@ body {
 
 .MovieItem {
     margin: 3px;
-    width: 18%;
+    width: 19%;
     aspect-ratio: 1 / 2 ;
     text-overflow: ellipsis;
 }
@@ -106,7 +106,7 @@ body {
     z-index: 1; /* Stay on top */
     top: 0;
     left: 0;
-    background-color: #111; /* Black*/
+    background-color: #0d6efd;
     overflow-x: hidden; /* Disable horizontal scroll */
     padding-top: 60px; /* Place content 60px from the top */
     transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
@@ -116,7 +116,7 @@ body {
     .sidebar a {
         padding: 8px 8px 8px 32px;
         text-decoration: none;
-        font-size: 25px;
+        font-size: 15px;
         color: #818181;
         display: block;
         transition: 0.3s;
@@ -140,7 +140,7 @@ body {
 .openbtn {
     font-size: 20px;
     cursor: pointer;
-    background-color: #111;
+    background-color: #0d6efd;
     color: white;
     padding: 10px 15px;
     border: none;
@@ -162,7 +162,15 @@ body {
         padding-top: 15px;
     }
 
-        .sidebar a {
-            font-size: 18px;
-        }
+    
+}
+.moviefilter > * {
+    width: 90%!important;
+    align-self: center;
+    display: block !important;
+    margin: 0 auto !important;
+}
+
+.dropdown-menu{
+    max-width:90% !important;
 }

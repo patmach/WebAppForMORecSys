@@ -12,6 +12,7 @@ using WebAppForMORecSys.ParseHelpers;
 using System.Text.RegularExpressions;
 using WebAppForMORecSys.Models.HomeViewsModels;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.View;
 
 namespace WebAppForMORecSys.Controllers
 {
@@ -26,10 +27,16 @@ namespace WebAppForMORecSys.Controllers
         
             _context = context;
             Item.context= context;
+            Movie.GetAllGenres();
+            /*var movies = Item.GetAll();
+            movies.ForEach(m => { m.JSONParams = m.JSONParams.Replace("Genres", "\"Genres\""); });
+            context.UpdateRange(movies);
+            context.SaveChanges();*/
+
         }
 
        
-        public async Task<IActionResult> Index(string search)
+        public async Task<IActionResult> Index(string search, string director, string actor, string[] genres)
         {
             if (_context.Items == null)
             {
@@ -38,6 +45,7 @@ namespace WebAppForMORecSys.Controllers
             var viewModel = new MainViewModel();
             var metrics = from metric in _context.Metrics
                           select metric;
+            viewModel.SearchValue = search ?? "";
             viewModel.Metrics = await metrics.ToListAsync();
             viewModel.Metrics = new List<Metric> { new Metric { Name = "Relevance" },
                 new Metric { Name = "Novelty" }, new Metric { Name = "Diversity" } };//DELETE Later

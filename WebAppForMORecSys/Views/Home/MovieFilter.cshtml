@@ -1,16 +1,38 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-@model WebAppForMORecSys.Models.Movie
-<form asp-controller="Home" asp-action="Index" method="post">
-    <label for="">Director</label>
-    <select class="form-select" aria-label="Default select example">
-        <option selected>Not selected</option>
-        @foreach (var item in new List<string>())
+﻿
+<form asp-controller="Home" asp-action="Index" method="get" class="moviefilter">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+
+    <label for="idirector">Director</label>
+    <br />
+    <input class="form-control rounded m-3" type="text" id="idirector" aria-required="true" name="director" placeholder="Director" />
+    <br/>
+    <br />
+    <label for="iactor">Actor</label>
+    <br />
+    <input class="form-control rounded m-3" type="text" id="iactor" aria-required="true" name="actor" placeholder="Actor" />
+    <br />
+    <br />
+    <label for="igenre">Genre</label>
+    <br />
+
+
+    <select class="selectpicker" multiple data-live-search="true" aria-required="true" name="genres" placeholder="Genres" >
+        @foreach (var genre in Movie.GetAllGenres())
         {
-            
+            <option>@genre</option>
         }
     </select>
+        
+   
+  
+    <br />
+    <input class="form-control rounded m-3" type="submit" class="btn-secondary" value="SEARCH" />
 </form>
+
+<script>
+    $('select').selectpicker();
+</script>

@@ -23,7 +23,7 @@ namespace WebAppForMORecSys.ParseHelpers
                 csv.Context.RegisterClassMap<MovieMap>();
                 movies = csv.GetRecords<Item>().ToList();
             }
-            movies.ForEach(x => { x.JSONParams = "Genres:[\"" + x.JSONParams.Replace("|","\",\"") + "\"]"; });
+            movies.ForEach(x => { x.JSONParams = "\"Genres\":[\"" + x.JSONParams.Replace("|","\",\"") + "\"]"; });
 
             return movies;
         }

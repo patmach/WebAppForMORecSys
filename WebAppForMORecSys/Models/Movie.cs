@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing.Text;
 using System.Text.Json.Nodes;
 using WebAppForMORecSys.Controllers;
 
@@ -57,5 +58,20 @@ namespace WebAppForMORecSys.Models
         {
             return Item.GetAll().Select(i=> new Movie(i)).ToList();
         }
+
+        public static List<string> GetAllGenres()
+        {
+            if (AllGenres == null)
+            {
+                var genres = new List<string>();
+                var movies = GetAll();
+                movies.ForEach(m => genres.AddRange(m.Genres));
+                AllGenres = genres.Distinct().ToList();
+                AllGenres.Remove("(nogenreslisted)");
+            }
+            return AllGenres;
+        }
+
+        private static List<string> AllGenres;
     }
 }
