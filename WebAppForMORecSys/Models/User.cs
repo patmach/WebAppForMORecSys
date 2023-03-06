@@ -1,4 +1,8 @@
-﻿using WebAppForMORecSys.Areas.Identity.Data;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
+using WebAppForMORecSys.Areas.Identity.Data;
+using WebAppForMORecSys.Data;
 
 namespace WebAppForMORecSys.Models
 {
@@ -24,7 +28,9 @@ namespace WebAppForMORecSys.Models
 
         public User()
         {
-            
+
         }
+
+        
     }
 }

@@ -1,0 +1,73 @@
+﻿@model WebAppForMORecSys.Models.HomeViewsModels.MainViewModel
+<form asp-controller="Home" asp-action="Index" method="get" class="moviefilter">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+    @{
+        string director;
+        string actor;
+        string releasedatefrom;
+        string releasedateto;
+        string genresstring;
+        string[] genres;
+        bool b = @Model.FilterValues.TryGetValue("Director", out director);
+        b = @Model.FilterValues.TryGetValue("Actor", out actor);
+        b = @Model.FilterValues.TryGetValue("ReleaseDateFrom", out releasedatefrom);
+        b = @Model.FilterValues.TryGetValue("ReleaseDateTo", out releasedateto);
+        b = @Model.FilterValues.TryGetValue("ReleaseDateTo", out releasedateto);
+        b = @Model.FilterValues.TryGetValue("Genres", out genresstring);
+        genres = genresstring?.Split(',') ?? new string[0];
+        director = director ?? "";
+        actor = actor ?? "";
+        releasedatefrom = releasedatefrom ?? "";
+        releasedateto = releasedatefrom ?? "";
+
+    }
+    <label for="igenre">Genre</label>
+
+    <select class="selectpicker" multiple data-live-search="true" name="genres" placeholder="Genres">
+       
+        @foreach (var genre in Movie.GetAllGenres())
+        {
+            @if (genres.Contains(genre))
+            {
+                <option selected>@genre</option>
+            }
+            else
+            {
+                <option>@genre</option>
+            }
+        }
+    </select>
+    <br />
+    <br />
+    <label for="idirector">Director</label>
+    <input class="form-control rounded m-3" type="text" id="idirector"  name="director" placeholder="Director" value="@director"/>
+    <br/>
+    <br />
+    <label for="iactor">Actor</label>
+
+    <input class="form-control rounded m-3" type="text" id="iactor" name="actor" placeholder="Actor" value="@actor" />
+    <br />
+    <br />
+    <label for="idatefrom">Release Date - From</label>
+
+    <input class="form-control rounded m-3" type="date" id="idatefrom"  name="releasedatefrom" placeholder="ReleaseDateFrom" value="@releasedatefrom"/>
+    <br />
+    <br />
+    <label for="idateto">Release Date - To</label>
+    <input class="form-control rounded m-3" type="date" id="idateto" name="releasedateto" placeholder="ReleaseDateTo" value="@releasedateto" />
+    <br />
+    <br />
+
+    <input type="hidden" name="type" placeholder="Type" value="MovieFilter" />
+
+  
+    <input class="form-control rounded m-3" type="submit" class="btn-secondary" value="SEARCH" />
+</form>
+
+<script>
+    $('select').selectpicker();
+</script>

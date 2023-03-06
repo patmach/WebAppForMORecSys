@@ -1,0 +1,24 @@
+﻿@model WebAppForMORecSys.Helpers.MovieHelper.MovieUserUserratings
+<div class="MovieItem horizontal">
+    <a href='@Url.Action("Details","Movies", new { id=Model.movie.Id })' class="ajaxdetail"><h4>@Model.movie.Name</h4></a>
+    <div id="logo-holder">
+        <img class="image" style="width:95%" src="@Model.movie.ImageURL" />
+        <div class="text" style="width:95%; height:100%">@Model.movie.ShortDescription</div>
+    </div>
+    <div style="margin-top:1px"><b>@Html.DisplayNameFor(model => model.movie.Director):</b>@Model.movie.Director</div>
+    @Html.Partial("../Movies/MovieRating", Model)
+</div>
+<script>
+    function shownewvalue(newValue, movieId) {
+        var ratingValue = newValue
+        var startlist = $('.ratingstar' + movieId);
+        for (var i = 0; i < ratingValue; i++) {
+            startlist[i].classList.remove('fa-star-o');
+            startlist[i].classList.add('fa-star');
+        }
+        for (var i = ratingValue; i < 10; i++) {
+            startlist[i].classList.remove('fa-star');
+            startlist[i].classList.add('fa-star-o');
+        }
+    }
+</script>

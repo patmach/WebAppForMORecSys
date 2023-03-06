@@ -174,3 +174,22 @@ body {
 .dropdown-menu{
     max-width:90% !important;
 }
+
+/*Movie Detail*/
+dl {
+    display: grid;
+    grid-template-columns: max-content auto;
+}
+
+dt {
+    grid-column-start: 1;
+}
+
+dd {
+    grid-column-start: 2;
+}
+
+a.disabled {
+    pointer-events: none;
+    cursor: default;
+}

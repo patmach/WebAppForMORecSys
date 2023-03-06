@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using WebAppForMORecSys.Areas.Identity.Data;
+using WebAppForMORecSys.Data;
 
 namespace WebAppForMORecSys.Areas.Identity.Pages.Account
 {
@@ -75,6 +76,7 @@ namespace WebAppForMORecSys.Areas.Identity.Pages.Account
             [StringLength(20)]
             [DataType(DataType.Text)]
             [Display(Name = "Username")]
+            [Remote(action: "VerifyUserName", controller: "Users")]
             public string UserName { get; set; }
 
             /// <summary>
@@ -128,7 +130,7 @@ namespace WebAppForMORecSys.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                   
+                   /*
                     var userId = await _userManager.GetUserIdAsync(account);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(account);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -140,16 +142,12 @@ namespace WebAppForMORecSys.Areas.Identity.Pages.Account
 
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
-                    }
-                    else
-                    {
-                        await _signInManager.SignInAsync(account, isPersistent: false);
-                        return LocalRedirect(returnUrl);
-                    }
+                    */
+                    await _signInManager.SignInAsync(account, isPersistent: false);
+                    return RedirectToAction("Create", "Users", new { account.UserName, ReturnUrl = returnUrl });
+                    
+                    
+                    
                 }
                 foreach (var error in result.Errors)
                 {
@@ -183,5 +181,7 @@ namespace WebAppForMORecSys.Areas.Identity.Pages.Account
             }
             return (IUserEmailStore<Data.Account>)_userStore;
         }
+
+       
     }
 }

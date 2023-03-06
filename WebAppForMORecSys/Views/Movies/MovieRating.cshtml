@@ -1,0 +1,35 @@
+﻿@model WebAppForMORecSys.Helpers.MovieHelper.MovieUserUserratings
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div>
+    <span>
+        @{
+            string aclass = Model.user != null ? "" : "disabled";
+            string ratingClass = "ratingstar" + Model.movie.Id;
+        }
+        @for (int i = 0; i < 10; i++)
+        {
+            <a onclick="shownewvalue(@Html.Raw(i+1), @Model.movie.Id)" class="@aclass" href='@Url.Action("Rate","Movies", new { id=Model.movie.Id, score= i+1 })'>
+                <i class="@ratingClass fa fa-star-o" aria-hidden="true"></i>
+            </a>
+        }
+    </span>
+</div>
+<script>
+    $(function () {
+    @{
+        int ratingScore = 0;
+        if (Model.user != null)
+            ratingScore = Model.userRatings.Where(r => r.ItemID == Model.movie.Id).FirstOrDefault()?.RatingScore ?? 0;
+    }
+        var ratingValue = @Html.Raw(ratingScore);
+        var movieId = @Html.Raw(Model.movie.Id);
+        var startlist = $('.ratingstar' + movieId);
+        for (var i = 0; i < ratingValue; i++) {
+            startlist[i].classList.remove('fa-star-o');
+            startlist[i].classList.add('fa-star');
+        }
+    })
+
+
+</script>

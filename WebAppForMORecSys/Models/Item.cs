@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;
 using System.Text.Json.Nodes;
 using WebAppForMORecSys.Data;
@@ -16,22 +17,19 @@ namespace WebAppForMORecSys.Models
         public string? ImageURL { get; set; }
 
         public string? Description { get; set; }
+
+        [Display(Name = "Short\ndescription")]
         public string? ShortDescription { get; set; }
         public string? JSONParams { get; set;}
+
         public List<Rating> Ratings { get; set; }
+
         public List<Interaction> Interactions { get; set; }
 
         public Item()
         {
 
         }
-        public static List<Item>GetAll() { 
-            List<Item> items = new List<Item>();
-            items = context.Items.ToList();
-            return items; 
-        }
-
-        public static ApplicationDbContext context;
     }
 }
 

@@ -1,20 +1,21 @@
-﻿@model WebAppForMORecSys.Models.HomeViewsModels.MainViewModel
+﻿@using static WebAppForMORecSys.Helpers.MovieHelper
+@model WebAppForMORecSys.Models.HomeViewsModels.MainViewModel
 @{
     ViewData["Title"] = "Home Page";
 }
 
 <div id="mySidebar" class="sidebar">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    @Html.Partial("MovieFilter")
+    @Html.Partial("../Movies/MovieFilter")
 </div>
 <div id="main">
-    <button class="openbtn" onclick="openNav()">&#9776; Open Filter</button>
-    
-    <form asp-controller="Home" asp-action="Index" method="get">
+    <div id="openfilterbtn"><button id="openfilterbtn " class="openbtn" onclick="openNav()">&#9776; Open Filter</button></div>
+    <div id="closefilterbtn" style="display:none"> <button class="openbtn" onclick="closeNav()">&#9776; Close Filter</button></div>
+    <form asp-controller="Movies" asp-action="Index" method="get">
         <div class="form-floating mb-3">
             <div id="input-textsearch-group" class="input-group">
                 <input class="form-control rounded m-3" aria-required="true" name="search" placeholder="Search" value="@Model.SearchValue" />
-                <!--<span asp-validation-for="Input.Email" class="text-danger"></span>-->            
+                <input type="hidden" name="type" placeholder="Type" value="Search"/>
                 <input type="image" src="@Url.Content("~/Resources/Images/search.png")" border="0" alt="Submit" />
             </div>
             <div class="input-group" id="input-range-group">
@@ -25,7 +26,7 @@
                     string valueAsNumber = id + ".valueAsNumber";
                     <div class="range-wrap">
                         <label for="@id">@metric.Name</label>
-                        <input class="custom-range range" type="range" min="0" max="100" name="@id" id="@id" value="@averageValue" oninput="changeValues(this.value, @index)"
+                        <input class="custom-range range" type="range" min="0" max="100" name="metricimportance" id="@id" value="@averageValue" placeholder="Metrics" oninput="changeValues(this.value, @index)"
                            onchange="changeValues(this.value, @index)" />
                     
                         <output class="bubble"></output>                
@@ -36,20 +37,19 @@
             </div>
         </div>
     </form>
-    @{
-        int itemsInRow = 4;
-        int count = 0;
-    }
-    <div style="width:100%">
+    <div id="TargetDiv" style="margin-bottom:5px;"></div>
+    <div id="MoviePreviews" style="width:100%">
     @foreach (var item in Model.Items)
     {
-            @Html.Partial("MoviePreview", new Movie(item))
+            @Html.Partial("../Movies/MoviePreview", new MovieUserUserratings(new Movie(item), Model.CurrentUser, Model.CurrentUserRatings))
 
     }
     </div>
+    
 </div>
 
 <script>
+    /* Make sliders responsive to change of value */
     function getSumOfRangeValues(){
         let inputranges = document.getElementById("input-range-group").getElementsByTagName('input');
         let length = inputranges.length;
@@ -86,6 +86,7 @@
 
     }
 
+   /* #For showing values under sliders */
     function setBubbles(){
         const allRanges = document.querySelectorAll(".range-wrap");
         allRanges.forEach(wrap => {
@@ -111,16 +112,47 @@
      // Sorta magic numbers based on size of the native UI thumb
      bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
 }
-/* Set the width of the sidebar to 250px and the left margin of the page content to 250px */
+
+/* For showing and closing sidebar filter*/
 function openNav() {
-  document.getElementById("mySidebar").style.width = "25%";
-  document.getElementById("main").style.marginLeft = "25%";
+    document.getElementById("mySidebar").style.width = "25%";
+    document.getElementById("main").style.marginLeft = "25%";
+    document.getElementById("openfilterbtn").style.display = "none";
+    document.getElementById("closefilterbtn").style.display = "";
+
 }
 
-/* Set the width of the sidebar to 0 and the left margin of the page content to 0 */
 function closeNav() {
-  document.getElementById("mySidebar").style.width = "0";
-  document.getElementById("main").style.marginLeft = "0";
+    document.getElementById("mySidebar").style.width = "0";
+    document.getElementById("main").style.marginLeft = "0";
+    document.getElementById("closefilterbtn").style.display = "none";
+    document.getElementById("openfilterbtn").style.display = "";
 }
+</script>
+
+<!-- For showing detail on the same page -->
+<!-- <script src="~/Scripts/jquery-2.2.0.js"></script> -->
+<script>
+    
+    $(document).ready(function () {
+        $(".ajaxdetail").on("click", function (e) {
+            e.preventDefault();
+            var elementUrl = $(this).attr('href');
+            $.ajax({
+                url: elementUrl,
+                cache: false,
+                success: function (data) {
+                    $('#TargetDiv').html(data);
+                    document.getElementById("TargetDiv").style.display = ""
+                    document.getElementById("MoviePreviews").style.display = "none";
+                }
+            });            
+        });        
+    });
+
+    function BackToList(){
+        document.getElementById('TargetDiv').style.display = "none";
+        document.getElementById("MoviePreviews").style.display = "";
+    }
 </script>
 

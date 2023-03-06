@@ -277,7 +277,7 @@ namespace WebAppForMORecSys.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Ratings_Users_UserID",
-                        column: x => x.UserID,
+                        column: x => x.UserID,                        
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
