@@ -1,6 +1,9 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System.Text.Json.Nodes;
 using WebAppForMORecSys.Models;
+using static WebAppForMORecSys.Helpers.UserHelper;
 
 namespace WebAppForMORecSys.Helpers
 {
@@ -59,5 +62,53 @@ namespace WebAppForMORecSys.Helpers
             return DateTime.Parse(stringDate);
         }
         public static string[] GetGenres(Item movie) => MovieHelper.getPropertyListValueFromJSON(movie, "Genres");
+
+
+        public static void AddDirectorToBlackList(this User user, string director)
+        {
+            UserHelper.AddStringValueToBlackList(user, "Director", director);
+        }
+
+        public static void AddActorToBlackList(this User user, string actor)
+        {
+            UserHelper.AddStringValueToBlackList(user, "Actor", actor);
+        }
+
+        public static void AddGenreToBlackList(this User user, string genre)
+        {
+            UserHelper.AddStringValueToBlackList(user, "Genre", genre);
+        }
+
+        public static void RemoveDirectorFromBlackList(this User user, string director)
+        {
+            UserHelper.RemoveStringValueFromBlackList(user, "Director", director);
+        }
+
+        public static void RemoveActorFromBlackList(this User user, string actor)
+        {
+            UserHelper.RemoveStringValueFromBlackList(user, "Actor", actor);
+        }
+
+        public static void RemoveGenreFromBlackList(this User user, string genre)
+        {
+            UserHelper.RemoveStringValueFromBlackList(user, "Genre", genre);
+        }
+
+        public static bool IsDirectorInBlackList(this User user, string actor)
+        {
+            return UserHelper.IsStringValueInBlackList(user, "Director", actor);
+        }
+
+        public static bool IsActorInBlackList(this User user, string actor)
+        {
+            return UserHelper.IsStringValueInBlackList(user, "Actor", actor);
+        }
+
+        public static bool IsGenreInBlackList(this User user, string genre)
+        {
+            return UserHelper.IsStringValueInBlackList(user, "Genre", genre);
+        }
+
+
     }
 }

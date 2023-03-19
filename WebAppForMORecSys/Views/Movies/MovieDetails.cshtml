@@ -1,0 +1,186 @@
+﻿@using static WebAppForMORecSys.Helpers.MovieHelper
+@using static WebAppForMORecSys.Helpers.UserHelper
+@model WebAppForMORecSys.Helpers.MovieHelper.MovieUserUserratings
+@{
+    string divId = "MovieDetail_" + Model.movie.Id;
+    string aclass = Model.user != null ? "" : "disabled";
+    string hideDisplay = "";
+    string showDisplay = "none";
+    if (Model.user?.IsItemInBlackList(Model.movie.Id) ?? false)
+    {
+        hideDisplay = "none";
+        showDisplay = "";
+    }
+}
+<div class="@divId">
+    <div>
+        <button class=" btn btn-primary" onclick="BackToList();" style="float:right">Back to List</button>
+        <h1>@Html.DisplayFor(model => model.movie.Name)</h1>
+    </div>
+    <div>
+        <a style="display:@hideDisplay;" class="hideimg" onclick="hide(@Model.movie.Id)"
+            href='@Url.Action("Hide","Movies", new { id=Model.movie.Id })'>
+            <img src="@Url.Content("~/Resources/Images/hide.png")" title="Don't recommend this movie" />
+        </a>
+        <a style="display:@showDisplay;" class="showimg" onclick="show(@Model.movie.Id)"
+            href='@Url.Action("Show","Movies", new { id=Model.movie.Id })'>
+            <img src="@Url.Content("~/Resources/Images/show.png")" title="Show movie again." />
+        </a>
+        <hr />
+        <img class="image" style="max-width:48%; max-height:90%; float:right;" src="@Model.movie.ImageURL" />
+
+        <dl class="row" style="max-width:48%; display:grid;">
+             @if (Model.user!=null)
+            {
+                <dt class="col-sm-2">
+                    My rating
+                </dt>
+                <dd class="col-sm-10">
+                    @await Html.PartialAsync("../Movies/MovieRating", Model)
+                </dd>
+                <br/>
+            }
+            @if (!string.IsNullOrEmpty(Model.movie.Description))
+            {
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.movie.Description)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.movie.Description)
+                </dd>
+                <br />
+            }
+            @if (Model.movie.Genres.Length > 0)
+            {
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.movie.Genres)
+                </dt>
+                <dd class="col-sm-10">
+                    @for (int i = 0; i < Model.movie.Genres.Length; i++)
+                    {
+                        @Html.DisplayFor(model => model.movie.Genres[i])
+                        string hideDisplayGenre = "";
+                        string showDisplayGenre = "none";
+                        string hideClassGenre = "hidegenre_" + i;
+                        string showClassGenre = "showgenre_" + i;
+                        if (Model.user?.IsGenreInBlackList(Model.movie.Genres[i]) ?? false)
+                        {
+                            hideDisplayGenre = "none";
+                            showDisplayGenre = "";                       
+                        }
+                        <a style="display:@hideDisplayGenre; position: absolute; right: 1px;" class="@hideClassGenre"
+                           onclick="hide_by_property('genre',@i)"
+                           href='@Url.Action("HideGenre","Movies", new { genre=Model.movie.Genres[i] })'>
+                            <img src="@Url.Content("~/Resources/Images/hide.png")" title="Don't recommend movies of this genre" />
+                        </a>
+                        <a style="display:@showDisplayGenre; position: absolute; right: 1px"
+                           onclick="show_by_property('genre',@i)"
+                        class="@showClassGenre" href='@Url.Action("ShowGenre","Movies", new { genre=Model.movie.Genres[i] })'>
+                            <img src="@Url.Content("~/Resources/Images/show.png")" title="Show movies of this genre again" />
+                        </a>
+                        <br />
+                    }
+                </dd>
+            }
+            @if (!string.IsNullOrEmpty(Model.movie.ShortDescription))
+            {
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.movie.ShortDescription)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.movie.ShortDescription)
+                </dd>
+                <br />
+            }
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.movie.ReleaseDate)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.movie.ReleaseDate.Date)
+            </dd>      
+            <br />
+            @if (!string.IsNullOrEmpty(Model.movie.Director))
+            {
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.movie.Director)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.movie.Director)
+                    @{
+                        string hideDisplayDirector = "";
+                        string showDisplayDirector = "none";
+                        string hideClassDirector = "hidedirector_";
+                        string showClassDirector = "showdirector_";
+                        if (Model.user?.IsDirectorInBlackList(Model.movie.Director) ?? false)
+                        {
+                        hideDisplayDirector = "none";
+                        showDisplayDirector = "";
+                        }
+                    }
+                    <a style="display:@hideDisplayDirector; position: absolute; right: 1px;" class="@hideClassDirector"
+                       onclick="hide_by_property('director','')"
+                       href='@Url.Action("HideDirector","Movies", new { director=Model.movie.Director })'>
+                        <img src="@Url.Content("~/Resources/Images/hide.png")" title="Don't recommend movies of this director" />
+                    </a>
+                    <a style="display:@showDisplayDirector; position: absolute; right: 1px"
+                       onclick="show_by_property('director','')"
+                       class="@showClassDirector" href='@Url.Action("ShowDirector","Movies", new { director=Model.movie.Director })'>
+                        <img src="@Url.Content("~/Resources/Images/show.png")" title="Show movies of this director again" />
+                    </a>
+                </dd>
+                <br />
+            }
+            @if (Model.movie.Actors.Length>0)
+            {
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.movie.Actors)
+                </dt>
+                <dd class="col-sm-10">
+                    @for (int i = 0; i < Model.movie.Actors.Length; i++)
+                    {
+                        @Html.DisplayFor(model => model.movie.Actors[i])
+                        string hideDisplayActor = "";
+                        string showDisplayActor = "none";
+                        string hideClassActor = "hideactor_" + i;
+                        string showClassActor = "showactor_" + i;
+                        if (Model.user?.IsActorInBlackList(Model.movie.Actors[i]) ?? false)
+                        {
+                            hideDisplayActor = "none";
+                            showDisplayActor = "";
+                        }
+                        <a style="display:@hideDisplayActor; position: absolute; right: 1px;" class="@hideClassActor"
+                           onclick="hide_by_property('actor',@i)"
+                           href='@Url.Action("HideActor","Movies", new { actor=Model.movie.Actors[i] })'>
+                            <img src="@Url.Content("~/Resources/Images/hide.png")" title="Don't recommend movies with this actor" />
+                        </a>
+                        <a style="display:@showDisplayActor; position: absolute; right: 1px"
+                           onclick="show_by_property('actor',@i)"
+                           class="@showClassActor" href='@Url.Action("ShowActor","Movies", new { actor=Model.movie.Actors[i] })'>
+                            <img src="@Url.Content("~/Resources/Images/show.png")" title="Show movies with this actor again" />
+                        </a>
+                        <br/>
+                    }                
+                </dd>
+                <br />
+            }
+      
+        </dl>
+    </div>
+
+</div>
+<script>
+    function hide_by_property(name, index) {
+        hidelink = $('.hide' + name + '_' + index);
+        showlink = $('.show' + name + '_' + index);
+        showlink[0].style.display = "";
+        hidelink[0].style.display = "none"
+    }
+
+    function show_by_property(name, index) {
+        hidelink = $('.hide' + name + '_' + index);
+        showlink = $('.show' + name + '_' + index);
+        showlink[0].style.display = "none";
+        hidelink[0].style.display = ""
+    }
+</script>
+

@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.IO;
 using WebAppForMORecSys.Areas.Identity.Data;
 using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Helpers;
 using WebAppForMORecSys.Models;
 using WebAppForMORecSys.Models.HomeViewsModels;
+using static WebAppForMORecSys.Helpers.MovieHelper;
 
 namespace WebAppForMORecSys.Controllers
 {
@@ -30,15 +32,11 @@ namespace WebAppForMORecSys.Controllers
         public async Task<IActionResult> Index(string search, string[] metricimportance, string director,
           string actor, string[] genres, string type, string releasedateto, string releasedatefrom)
         {
-            if (_context.Items == null)
-            {
-                return Problem("Entity set 'Context.Items'  is null.");
-            }
             var viewModel = new MainViewModel();
-            var account = await _userManager.GetUserAsync(User);
-            if (account != null)
+            User user = GetCurrentUser();
+            if (user != null)
             {
-                viewModel.CurrentUser = _context.Users.Where(u => u.UserName == account.UserName).FirstOrDefault();
+                viewModel.CurrentUser = user;
                 viewModel.CurrentUserRatings = await (from rating in _context.Ratings
                                                where rating.UserID == viewModel.CurrentUser.Id
                                                select rating).ToListAsync();
@@ -49,47 +47,61 @@ namespace WebAppForMORecSys.Controllers
             viewModel.Metrics = await metrics.ToListAsync();
             viewModel.Metrics = new List<Metric> { new Metric { Name = "Relevance" },
                 new Metric { Name = "Novelty" }, new Metric { Name = "Diversity" } };//DELETE Later
-
-
-           
+            List<Item> possibleItems = new List<Item>()
             if (type == "Search" && search != null)
             {
-                allItems = allItems.Where(x => x.Name.ToLower().Contains(search.ToLower()));
+                possibleItems = await allItems.Where(x => x.Name.ToLower().Contains(search.ToLower())).ToListAsync();
             }
             if (type == "MovieFilter")
             {
-
-                var itemslist = allItems.ToList();
-                if (!director.IsNullOrEmpty())
-                    itemslist = itemslist.Where(i => (MovieHelper.GetDirector(i) ?? "")
-                        .Contains(director, StringComparison.OrdinalIgnoreCase)).ToList();
-                if (!actor.IsNullOrEmpty())
-                    itemslist = itemslist.Where(i => MovieHelper.GetActors(i)
-                        .Any(a => a.Contains(actor, StringComparison.OrdinalIgnoreCase))).ToList();
-                if (genres != null && genres.Length != 0)
-                    itemslist = itemslist.Where(i => MovieHelper.GetGenres(i).Intersect(genres).Count() > 0).ToList();
-                if (!releasedatefrom.IsNullOrEmpty())
-                    itemslist = itemslist.Where(i => MovieHelper.GetReleaseDate(i) > DateTime.Parse(releasedatefrom)).ToList();
-                if (!releasedateto.IsNullOrEmpty())
-                    itemslist = itemslist.Where(i => MovieHelper.GetReleaseDate(i) < DateTime.Parse(releasedateto)).ToList();
-                allItems = itemslist.AsQueryable();
-
+                possibleItems = FilterByMovieFilter(director, actor, genres, releasedatefrom, releasedateto);
                 viewModel.FilterValues.Add("Director", director);
                 viewModel.FilterValues.Add("Actor", actor);
                 viewModel.FilterValues.Add("ReleaseDateFrom", releasedatefrom);
                 viewModel.FilterValues.Add("ReleaseDateTo", releasedateto);
                 viewModel.FilterValues.Add("Genres", string.Join(',', genres));
-
-
             }
-            viewModel.Items = allItems.Take(50).ToList();//Nahradit voláním RS
+            viewModel.Items = possibleItems.Take(50).ToList();//Nahradit voláním RS
             return View(viewModel);
         }
 
-        public ActionResult Details(int id)
+        public List<Item> FilterByMovieFilter(string director, string actor, string[] genres,
+            string releasedatefrom, string releasedateto)
         {
-            //get model from database
-            return PartialView(new Movie(_context.Items.First(x => x.Id == id)));
+
+            List<Item> itemslist = allItems.ToList();
+            if (!director.IsNullOrEmpty())
+                itemslist = itemslist.Where(i => (MovieHelper.GetDirector(i) ?? "")
+                    .Contains(director, StringComparison.OrdinalIgnoreCase)).ToList();
+            if (!actor.IsNullOrEmpty())
+                itemslist = itemslist.Where(i => MovieHelper.GetActors(i)
+                    .Any(a => a.Contains(actor, StringComparison.OrdinalIgnoreCase))).ToList();
+            if (genres != null && genres.Length != 0)
+                itemslist = itemslist.Where(i => MovieHelper.GetGenres(i).Intersect(genres).Count() > 0).ToList();
+            if (!releasedatefrom.IsNullOrEmpty())
+                itemslist = itemslist.Where(i => MovieHelper.GetReleaseDate(i) > DateTime.Parse(releasedatefrom)).ToList();
+            if (!releasedateto.IsNullOrEmpty())
+                itemslist = itemslist.Where(i => MovieHelper.GetReleaseDate(i) < DateTime.Parse(releasedateto)).ToList();
+            return itemslist;
+        }
+
+        public async Task<IActionResult> MovieDetails(int id)
+        {
+            User user = GetCurrentUser();
+            List<Rating> ratings = null;
+            if (user != null)
+            {
+                user =  user;
+                ratings = await(from rating in _context.Ratings
+                                                     where rating.UserID == user.Id
+                                                     select rating).ToListAsync();
+            }
+            return PartialView(new MovieUserUserratings(
+                new Movie(_context.Items.First(x => x.Id == id)),
+                user,
+                ratings
+                ));
+
         }
 
         public void SetAllGenres()
@@ -107,12 +119,7 @@ namespace WebAppForMORecSys.Controllers
 
         public IResult Rate(int id, int score)
         {
-            var account = _userManager.GetUserAsync(User).Result;
-            User user = null;
-            if (account != null)
-            {
-                user = _context.Users.Where(u => u.UserName == account.UserName).FirstOrDefault();
-            }
+            User user = GetCurrentUser();
             if (user == null)
             {
                 return Results.Unauthorized();
@@ -135,6 +142,120 @@ namespace WebAppForMORecSys.Controllers
                 rating.Date = DateTime.Now;
                 _context.Update(rating);
             }
+            _context.SaveChanges();
+            return Results.NoContent();
+        }
+
+        private User GetCurrentUser()
+        {
+            var account = _userManager.GetUserAsync(User).Result;
+            User user = null;
+            if (account != null)
+            {
+                user = _context.Users.Where(u => u.UserName == account.UserName).FirstOrDefault();
+            }
+            return user;
+        }
+        public IResult Hide(int id)
+        {
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return Results.Unauthorized();
+            }
+            user.AddItemToBlackList(id);
+            _context.Update(user);
+            _context.SaveChanges();
+            return Results.NoContent();
+        }
+
+        public IResult HideDirector(string director)
+        {
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return Results.Unauthorized();
+            }
+            user.AddDirectorToBlackList(director);
+            _context.Update(user);
+            _context.SaveChanges();
+            return Results.NoContent();
+        }
+
+        public IResult HideActor(string actor)
+        {
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return Results.Unauthorized();
+            }
+            user.AddActorToBlackList(actor);
+            _context.Update(user);
+            _context.SaveChanges();
+            return Results.NoContent();
+        }
+
+        public IResult HideGenre(string genre)
+        {
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return Results.Unauthorized();
+            }
+            user.AddGenreToBlackList(genre);
+            _context.Update(user);
+            _context.SaveChanges();
+            return Results.NoContent();
+        }
+
+        public IResult Show(int id)
+        {
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return Results.Unauthorized();
+            }
+            user.RemoveItemFromBlackList(id);
+            _context.Update(user);
+            _context.SaveChanges();
+            return Results.NoContent();
+        }
+
+        public IResult ShowDirector(string director)
+        {
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return Results.Unauthorized();
+            }
+            user.RemoveDirectorFromBlackList(director);
+            _context.Update(user);
+            _context.SaveChanges();
+            return Results.NoContent();
+        }
+
+        public IResult ShowActor(string actor)
+        {
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return Results.Unauthorized();
+            }
+            user.RemoveActorFromBlackList(actor);
+            _context.Update(user);
+            _context.SaveChanges();
+            return Results.NoContent();
+        }
+
+        public IResult ShowGenre(string genre)
+        {
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return Results.Unauthorized();
+            }
+            user.RemoveGenreFromBlackList(genre);
+            _context.Update(user);
             _context.SaveChanges();
             return Results.NoContent();
         }

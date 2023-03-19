@@ -6,112 +6,28 @@
 
 <div id="mySidebar" class="sidebar">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    @Html.Partial("../Movies/MovieFilter")
+    @await Html.PartialAsync("../Movies/MovieFilter")
 </div>
 <div id="main">
     <div id="openfilterbtn"><button id="openfilterbtn " class="openbtn" onclick="openNav()">&#9776; Open Filter</button></div>
     <div id="closefilterbtn" style="display:none"> <button class="openbtn" onclick="closeNav()">&#9776; Close Filter</button></div>
     <form asp-controller="Movies" asp-action="Index" method="get">
         <div class="form-floating mb-3">
-            <div id="input-textsearch-group" class="input-group">
-                <input class="form-control rounded m-3" aria-required="true" name="search" placeholder="Search" value="@Model.SearchValue" />
-                <input type="hidden" name="type" placeholder="Type" value="Search"/>
-                <input type="image" src="@Url.Content("~/Resources/Images/search.png")" border="0" alt="Submit" />
-            </div>
-            <div class="input-group" id="input-range-group">
-                @{ int index = 0;}
-                @foreach (var metric in Model.Metrics){
-                    string id = "range" + index;
-                    int averageValue = 100 / Model.Metrics.Count;
-                    string valueAsNumber = id + ".valueAsNumber";
-                    <div class="range-wrap">
-                        <label for="@id">@metric.Name</label>
-                        <input class="custom-range range" type="range" min="0" max="100" name="metricimportance" id="@id" value="@averageValue" placeholder="Metrics" oninput="changeValues(this.value, @index)"
-                           onchange="changeValues(this.value, @index)" />
-                    
-                        <output class="bubble"></output>                
-                    
-                    </div>
-                    index++;
-                }
-            </div>
+            @await Html.PartialAsync("../Home/Search")
+            @await Html.PartialAsync("../Home/MetricsFilter", Model)
         </div>
     </form>
-    <div id="TargetDiv" style="margin-bottom:5px;"></div>
+    <div id="DetailsDiv" style="margin-bottom:5px;"></div>
     <div id="MoviePreviews" style="width:100%">
     @foreach (var item in Model.Items)
     {
-            @Html.Partial("../Movies/MoviePreview", new MovieUserUserratings(new Movie(item), Model.CurrentUser, Model.CurrentUserRatings))
-
+            @await Html.PartialAsync("../Movies/MoviePreview", new MovieUserUserratings(new Movie(item), Model.CurrentUser, Model.CurrentUserRatings))
     }
     </div>
     
 </div>
 
 <script>
-    /* Make sliders responsive to change of value */
-    function getSumOfRangeValues(){
-        let inputranges = document.getElementById("input-range-group").getElementsByTagName('input');
-        let length = inputranges.length;
-        let sum = 0;
-        for (let i = 0; i < length; i++) {            
-            sum+= parseInt(inputranges[i].value)
-        }
-        return sum;
-    }
-    function getRandomInt(max) {
-        return Math.floor(Math.random() * max);
-    }
-    function changeValues(value, index){
-        let inputranges = document.getElementById("input-range-group").getElementsByTagName('input');
-        let length = inputranges.length;
-        let sum = getSumOfRangeValues();
-        let overflow = sum - 100;
-        if (overflow > 0) {
-            for (let i = 0; i < length; i++) {            
-                if (i==index) continue;
-                let current_value = parseInt(inputranges[i].value);
-                let subtract = (overflow * current_value / 100) | 0;
-                inputranges[i].value = current_value - subtract;
-            }
-            while (getSumOfRangeValues() > 100) {
-                i = getRandomInt(length)
-                if (i==index) continue;
-                if (parseInt(inputranges[i].value)>0){
-                    inputranges[i].value = parseInt(inputranges[i].value) - 1;
-                }                                
-            }
-        }
-        setBubbles();
-
-    }
-
-   /* #For showing values under sliders */
-    function setBubbles(){
-        const allRanges = document.querySelectorAll(".range-wrap");
-        allRanges.forEach(wrap => {
-              const range = wrap.querySelector(".range");
-              const bubble = wrap.querySelector(".bubble");
-
-              range.addEventListener("input", () => {
-                setBubble(range, bubble);
-              });
-              setBubble(range, bubble);
-        });
-    }
-
-    setBubbles();
-
-    function setBubble(range, bubble) {
-          const val = range.value;
-          const min = range.min ? range.min : 0;
-          const max = range.max ? range.max : 100;
-          const newVal = Number(((val - min) * 100) / (max - min));
-          bubble.innerHTML = val;
-
-     // Sorta magic numbers based on size of the native UI thumb
-     bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
-}
 
 /* For showing and closing sidebar filter*/
 function openNav() {
@@ -142,17 +58,46 @@ function closeNav() {
                 url: elementUrl,
                 cache: false,
                 success: function (data) {
-                    $('#TargetDiv').html(data);
-                    document.getElementById("TargetDiv").style.display = ""
+                    $('#DetailsDiv').html(data);
+                    document.getElementById("DetailsDiv").style.display = ""
                     document.getElementById("MoviePreviews").style.display = "none";
                 }
             });            
         });        
     });
 
-    function BackToList(){
-        document.getElementById('TargetDiv').style.display = "none";
+    function BackToList() {
+        document.getElementById('DetailsDiv').style.display = "none";
+        document.getElementById('DetailsDiv').innerHTML="";
         document.getElementById("MoviePreviews").style.display = "";
+    }
+
+    function hide(itemId) {
+        var list = $('.preview_' + itemId);
+        list[0].style.opacity = 0.2;
+        list[0].getElementsByClassName("hideimg")[0].style.display = "none";
+        list[0].getElementsByClassName("showimg")[0].style.display = "";
+        list = $('.MovieDetail_' + itemId);
+        if (list.length > 0) {
+            list[0].style.opacity = 0.2;
+            var x = list[0].getElementsByClassName("hideimg")[0];
+            list[0].getElementsByClassName("hideimg")[0].style.display = "none";
+            list[0].getElementsByClassName("showimg")[0].style.display = "";
+        }
+    }
+
+    function show(itemId) {
+        var list = $('.preview_' + itemId);
+        list[0].style.opacity = 1;
+        list[0].getElementsByClassName("showimg")[0].style.display = "none";
+        list[0].getElementsByClassName("hideimg")[0].style.display = "";
+        list = $('.MovieDetail_' + itemId);
+        if (list.length> 0){
+            list[0].style.opacity = 1;
+            var x = list[0].getElementsByClassName("showimg")[0];
+            list[0].getElementsByClassName("showimg")[0].style.display = "none";
+            list[0].getElementsByClassName("hideimg")[0].style.display = "";
+        }
     }
 </script>
 

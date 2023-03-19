@@ -1,24 +1,44 @@
-﻿@model WebAppForMORecSys.Helpers.MovieHelper.MovieUserUserratings
-<div class="MovieItem horizontal">
-    <a href='@Url.Action("Details","Movies", new { id=Model.movie.Id })' class="ajaxdetail"><h4>@Model.movie.Name</h4></a>
+﻿@using static WebAppForMORecSys.Helpers.UserHelper
+@model WebAppForMORecSys.Helpers.MovieHelper.MovieUserUserratings
+@{
+
+    string moviepreviewclass = "preview_" + Model.movie.Id;
+    string hideDisplay = "";
+    string showDisplay = "none";
+    if (Model.user.IsItemInBlackList(Model.movie.Id))
+    {
+        hideDisplay = "none";
+        showDisplay = "";
+    }
+}
+<div class="MovieItem horizontal @moviepreviewclass">
+    <a href='@Url.Action("MovieDetails","Movies", new { id=Model.movie.Id })' class="ajaxdetail"><h4>@Model.movie.Name</h4></a>
+    
     <div id="logo-holder">
-        <img class="image" style="width:95%" src="@Model.movie.ImageURL" />
+        @{
+            string ImageURL = Model.movie.ImageURL;
+            if (String.IsNullOrEmpty(ImageURL))
+            {
+                ImageURL = @Url.Content("~/Resources/Images/grey_no_image.png");
+            }
+        }
+        <img class="image" style="width:95%" src="@ImageURL" />
         <div class="text" style="width:95%; height:100%">@Model.movie.ShortDescription</div>
     </div>
-    <div style="margin-top:1px"><b>@Html.DisplayNameFor(model => model.movie.Director):</b>@Model.movie.Director</div>
-    @Html.Partial("../Movies/MovieRating", Model)
+    <div>
+        <a style="position: absolute; right: 1px; display:@hideDisplay" id="hideimg" class="hideimg" onclick="hide(@Model.movie.Id)" href='@Url.Action("Hide","Movies", new { id=Model.movie.Id })'>
+            <img src="@Url.Content("~/Resources/Images/hide.png")" title="Don't recommend this movie" />
+        </a>
+        <a style="position: absolute; right: 1px; display:@showDisplay" id="showimg" class="showimg" onclick="show(@Model.movie.Id)" href='@Url.Action("Show","Movies", new { id=Model.movie.Id })'>
+            <img src="@Url.Content("~/Resources/Images/show.png")" title="Show movie again." />
+        </a>
+    </div>
+    <div style="margin-top:1px">
+        <b>@Html.DisplayNameFor(model => model.movie.Director):</b>
+        <br/>
+        @Model.movie.Director
+    </div>
+    @await Html.PartialAsync("../Movies/MovieRating", Model)
 </div>
-<script>
-    function shownewvalue(newValue, movieId) {
-        var ratingValue = newValue
-        var startlist = $('.ratingstar' + movieId);
-        for (var i = 0; i < ratingValue; i++) {
-            startlist[i].classList.remove('fa-star-o');
-            startlist[i].classList.add('fa-star');
-        }
-        for (var i = ratingValue; i < 10; i++) {
-            startlist[i].classList.remove('fa-star');
-            startlist[i].classList.add('fa-star-o');
-        }
-    }
-</script>
+
+
