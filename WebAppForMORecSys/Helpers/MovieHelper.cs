@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.Text.Json.Nodes;
 using WebAppForMORecSys.Models;
 using static WebAppForMORecSys.Helpers.UserHelper;
+using NuGet.Packaging;
 
 namespace WebAppForMORecSys.Helpers
 {
@@ -110,5 +111,34 @@ namespace WebAppForMORecSys.Helpers
         }
 
 
+        public static List<string> GetDirectorsInBlackList(this User user)
+        {
+            return UserHelper.GetStringValuesInBlackList(user, "Director");
+        }
+
+        public static List<string> GetActorsInBlackList(this User user)
+        {
+            return UserHelper.GetStringValuesInBlackList(user, "Actor");
+        }
+
+        public static List<string> GetGenresInBlackList(this User user)
+        {
+            return UserHelper.GetStringValuesInBlackList(user, "Genre");
+        }
+
+        public static List<int> ComputeAllBlockedMovies(this User user)
+        {
+            var blackList = new List<int>();
+            blackList.AddRange(UserHelper.GetItemsInBlackList(user));
+            var directorsBL = GetDirectorsInBlackList(user);
+            var actorsBL = GetActorsInBlackList(user);
+            var genresBL = GetGenresInBlackList(user);
+            blackList.AddRange(Movie.AllMovies.Where(m => (m.Actors.Intersect(actorsBL).Count() > 0) ||
+                                                    (m.Genres.Intersect(genresBL).Count() > 0) ||
+                                                    (directorsBL.Contains(m.Director)))
+                                                    .Select(m=> m.Id).ToList());
+            blackList = blackList.Distinct().ToList();
+            return blackList;
+        }
     }
 }

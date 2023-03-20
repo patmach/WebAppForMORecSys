@@ -37,5 +37,13 @@ namespace WebAppForMORecSys.Models
         }
 
         public static List<string> AllGenres;
+
+        public static List<string> AllDirectors;
+
+        public static List<string> AllActors;
+
+        public static List<Movie> AllMovies;
+
+
     }
 }

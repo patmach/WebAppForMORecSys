@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using WebAppForMORecSys.Areas.Identity.Data;
 using WebAppForMORecSys.Data;
+using WebAppForMORecSys.Helpers;
 
 namespace WebAppForMORecSys.Models
 {
@@ -25,6 +26,17 @@ namespace WebAppForMORecSys.Models
         public List<Interaction> Interactions { get; set; }
 
         public Account account;
+
+        private List<int> BlockedItemIDs = null;
+
+        public List<int> GetAllBlockedItems()
+        {
+            if (this.BlockedItemIDs == null)
+            { 
+                this.BlockedItemIDs = this.ComputeAllBlockedMovies();
+            }
+            return this.BlockedItemIDs;
+        }
 
         public User()
         {

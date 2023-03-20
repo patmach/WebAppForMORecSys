@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IO;
@@ -24,8 +25,11 @@ namespace WebAppForMORecSys.Controllers
         {
             _context = context;
             _userManager = userManager;
+            SetAllMovies();
             SetAllGenres();
-            allItems = from item in _context.Items/*.Include(i => i.Ratings)*/
+            SetAllDirectors();
+            SetAllActors();
+            allItems = from item in _context.Items
                            select item;
         }
 
@@ -47,12 +51,14 @@ namespace WebAppForMORecSys.Controllers
             viewModel.Metrics = await metrics.ToListAsync();
             viewModel.Metrics = new List<Metric> { new Metric { Name = "Relevance" },
                 new Metric { Name = "Novelty" }, new Metric { Name = "Diversity" } };//DELETE Later
-            List<Item> possibleItems = new List<Item>()
-            if (type == "Search" && search != null)
+            List<Item> possibleItems = new List<Item>();
+            if (type.IsNullOrEmpty())
+                possibleItems = await allItems.ToListAsync();
+            else if (type == "Search" && search != null)
             {
                 possibleItems = await allItems.Where(x => x.Name.ToLower().Contains(search.ToLower())).ToListAsync();
             }
-            if (type == "MovieFilter")
+            else if (type == "MovieFilter")
             {
                 possibleItems = FilterByMovieFilter(director, actor, genres, releasedatefrom, releasedateto);
                 viewModel.FilterValues.Add("Director", director);
@@ -109,12 +115,57 @@ namespace WebAppForMORecSys.Controllers
             if (Movie.AllGenres == null)
             {
                 var genres = new List<string>();
-                var movies = _context.Items.ToList();
-                movies.ForEach(m => genres.AddRange(MovieHelper.GetGenres(m)));
+                Movie.AllMovies.ForEach(m => genres.AddRange(MovieHelper.GetGenres(m)));
                 Movie.AllGenres = genres.Distinct().ToList();
                 Movie.AllGenres.Remove("(nogenreslisted)");
             }
         }
+
+        public void SetAllDirectors()
+        {
+            if (Movie.AllDirectors == null)
+            {
+                var directors = new List<string>();
+                Movie.AllMovies.ForEach(m => directors.Add(MovieHelper.GetDirector(m)));
+                Movie.AllDirectors = directors.Distinct().ToList();
+            }
+        }
+
+        public void SetAllActors()
+        {
+            if (Movie.AllActors == null)
+            {
+                var actors = new List<string>();
+                Movie.AllMovies.ForEach(m => actors.AddRange(MovieHelper.GetActors(m)));
+                Movie.AllActors = actors.Distinct().ToList();
+            }
+        }
+
+        public void SetAllMovies()
+        {
+            if (Movie.AllActors == null)
+            {
+                var actors = new List<string>();
+                Movie.AllMovies = _context.Items.Select(i => new Movie(i)).ToList();
+            }
+        }
+
+        public List<string> GetAllMovieNames(string prefix)
+        {
+            return Movie.AllMovies.Where(m => m.Name.Contains(prefix, StringComparison.OrdinalIgnoreCase)).Select(m => m.Name).ToList();
+
+        }
+        public List<string> GetAllDirectors(string prefix)
+        {
+            return Movie.AllDirectors.Where(d => d.Contains(prefix, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        }
+        public List<string> GetAllActors(string prefix)
+        {
+            return Movie.AllActors.Where(a => a.Contains(prefix, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        }
+
 
 
         public IResult Rate(int id, int score)

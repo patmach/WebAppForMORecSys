@@ -27,6 +27,43 @@
     
 </div>
 
+
+<script>
+    $(document).ready(function () {
+        SetAutoComplete("titlesearch", "Movies/GetAllMovieNames");
+        SetAutoComplete("idirector", "Movies/GetAllDirectors");
+        SetAutoComplete("iactor", "Movies/GetAllActors");
+
+
+    });
+    function SetAutoComplete(textbox, url) {
+    $("#" + textbox).autocomplete(
+        {
+            source: function (request, response) 
+            {
+                $.ajax(
+                    {
+                    url: url,
+                    type: "POST",
+                    dataType: "json",
+                    data: { Prefix: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item, value: item };
+                        }))
+                    }
+                })
+            },
+            messages: {
+                noResults: "", results: ""
+            }
+        });
+    }
+    
+        
+    
+</script>
+
 <script>
 
 /* For showing and closing sidebar filter*/

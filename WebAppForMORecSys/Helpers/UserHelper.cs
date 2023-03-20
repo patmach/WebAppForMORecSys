@@ -76,6 +76,7 @@ namespace WebAppForMORecSys.Helpers
                 listOfValues.Remove(value);
             jsonObj[name] = JArray.FromObject(listOfValues);
             user.JSONBlockRules = JsonConvert.SerializeObject(jsonObj);
+
         }
 
         public static bool IsItemInBlackList(this User user, int itemId)
@@ -98,10 +99,32 @@ namespace WebAppForMORecSys.Helpers
             {
                 return false;
             }
-            var listOfIDs = ((JArray)jsonObj[name])?.ToObject<List<string>>();
-            if ((listOfIDs?.Contains(value)) ?? false)
+            var listOfValues = ((JArray)jsonObj[name])?.ToObject<List<string>>();
+            if ((listOfValues?.Contains(value)) ?? false)
                 return true;
             return false;
+        }
+
+        public static List<int> GetItemsInBlackList(this User user)
+        {
+            var jsonObj = GetBlockRuleDynamic(user);
+            if ((jsonObj == null) || (jsonObj["Id"] == null))
+            {
+                return new List<int>();
+            }
+            var listOfIDs = ((JArray)jsonObj["Id"])?.ToObject<List<int>>();
+            return listOfIDs;
+        }
+
+        public static List<string> GetStringValuesInBlackList(this User user, string name)
+        {
+            var jsonObj = GetBlockRuleDynamic(user);
+            if ((jsonObj == null) || (jsonObj[name] == null))
+            {
+                return new List<string>();
+            }
+            var listOfValues = ((JArray)jsonObj[name])?.ToObject<List<string>>();
+            return listOfValues;
         }
 
 
