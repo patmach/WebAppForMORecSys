@@ -1,33 +1,19 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using System;
-using System.IO;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Models;
-using WebAppForMORecSys.ParseHelpers;
-using System.Text.RegularExpressions;
-using WebAppForMORecSys.Models.HomeViewsModels;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.View;
-using Microsoft.IdentityModel.Tokens;
-using System.Linq;
-using WebAppForMORecSys.Helpers;
 using Microsoft.AspNetCore.Identity;
 using WebAppForMORecSys.Areas.Identity.Data;
-using Microsoft.EntityFrameworkCore.Update;
+using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Controllers
 {
-    
+
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<Account> _userManager;
-
         public HomeController(ApplicationDbContext context, UserManager<Account> userManager)
         {
         
@@ -40,10 +26,15 @@ namespace WebAppForMORecSys.Controllers
        
         public async Task<IActionResult> Index()
         {
-            return RedirectToAction("Index", "Movies");
+            return RedirectToAction("Index", SystemParameters.Controller);
         }
 
-        
+        public async Task<IActionResult> UserBlockSettings()
+        {
+            return RedirectToAction("UserBlockSettings", SystemParameters.Controller);
+        }
+
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

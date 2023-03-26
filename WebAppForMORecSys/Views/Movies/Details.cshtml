@@ -2,17 +2,19 @@
 @using static WebAppForMORecSys.Helpers.UserHelper
 @model WebAppForMORecSys.Helpers.MovieHelper.MovieUserUserratings
 @{
-    string divId = "MovieDetail_" + Model.movie.Id;
+    string divId = "Detail_" + Model.movie.Id;
     string aclass = Model.user != null ? "" : "disabled";
     string hideDisplay = "";
     string showDisplay = "none";
+    string opacity = "1";
     if (Model.user?.IsItemInBlackList(Model.movie.Id) ?? false)
     {
         hideDisplay = "none";
         showDisplay = "";
+        opacity = "0.5";
     }
 }
-<div class="@divId">
+<div style="opacity:@opacity" class="@divId">
     <div>
         <button class=" btn btn-primary" onclick="BackToList();" style="float:right">Back to List</button>
         <h1>@Html.DisplayFor(model => model.movie.Name)</h1>
@@ -36,7 +38,7 @@
                     My rating
                 </dt>
                 <dd class="col-sm-10">
-                    @await Html.PartialAsync("../Movies/MovieRating", Model)
+                    @await Html.PartialAsync("../Movies/Rating", Model)
                 </dd>
                 <br/>
             }
@@ -168,19 +170,5 @@
     </div>
 
 </div>
-<script>
-    function hide_by_property(name, index) {
-        hidelink = $('.hide' + name + '_' + index);
-        showlink = $('.show' + name + '_' + index);
-        showlink[0].style.display = "";
-        hidelink[0].style.display = "none"
-    }
 
-    function show_by_property(name, index) {
-        hidelink = $('.hide' + name + '_' + index);
-        showlink = $('.show' + name + '_' + index);
-        showlink[0].style.display = "none";
-        hidelink[0].style.display = ""
-    }
-</script>
 

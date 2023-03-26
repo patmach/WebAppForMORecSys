@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace WebAppForMORecSys.Models.HomeViewsModels
+namespace WebAppForMORecSys.Models.ViewModels
 {
     public class MainViewModel
     {

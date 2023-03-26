@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebAppForMORecSys.Areas.Identity.Data;
 using WebAppForMORecSys.Data;
+using WebAppForMORecSys.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,10 @@ builder.Services.Configure<IdentityOptions>(options =>
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
     options.User.RequireUniqueEmail = false;
 });
+
+SystemParameters.Controller = "Movies";
+SystemParameters.MetricsView = MetricsView.Sliders;
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

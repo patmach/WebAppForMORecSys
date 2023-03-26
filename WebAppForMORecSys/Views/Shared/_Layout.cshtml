@@ -17,8 +17,15 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul style="margin-left:27%" class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index" title="Home Page">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index"
+                            title="Home Page">
                                 <img src="@Url.Content("~/Resources/Images/home.png")" />
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="UserBlockSettings"
+                            title="My Block Rules">
+                                <img src="@Url.Content("~/Resources/Images/block.png")" />
                             </a>
                         </li>
                     </ul>
@@ -38,11 +45,14 @@
             &copy; 2023 - WebAppForMORecSys - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+   
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src="~/lib/jquery-ui-1.13.2.custom/jquery-ui.js"></script>
+    <!--<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>-->
 
     @await RenderSectionAsync("Scripts", required: false)
+    @Html.Raw(TempData["msg"])
 </body>
 </html>

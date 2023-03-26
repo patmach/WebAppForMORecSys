@@ -1,0 +1,81 @@
+﻿@model WebAppForMORecSys.Models.ViewModels.UserBlockRule
+
+<div class="PropertyBlock">
+    <h4>Genres</h4>
+    @for (int i = 0; i < Model.StringPropertiesBlocks["Genres"].Count; i++)
+    {
+       
+        string genre = Model.StringPropertiesBlocks["Genres"][i];
+        string hideDisplayGenre = "none";
+        string showDisplayGenre = "";
+        string hideClassGenre = "hidegenre_" + i;
+        string showClassGenre = "showgenre_" + i;
+        @genre;
+        <a style="display:@hideDisplayGenre;  right: 1px;" class="@hideClassGenre"
+           onclick="hide_by_property('genre',@i)"
+           href='@Url.Action("HideGenre","Movies", new { genre=genre })'>
+            <img src="@Url.Content("~/Resources/Images/hide.png")" title="Don't recommend movies of this genre" />
+        </a>
+        <a style="display:@showDisplayGenre;  right: 1px"
+           onclick="show_by_property('genre',@i)"
+           class="@showClassGenre" href='@Url.Action("ShowGenre","Movies", new { genre=genre })'>
+            <img src="@Url.Content("~/Resources/Images/show.png")" title="Show movies  of this genre" />
+        </a>
+        <br />
+    }
+</div>
+
+<div class="PropertyBlock">
+    <h4>Actors</h4>
+    @for (int i = 0; i < Model.StringPropertiesBlocks["Actors"].Count; i++)
+    {
+        string actor = Model.StringPropertiesBlocks["Actors"][i];
+        string hideDisplayActor = "none";
+        string showDisplayActor = "";
+        string hideClassActor = "hideactor_" + i;
+        string showClassActor = "showactor_" + i;
+        @actor
+        <a style="display:@hideDisplayActor;  right: 1px;" class="@hideClassActor"
+           onclick="hide_by_property('actor',@i)"
+               href='@Url.Action("HideActor","Movies", new { actor=actor })'>
+            <img src="@Url.Content("~/Resources/Images/hide.png")" title="Don't recommend movies with this actor" />
+        </a>
+        <a style="display:@showDisplayActor;  right: 1px"
+           onclick="show_by_property('actor',@i)"
+               class="@showClassActor" href='@Url.Action("ShowActor","Movies", new { actor=actor })'>
+            <img src="@Url.Content("~/Resources/Images/show.png")" title="Show movies with this actor again" />
+        </a>
+        <br />
+    }
+</div>
+<div class="PropertyBlock">
+    <h4>Directors</h4>
+    @for (int i = 0; i < Model.StringPropertiesBlocks["Directors"].Count; i++)
+    {
+        string director = Model.StringPropertiesBlocks["Directors"][i];
+        string hideDisplayDirector = "none";
+        string showDisplayDirector = "";
+        string hideClassDirector = "hidedirector_" + i;
+        string showClassDirector = "showdirector_" + i;
+        @director
+        <a style="display:@hideDisplayDirector;  right: 1px;" class="@hideClassDirector"
+           onclick="hide_by_property('director',@i)"
+           href='@Url.Action("HideDirector","Movies", new { director=director })'>
+            <img src="@Url.Content("~/Resources/Images/hide.png")" title="Don't recommend movies of this director" />
+        </a>
+        <a style="display:@showDisplayDirector;  right: 1px"
+           onclick="show_by_property('director',@i)"
+           class="@showClassDirector" href='@Url.Action("ShowDirector","Movies", new { director=director })'>
+            <img src="@Url.Content("~/Resources/Images/show.png")" title="Show movies  of this director" />
+        </a>
+        <br />
+    }
+
+</div>
+<script>
+    $(document).ready(function () {
+        SetAutoComplete("idirector", "GetAllDirectors");
+        SetAutoComplete("iactor", "GetAllActors");
+
+    });
+</script>

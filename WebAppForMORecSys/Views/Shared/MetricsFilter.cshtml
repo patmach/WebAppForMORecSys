@@ -1,19 +1,28 @@
-﻿@model WebAppForMORecSys.Models.HomeViewsModels.MainViewModel
+﻿@model List<WebAppForMORecSys.Models.Metric>
+@using WebAppForMORecSys.Settings
 <div class="input-group" id="input-metrics-sliders-group">
     @{
         int index = 0;
+        int averageValue = 100 / Model.Count;
     }
-    @foreach (var metric in Model.Metrics)
+    @foreach (var metric in Model)
     {
-        string id = "range" + index;
-        int averageValue = 100 / Model.Metrics.Count;
+        string id = "range" + index;        
         string valueAsNumber = id + ".valueAsNumber";
         <div class="range-wrap">
             <label for="@id">@metric.Name</label>
-            <input class="custom-range range" type="range" min="0" max="100" name="metricimportance" id="@id" value="@averageValue" placeholder="Metrics" oninput="changeValues(this.value, @index)"
-                   onchange="changeValues(this.value, @index)" />
-
-            <output class="bubble"></output>
+            @if (SystemParameters.MetricsView == MetricsView.Sliders)
+            {
+                <input class="custom-range range" type="range" min="0" max="100" name="metricimportance" id="@id" value="@averageValue" placeholder="Metrics" oninput="changeValues(this.value, @index)"
+                onchange="changeValues(this.value, @index)" />
+                <output class="bubble"></output>
+            }
+            @if (SystemParameters.MetricsView == MetricsView.TextBoxNumbers)
+            {
+            <input class="custom-range range" type="number" min="0" max="100" name="metricimportance" id="@id" value="@averageValue"  placeholder="Metrics" oninput="changeValues(this.value, @index)"
+                   onchange="changeValues(this.value, @index)" />            
+            }
+            
         </div>
         index++;
     }

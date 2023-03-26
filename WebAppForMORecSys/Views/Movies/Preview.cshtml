@@ -5,14 +5,16 @@
     string moviepreviewclass = "preview_" + Model.movie.Id;
     string hideDisplay = "";
     string showDisplay = "none";
+    string opacity = "1";
     if (Model.user.IsItemInBlackList(Model.movie.Id))
     {
         hideDisplay = "none";
         showDisplay = "";
+        opacity = "0.5";
     }
 }
-<div class="MovieItem horizontal @moviepreviewclass">
-    <a href='@Url.Action("MovieDetails","Movies", new { id=Model.movie.Id })' class="ajaxdetail"><h4>@Model.movie.Name</h4></a>
+<div style="opacity:@opacity" class="MovieItem horizontal @moviepreviewclass">
+    <a href='@Url.Action("Details","Movies", new { id=Model.movie.Id })' class="ajaxdetail"><h4>@Model.movie.Name</h4></a>
     
     <div id="logo-holder">
         @{
@@ -38,7 +40,7 @@
         <br/>
         @Model.movie.Director
     </div>
-    @await Html.PartialAsync("../Movies/MovieRating", Model)
+    @await Html.PartialAsync("../Movies/Rating", Model)
 </div>
 
 

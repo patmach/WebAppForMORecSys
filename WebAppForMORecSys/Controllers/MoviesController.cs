@@ -5,11 +5,13 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IO;
+using System.Text;
 using WebAppForMORecSys.Areas.Identity.Data;
 using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Helpers;
 using WebAppForMORecSys.Models;
-using WebAppForMORecSys.Models.HomeViewsModels;
+using WebAppForMORecSys.Models.ViewModels;
+using WebAppForMORecSys.Models.ViewModels;
 using static WebAppForMORecSys.Helpers.MovieHelper;
 
 namespace WebAppForMORecSys.Controllers
@@ -29,13 +31,13 @@ namespace WebAppForMORecSys.Controllers
             SetAllGenres();
             SetAllDirectors();
             SetAllActors();
-            allItems = from item in _context.Items
-                           select item;
+            allItems = _context.Items;
         }
 
         public async Task<IActionResult> Index(string search, string[] metricimportance, string director,
           string actor, string[] genres, string type, string releasedateto, string releasedatefrom)
         {
+            
             var viewModel = new MainViewModel();
             User user = GetCurrentUser();
             if (user != null)
@@ -71,6 +73,69 @@ namespace WebAppForMORecSys.Controllers
             return View(viewModel);
         }
 
+        public async Task<IActionResult> UserBlockSettings(string search, string director,string actor, 
+            string[] genres)
+        {
+            User user = GetCurrentUser();
+            string method = HttpContext.Request.Method;
+            if (method == "POST")
+            {
+                string message = AddBlockRules(user, director, actor, genres);
+                if (!message.IsNullOrEmpty())
+                {
+                    TempData["msg"] = "<script>alert('"+message+"');</script>";
+                }
+            }
+            var itemIDs = user.GetItemsInBlackList();
+            var items = _context.Items.Where(item => itemIDs.Contains(item.Id));
+            if (!search.IsNullOrEmpty())
+            {
+                items = items.Where(x => x.Name.ToLower().Contains(search.ToLower()));
+            }
+            var viewModel = new UserBlockRule
+            {
+                Items = _context.Items.Where(item => itemIDs.Contains(item.Id)).ToList(),
+                SearchValue = search ?? "",
+                CurrentUser = user,
+                CurrentUserRatings = await (from rating in _context.Ratings
+                                            where rating.UserID == user.Id
+                                            select rating).ToListAsync()
+
+            };       
+            viewModel.StringPropertiesBlocks.Add("Genres", user.GetGenresInBlackList());
+            viewModel.StringPropertiesBlocks.Add("Directors", user.GetDirectorsInBlackList());
+            viewModel.StringPropertiesBlocks.Add("Actors", user.GetActorsInBlackList());
+
+            return View(viewModel);
+        }
+
+        private string AddBlockRules(User user, string director, string actor, string[] genres)
+        {
+            var message = new StringBuilder();
+            if (!actor.IsNullOrEmpty())
+            {
+                if (!Movie.AllActors.Contains(actor))
+                    message.Append("Block rule for actor " + actor + " was not added. Because there is no actor of that exact name in the database.\\n");
+                else
+                    HideActor(actor);
+            }
+            if (!director.IsNullOrEmpty())
+            {
+                if (!Movie.AllDirectors.Contains(director))
+                    message.Append("Block rule for director " + director + " was not added. Because there is no director of that exact name in the database.\\n");
+                else
+                    HideDirector(director);
+            }
+            foreach (var genre in genres) 
+            {
+                if (!Movie.AllGenres.Contains(genre))
+                    message.Append("Block rule for genre " + genre + " was not added. Because there is no genre of that exact name in the database.\\n");
+                else
+                    HideGenre(genre);
+            }
+            return message.ToString();
+        }
+
         public List<Item> FilterByMovieFilter(string director, string actor, string[] genres,
             string releasedatefrom, string releasedateto)
         {
@@ -91,7 +156,9 @@ namespace WebAppForMORecSys.Controllers
             return itemslist;
         }
 
-        public async Task<IActionResult> MovieDetails(int id)
+        
+
+        public async Task<IActionResult> Details(int id)
         {
             User user = GetCurrentUser();
             List<Rating> ratings = null;
@@ -152,17 +219,18 @@ namespace WebAppForMORecSys.Controllers
 
         public List<string> GetAllMovieNames(string prefix)
         {
-            return Movie.AllMovies.Where(m => m.Name.Contains(prefix, StringComparison.OrdinalIgnoreCase)).Select(m => m.Name).ToList();
+            return Movie.AllMovies.Where(m => m.Name.Contains(prefix, StringComparison.OrdinalIgnoreCase))
+                .Select(m => m.Name).Take(15).ToList();
 
         }
         public List<string> GetAllDirectors(string prefix)
         {
-            return Movie.AllDirectors.Where(d => d.Contains(prefix, StringComparison.OrdinalIgnoreCase)).ToList();
+            return Movie.AllDirectors.Where(d => d.Contains(prefix, StringComparison.OrdinalIgnoreCase)).Take(10).ToList();
 
         }
         public List<string> GetAllActors(string prefix)
         {
-            return Movie.AllActors.Where(a => a.Contains(prefix, StringComparison.OrdinalIgnoreCase)).ToList();
+            return Movie.AllActors.Where(a => a.Contains(prefix, StringComparison.OrdinalIgnoreCase)).Take(10).ToList();
 
         }
 
@@ -209,6 +277,8 @@ namespace WebAppForMORecSys.Controllers
         }
         public IResult Hide(int id)
         {
+            if (!Movie.AllMovies.Any(m=>m.Id==id))
+                return Results.NoContent();
             User user = GetCurrentUser();
             if (user == null)
             {
@@ -222,6 +292,8 @@ namespace WebAppForMORecSys.Controllers
 
         public IResult HideDirector(string director)
         {
+            if (!Movie.AllDirectors.Contains(director))
+                return Results.NoContent();
             User user = GetCurrentUser();
             if (user == null)
             {
@@ -235,6 +307,8 @@ namespace WebAppForMORecSys.Controllers
 
         public IResult HideActor(string actor)
         {
+            if (!Movie.AllActors.Contains(actor))
+                return Results.NoContent();
             User user = GetCurrentUser();
             if (user == null)
             {
@@ -248,6 +322,8 @@ namespace WebAppForMORecSys.Controllers
 
         public IResult HideGenre(string genre)
         {
+            if (!Movie.AllGenres.Contains(genre))
+                return Results.NoContent();
             User user = GetCurrentUser();
             if (user == null)
             {
