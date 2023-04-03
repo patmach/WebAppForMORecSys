@@ -10,7 +10,7 @@
     <label for="igenre">Genre</label>
 
     <select class="selectpicker" multiple data-live-search="true" name="genres" placeholder="Genres">
-        @foreach (var genre in Movie.GetAllGenres())
+        @foreach (var genre in Movie.AllGenres)
         {
             <option>@genre</option>
             

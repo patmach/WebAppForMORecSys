@@ -27,7 +27,6 @@ namespace WebAppForMORecSys.Controllers
         {
             _context = context;
             _userManager = userManager;
-            SetAllMovies();
             SetAllGenres();
             SetAllDirectors();
             SetAllActors();
@@ -36,8 +35,7 @@ namespace WebAppForMORecSys.Controllers
 
         public async Task<IActionResult> Index(string search, string[] metricimportance, string director,
           string actor, string[] genres, string type, string releasedateto, string releasedatefrom)
-        {
-            
+        {            
             var viewModel = new MainViewModel();
             User user = GetCurrentUser();
             if (user != null)
@@ -53,23 +51,16 @@ namespace WebAppForMORecSys.Controllers
             viewModel.Metrics = await metrics.ToListAsync();
             viewModel.Metrics = new List<Metric> { new Metric { Name = "Relevance" },
                 new Metric { Name = "Novelty" }, new Metric { Name = "Diversity" } };//DELETE Later
-            List<Item> possibleItems = new List<Item>();
-            if (type.IsNullOrEmpty())
-                possibleItems = await allItems.ToListAsync();
-            else if (type == "Search" && search != null)
-            {
-                possibleItems = await allItems.Where(x => x.Name.ToLower().Contains(search.ToLower())).ToListAsync();
-            }
-            else if (type == "MovieFilter")
-            {
-                possibleItems = FilterByMovieFilter(director, actor, genres, releasedatefrom, releasedateto);
-                viewModel.FilterValues.Add("Director", director);
-                viewModel.FilterValues.Add("Actor", actor);
-                viewModel.FilterValues.Add("ReleaseDateFrom", releasedatefrom);
-                viewModel.FilterValues.Add("ReleaseDateTo", releasedateto);
-                viewModel.FilterValues.Add("Genres", string.Join(',', genres));
-            }
-            viewModel.Items = possibleItems.Take(50).ToList();//Nahradit voláním RS
+            var blackList = user.GetAllBlockedItems(allItems);
+            var whiteList = Movie.GetPossibleItems(_context.Items, user, search, director, actor, genres, type, releasedateto, releasedatefrom);
+            viewModel.FilterValues.Add("Director", director);
+            viewModel.FilterValues.Add("Actor", actor);
+            viewModel.FilterValues.Add("ReleaseDateFrom", releasedatefrom);
+            viewModel.FilterValues.Add("ReleaseDateTo", releasedateto);
+            viewModel.FilterValues.Add("Genres", string.Join(',', genres));
+            var possibleItems = whiteList;
+            var x = possibleItems.ToList();
+            viewModel.Items = possibleItems.Take(50);//Nahradit voláním RS
             return View(viewModel);
         }
 
@@ -136,27 +127,25 @@ namespace WebAppForMORecSys.Controllers
             return message.ToString();
         }
 
-        public List<Item> FilterByMovieFilter(string director, string actor, string[] genres,
-            string releasedatefrom, string releasedateto)
+        public async Task<IActionResult> Preview(int id)
         {
-
-            List<Item> itemslist = allItems.ToList();
-            if (!director.IsNullOrEmpty())
-                itemslist = itemslist.Where(i => (MovieHelper.GetDirector(i) ?? "")
-                    .Contains(director, StringComparison.OrdinalIgnoreCase)).ToList();
-            if (!actor.IsNullOrEmpty())
-                itemslist = itemslist.Where(i => MovieHelper.GetActors(i)
-                    .Any(a => a.Contains(actor, StringComparison.OrdinalIgnoreCase))).ToList();
-            if (genres != null && genres.Length != 0)
-                itemslist = itemslist.Where(i => MovieHelper.GetGenres(i).Intersect(genres).Count() > 0).ToList();
-            if (!releasedatefrom.IsNullOrEmpty())
-                itemslist = itemslist.Where(i => MovieHelper.GetReleaseDate(i) > DateTime.Parse(releasedatefrom)).ToList();
-            if (!releasedateto.IsNullOrEmpty())
-                itemslist = itemslist.Where(i => MovieHelper.GetReleaseDate(i) < DateTime.Parse(releasedateto)).ToList();
-            return itemslist;
+            User user = GetCurrentUser();
+            List<Rating> ratings = null;
+            if (user != null)
+            {
+                user = user;
+                ratings = await (from rating in _context.Ratings
+                                 where rating.UserID == user.Id
+                                 select rating).ToListAsync();
+            }
+            return PartialView(new MovieUserUserratings(
+                new Movie(_context.Items.First(x => x.Id == id)),
+                user,
+                ratings
+                ));
         }
 
-        
+
 
         public async Task<IActionResult> Details(int id)
         {
@@ -182,7 +171,7 @@ namespace WebAppForMORecSys.Controllers
             if (Movie.AllGenres == null)
             {
                 var genres = new List<string>();
-                Movie.AllMovies.ForEach(m => genres.AddRange(MovieHelper.GetGenres(m)));
+                _context.Items.ToList().ForEach(m => genres.AddRange(MovieHelper.GetGenres(m)));
                 Movie.AllGenres = genres.Distinct().ToList();
                 Movie.AllGenres.Remove("(nogenreslisted)");
             }
@@ -193,7 +182,7 @@ namespace WebAppForMORecSys.Controllers
             if (Movie.AllDirectors == null)
             {
                 var directors = new List<string>();
-                Movie.AllMovies.ForEach(m => directors.Add(MovieHelper.GetDirector(m)));
+                _context.Items.ToList().ForEach(m => directors.Add(MovieHelper.GetDirector(m)));
                 Movie.AllDirectors = directors.Distinct().ToList();
             }
         }
@@ -203,23 +192,15 @@ namespace WebAppForMORecSys.Controllers
             if (Movie.AllActors == null)
             {
                 var actors = new List<string>();
-                Movie.AllMovies.ForEach(m => actors.AddRange(MovieHelper.GetActors(m)));
+                _context.Items.ToList().ForEach(m => actors.AddRange(MovieHelper.GetActors(m)));
                 Movie.AllActors = actors.Distinct().ToList();
             }
         }
 
-        public void SetAllMovies()
-        {
-            if (Movie.AllActors == null)
-            {
-                var actors = new List<string>();
-                Movie.AllMovies = _context.Items.Select(i => new Movie(i)).ToList();
-            }
-        }
 
         public List<string> GetAllMovieNames(string prefix)
         {
-            return Movie.AllMovies.Where(m => m.Name.Contains(prefix, StringComparison.OrdinalIgnoreCase))
+            return _context.Items.Where(m => m.Name.Contains(prefix, StringComparison.OrdinalIgnoreCase))
                 .Select(m => m.Name).Take(15).ToList();
 
         }
@@ -277,7 +258,7 @@ namespace WebAppForMORecSys.Controllers
         }
         public IResult Hide(int id)
         {
-            if (!Movie.AllMovies.Any(m=>m.Id==id))
+            if (_context.Items.Where(m=>m.Id==id).Count()==0)
                 return Results.NoContent();
             User user = GetCurrentUser();
             if (user == null)

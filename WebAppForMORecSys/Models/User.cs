@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using WebAppForMORecSys.Areas.Identity.Data;
 using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Helpers;
+using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Models
 {
@@ -29,13 +30,25 @@ namespace WebAppForMORecSys.Models
 
         private List<int> BlockedItemIDs = null;
 
-        public List<int> GetAllBlockedItems()
+        public bool recomputeBlocked = true;
+
+        public List<int> GetAllBlockedItems(IQueryable<Item> allItems)
         {
-            if (this.BlockedItemIDs == null)
+            if (recomputeBlocked)
             { 
-                this.BlockedItemIDs = this.ComputeAllBlockedMovies();
+                this.BlockedItemIDs = ComputeAllBlockedItems(allItems);
+                recomputeBlocked = false;
             }
             return this.BlockedItemIDs;
+        }
+
+        private List<int> ComputeAllBlockedItems(IQueryable<Item> allItems)
+        {
+            if (SystemParameters.Controller == "Movies")
+            {
+                return this.ComputeAllBlockedMovies(allItems);
+            }
+            throw new NotImplementedException();
         }
 
         public User()

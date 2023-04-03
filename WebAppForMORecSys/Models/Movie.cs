@@ -1,7 +1,10 @@
-﻿using NuGet.Packaging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using NuGet.Packaging;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing.Text;
+using System.Text;
 using System.Text.Json.Nodes;
 using WebAppForMORecSys.Controllers;
 using WebAppForMORecSys.Helpers;
@@ -17,7 +20,6 @@ namespace WebAppForMORecSys.Models
         public DateTime ReleaseDate => DateTime.Parse(MovieHelper.getPropertyStringValueFromJSON(this, "ReleaseDate"));
         public string[] Genres => MovieHelper.getPropertyListValueFromJSON(this, "Genres");
 
-
         
         public Movie(Item item)
         {
@@ -31,19 +33,64 @@ namespace WebAppForMORecSys.Models
             this.JSONParams = item.JSONParams;
         }
 
-        public static List<string> GetAllGenres()
-        {
-            return AllGenres;
-        }
-
         public static List<string> AllGenres;
 
         public static List<string> AllDirectors;
 
         public static List<string> AllActors;
 
-        public static List<Movie> AllMovies;
+        public static IQueryable<Item> GetPossibleItems(DbSet<Item> allItems, User user, string search, string director,
+          string actor, string[] genres, string type, string releasedateto, string releasedatefrom)
+        {
+            IQueryable<Item> possibleItems = allItems;
+            if (type == "MovieFilter")
+            {
+                return FilterByMovieFilter(allItems, director, actor, genres, releasedatefrom, releasedateto);
+            }
+            if (type == "Search")
+            {
+                possibleItems = possibleItems.Where(movie => movie.Name.Contains(search));
+            }
+            return possibleItems;
+        }
 
+        public static IQueryable<Item> FilterByMovieFilter(DbSet<Item> possibleitems, string director, string actor, string[] genres,
+            string releasedatefrom, string releasedateto)
+        {
+            StringBuilder filterSQL = new StringBuilder($"SELECT * FROM dbo.{nameof(Item)}s WHERE ISJSON({nameof(Item.JSONParams)}) > 0");
+            if (!director.IsNullOrEmpty())
+            {
+                filterSQL.Append(" and ");
+                filterSQL.Append($"JSON_VALUE({nameof(Item.JSONParams)}, '$.Director') like '%{director}%' ");
+            }
+            if (!actor.IsNullOrEmpty())
+            {
+                filterSQL.Append(" and ");
+                filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Actors') like '%{actor}%' ");
+            }
+            if (genres != null && genres.Length != 0)
+            {
+                filterSQL.Append(" and (");
+                filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Genres') like '%{genres.First()}%' ");
+                for (int i = 1; i < genres.Length; i++)
+                {
+                    filterSQL.Append(" or ");
+                    filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Genres') like '%{genres[i]}%' ");
+                }
 
+                filterSQL.Append(')');
+            }
+            if (!releasedatefrom.IsNullOrEmpty())
+            {
+                filterSQL.Append(" and ");
+                filterSQL.Append($"CONVERT(DATETIME,JSON_VALUE({nameof(Item.JSONParams)}, '$.ReleaseDate')) >= CONVERT(DATETIME,'{releasedatefrom}') ");
+            }
+            if (!releasedateto.IsNullOrEmpty())
+            {
+                filterSQL.Append(" and ");
+                filterSQL.Append($"CONVERT(DATETIME,JSON_VALUE({nameof(Item.JSONParams)}, '$.ReleaseDate')) <= CONVERT(DATETIME,'{releasedateto}') ");
+            }
+            return possibleitems.FromSqlRaw(filterSQL.ToString()); 
+        }
     }
 }

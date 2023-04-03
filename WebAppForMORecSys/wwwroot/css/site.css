@@ -8,6 +8,10 @@ html {
   }
 }
 
+input, .filter-option{
+    font-size:1.3vw !important;
+}
+
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
@@ -134,6 +138,7 @@ body {
         right: 25px;
         font-size: 36px;
         margin-left: 50px;
+
     }
 
 /* The button used to open the sidebar */
@@ -164,15 +169,21 @@ body {
 
     
 }
-.moviefilter > * {
-    width: 90%!important;
+.moviefilter > *, .moviecreateblockrule > * {
+    width: 90% !important;
     align-self: center;
     display: block !important;
     margin: 0 auto !important;
 }
 
-.dropdown-menu{
-    max-width:90% !important;
+.moviefilter, .moviecreateblockrule {
+    margin-top:25px;
+}
+
+
+
+.dropdown-menu {
+    max-width: 90% !important;
 }
 
 /*Movie Detail*/

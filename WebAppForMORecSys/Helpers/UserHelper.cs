@@ -25,7 +25,8 @@ namespace WebAppForMORecSys.Helpers
             var jarray = (JArray)jsonObj["Id"];
             if ((!jarray?.ToObject<List<int>>()?.Contains(itemId)) ?? false)
                 ((JArray)jsonObj["Id"]).Add(itemId);
-            user.JSONBlockRules = JsonConvert.SerializeObject(jsonObj); 
+            user.JSONBlockRules = JsonConvert.SerializeObject(jsonObj);
+            user.recomputeBlocked = true;
         }
 
         public static void AddStringValueToBlackList(this User user, string name, string value)
@@ -44,6 +45,7 @@ namespace WebAppForMORecSys.Helpers
             if ((!jarray?.ToObject<List<string>>()?.Contains(value)) ?? false)
                 ((JArray)jsonObj[name]).Add(value);
             user.JSONBlockRules = JsonConvert.SerializeObject(jsonObj);
+            user.recomputeBlocked = true;
         }
 
 
@@ -60,7 +62,8 @@ namespace WebAppForMORecSys.Helpers
                 listOfIDs.Remove(itemId);
             else return;
             jsonObj["Id"] = JArray.FromObject(listOfIDs);
-            user.JSONBlockRules = JsonConvert.SerializeObject(jsonObj);        
+            user.JSONBlockRules = JsonConvert.SerializeObject(jsonObj);
+            user.recomputeBlocked = true;
         }
 
 
@@ -76,7 +79,7 @@ namespace WebAppForMORecSys.Helpers
                 listOfValues.Remove(value);
             jsonObj[name] = JArray.FromObject(listOfValues);
             user.JSONBlockRules = JsonConvert.SerializeObject(jsonObj);
-
+            user.recomputeBlocked = true;
         }
 
         public static bool IsItemInBlackList(this User user, int itemId)

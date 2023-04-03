@@ -1,4 +1,5 @@
-﻿@using static WebAppForMORecSys.Helpers.MovieHelper
+﻿@using System.Text.Json;
+@using static WebAppForMORecSys.Helpers.MovieHelper
 @model WebAppForMORecSys.Models.ViewModels.MainViewModel
 @{
     ViewData["Title"] = "Home Page";
@@ -20,7 +21,7 @@
     </form>
     <div id="DetailsDiv" style="margin-bottom:5px;"></div>
     <div id="Previews" style="width:100%">
-    @foreach (var item in Model.Items)
+    @fore0ach (var item in Model.Items)
     {
             @await Html.PartialAsync("../"+controller+"/Preview", new MovieUserUserratings(new Movie(item), Model.CurrentUser, Model.CurrentUserRatings))
     }
@@ -36,6 +37,8 @@
 
     });
 </script>
+
+
 @await Html.PartialAsync("../"+controller+"/Scripts")
 
 

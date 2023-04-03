@@ -126,14 +126,15 @@ namespace WebAppForMORecSys.Helpers
             return UserHelper.GetStringValuesInBlackList(user, "Genre");
         }
 
-        public static List<int> ComputeAllBlockedMovies(this User user)
+        public static List<int> ComputeAllBlockedMovies(this User user, IQueryable<Item> allItems)
         {
             var blackList = new List<int>();
             blackList.AddRange(UserHelper.GetItemsInBlackList(user));
             var directorsBL = GetDirectorsInBlackList(user);
             var actorsBL = GetActorsInBlackList(user);
             var genresBL = GetGenresInBlackList(user);
-            blackList.AddRange(Movie.AllMovies.Where(m => (m.Actors.Intersect(actorsBL).Count() > 0) ||
+            blackList.AddRange(allItems.Select(i => new Movie(i)).AsEnumerable().
+                                        Where(m => (m.Actors.Intersect(actorsBL).Count() > 0) ||
                                                     (m.Genres.Intersect(genresBL).Count() > 0) ||
                                                     (directorsBL.Contains(m.Director)))
                                                     .Select(m=> m.Id).ToList());

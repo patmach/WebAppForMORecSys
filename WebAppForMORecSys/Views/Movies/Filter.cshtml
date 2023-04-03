@@ -16,20 +16,19 @@
         b = @Model.FilterValues.TryGetValue("Actor", out actor);
         b = @Model.FilterValues.TryGetValue("ReleaseDateFrom", out releasedatefrom);
         b = @Model.FilterValues.TryGetValue("ReleaseDateTo", out releasedateto);
-        b = @Model.FilterValues.TryGetValue("ReleaseDateTo", out releasedateto);
         b = @Model.FilterValues.TryGetValue("Genres", out genresstring);
         genres = genresstring?.Split(',') ?? new string[0];
         director = director ?? "";
         actor = actor ?? "";
         releasedatefrom = releasedatefrom ?? "";
-        releasedateto = releasedatefrom ?? "";
+        releasedateto = releasedateto ?? "";
 
     }
     <label for="igenre">Genre</label>
 
     <select class="selectpicker" multiple data-live-search="true" name="genres" placeholder="Genres">
        
-        @foreach (var genre in Movie.GetAllGenres())
+        @foreach (var genre in Movie.AllGenres)
         {
             @if (genres.Contains(genre))
             {

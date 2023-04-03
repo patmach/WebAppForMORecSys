@@ -5,7 +5,7 @@ namespace WebAppForMORecSys.Models.ViewModels
     public class MainViewModel
     {
         public List<Metric> Metrics { get; set; }
-        public List<Item> Items { get; set; }
+        public IQueryable<Item> Items { get; set; }
 
         public string SearchValue ="";
 
@@ -18,7 +18,6 @@ namespace WebAppForMORecSys.Models.ViewModels
         public MainViewModel()
         {
             this.Metrics = new List<Metric>();
-            this.Items = new List<Item>();
         }
     }
 }
