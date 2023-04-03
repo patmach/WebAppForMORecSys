@@ -137,8 +137,7 @@ namespace WebAppForMORecSys.Helpers
                                         Where(m => (m.Actors.Intersect(actorsBL).Count() > 0) ||
                                                     (m.Genres.Intersect(genresBL).Count() > 0) ||
                                                     (directorsBL.Contains(m.Director)))
-                                                    .Select(m=> m.Id).ToList());
-            blackList = blackList.Distinct().ToList();
+                                                    .Select(m=> m.Id).ToList());            
             return blackList;
         }
     }

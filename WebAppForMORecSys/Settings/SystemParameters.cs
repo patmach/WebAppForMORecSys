@@ -10,7 +10,8 @@
     public enum MetricsView
     {
         Sliders,
-        TextBoxNumbers
+        TextBoxNumbers,
+        DragAndDrop
     }
     
 }

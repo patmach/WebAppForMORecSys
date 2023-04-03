@@ -28,18 +28,21 @@ namespace WebAppForMORecSys.Models
 
         public Account account;
 
-        private List<int> BlockedItemIDs = null;
-
-        public bool recomputeBlocked = true;
-
         public List<int> GetAllBlockedItems(IQueryable<Item> allItems)
         {
-            if (recomputeBlocked)
-            { 
-                this.BlockedItemIDs = ComputeAllBlockedItems(allItems);
-                recomputeBlocked = false;
+            if (recomputeBlocked.ContainsKey(Id) && recomputeBlocked[Id])
+            {
+                if (!BlockedItemIDs.ContainsKey(Id))
+                {
+                    BlockedItemIDs.Add(Id,ComputeAllBlockedItems(allItems));
+                }
+                else
+                {
+                    BlockedItemIDs[Id] = ComputeAllBlockedItems(allItems);
+                }
+                recomputeBlocked[Id] = false; 
             }
-            return this.BlockedItemIDs;
+            return BlockedItemIDs.ContainsKey(Id) ? BlockedItemIDs[Id] : new List<int>();
         }
 
         private List<int> ComputeAllBlockedItems(IQueryable<Item> allItems)
@@ -50,6 +53,9 @@ namespace WebAppForMORecSys.Models
             }
             throw new NotImplementedException();
         }
+
+        public static Dictionary<int, bool> recomputeBlocked = new Dictionary<int, bool>();
+        public static Dictionary<int, List<int>> BlockedItemIDs = new Dictionary<int, List<int>>();
 
         public User()
         {

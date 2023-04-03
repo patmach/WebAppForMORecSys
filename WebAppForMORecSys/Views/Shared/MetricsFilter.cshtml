@@ -1,37 +1,54 @@
-﻿@model List<WebAppForMORecSys.Models.Metric>
+﻿@model Dictionary<WebAppForMORecSys.Models.Metric, int>
 @using WebAppForMORecSys.Settings
-<div class="input-group" id="input-metrics-sliders-group">
+<div class="input-group container" id="input-metrics-group">
     @{
         int index = 0;
-        int averageValue = 100 / Model.Count;
+
     }
-    @foreach (var metric in Model)
-    {
-        string id = "range" + index;        
-        string valueAsNumber = id + ".valueAsNumber";
-        <div class="range-wrap">
-            <label for="@id">@metric.Name</label>
-            @if (SystemParameters.MetricsView == MetricsView.Sliders)
+    @foreach (var metric in Model.Keys)
+        {
+            string id = "range" + index;        
+            string valueAsNumber = id + ".valueAsNumber";
+            @if (SystemParameters.MetricsView == MetricsView.DragAndDrop)
             {
-                <input class="custom-range range" type="range" min="0" max="100" name="metricimportance" id="@id" value="@averageValue" placeholder="Metrics" oninput="changeValues(this.value, @index)"
-                onchange="changeValues(this.value, @index)" />
-                <output class="bubble"></output>
+
+                <div draggable="true" id="@("drag_" +@index)" class="drag box dragbox" style="width:90%">
+                    @metric.Name
+                    <input class="custom-range range" type="hidden" min="0" max="100" name="MetricsImportance" id="@id"
+                           value="@Model[metric]" placeholder="MetricsImportance" />
+                </div>
+                
             }
-            @if (SystemParameters.MetricsView == MetricsView.TextBoxNumbers)
+            else
             {
-            <input class="custom-range range" type="number" min="0" max="100" name="metricimportance" id="@id" value="@averageValue"  placeholder="Metrics" oninput="changeValues(this.value, @index)"
-                   onchange="changeValues(this.value, @index)" />            
+                <div class="range-wrap">
+                    @if (SystemParameters.MetricsView == MetricsView.Sliders)
+                    {
+                        <label for="@id">@metric.Name</label>
+                    <input class="custom-range range" type="range" min="0" max="100" name="MetricsImportance" id="@id"
+                           value="@Model[metric]" placeholder="MetricsImportance" oninput="changeValues(this.value, @index)"
+                        onchange="changeValues(this.value, @index)" />
+                        <output class="bubble"></output>
+                    }
+                    @if (SystemParameters.MetricsView == MetricsView.TextBoxNumbers)
+                    {
+                        <label for="@id">@metric.Name</label>
+                    <input class="custom-range range" type="number" min="0" max="100" name="MetricsImportance" id="@id"
+                           value="@Model[metric]" placeholder="MetricsImportance" oninput="changeValues(this.value, @index)"
+                        onchange="changeValues(this.value, @index)" />
+                    }
+
+                </div>
             }
-            
-        </div>
-        index++;
-    }
+            index++;
+        }
+    
 </div>
 
 <script>
     /* Make sliders responsive to change of value */
     function getSumOfRangeValues() {
-        let inputranges = document.getElementById("input-metrics-sliders-group").getElementsByTagName('input');
+        let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
         let length = inputranges.length;
         let sum = 0;
         for (let i = 0; i < length; i++) {
@@ -43,7 +60,7 @@
         return Math.floor(Math.random() * max);
     }
     function changeValues(value, index) {
-        let inputranges = document.getElementById("input-metrics-sliders-group").getElementsByTagName('input');
+        let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
         let length = inputranges.length;
         let sum = getSumOfRangeValues();
         let overflow = sum - 100;
@@ -92,4 +109,106 @@
         // Sorta magic numbers based on size of the native UI thumb
         bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
     }
+
+    //Drag and drop
+    document.addEventListener('DOMContentLoaded', (event) => {
+        function set_input_hidden_values(){
+            //sets right values to hidden (metrics ranking is the same as on start)
+            let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
+            let length = inputranges.length;
+            //let drag_ranges = document.getElementById("input-metrics-group").getElementsByClassName('drag');
+            let numberOfParts = 0;
+            for (let i = 0; i < length; i++) {
+                numberOfParts += i + 1;
+            }
+            for (let i = 0; i < length; i++) {
+                let index = parseInt(inputranges[i].id.replace(/^range/, ''));
+                inputranges[index].value = 100 / numberOfParts * (length - i);
+            }
+        }
+
+        function handleDragStart(e) {
+            this.style.opacity = '0.4';
+            dragSrcEl = this;
+
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+        }
+
+        function handleDragEnd(e) {
+            this.style.opacity = '1';
+
+            items.forEach(function (item) {
+                item.classList.remove('over');
+            });
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            this.classList.add('over');
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('over');
+        }
+        function handleDrop(e) {
+            e.stopPropagation(); // stops the browser from redirecting.
+            if (dragSrcEl !== this) {
+                dragSrcEl.innerHTML = this.innerHTML;
+                this.innerHTML = e.dataTransfer.getData('text/html');
+            }
+            set_input_hidden_values()
+            return false;
+        }
+
+        function order_drag_boxes_at_start(){
+            let drag_ranges = document.getElementById("input-metrics-group").getElementsByClassName('dragbox');
+            if (drag_ranges.length==0){
+                return;
+            }
+            let input_ranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
+            let temp = [];
+            let values=[];
+            let sorted = [];
+            for (let i = 0; i < drag_ranges.length; i++) {
+                temp[i] = drag_ranges[i].innerHTML;
+                values[i] = input_ranges[i].value;
+                sorted[i] = input_ranges[i].value;
+
+            }
+            sorted.sort();
+            sorted=sorted.reverse();
+            for (let i = 0; i < drag_ranges.length; i++) {
+                let index = sorted.indexOf(values[i]);
+                drag_ranges[index].innerHTML = temp[i];
+            }
+            set_input_hidden_values()
+            /*
+            input_ranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
+            //input ranges should still correspond to metrics ranking in db
+            for (let i = 0; i < drag_ranges.length; i++) {
+                input_ranges[i].value = values[i];
+            }*/
+
+
+        }
+
+
+        let items = document.querySelectorAll('.container .box');
+        items.forEach(function (item) {
+            item.addEventListener('dragstart', handleDragStart);
+            item.addEventListener('dragover', handleDragOver);
+            item.addEventListener('dragenter', handleDragEnter);
+            item.addEventListener('dragleave', handleDragLeave);
+            item.addEventListener('dragend', handleDragEnd);
+            item.addEventListener('drop', handleDrop);
+        });
+        order_drag_boxes_at_start();
+    });
+
+
 </script>

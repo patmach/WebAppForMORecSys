@@ -40,7 +40,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 SystemParameters.Controller = "Movies";
-SystemParameters.MetricsView = MetricsView.Sliders;
+SystemParameters.MetricsView = MetricsView.DragAndDrop;
 
 var app = builder.Build();
 

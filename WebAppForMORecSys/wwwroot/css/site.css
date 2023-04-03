@@ -216,3 +216,18 @@ a.disabled {
     display: table;
     clear: both;
 }
+
+/*drag and drop*/
+.container {
+    display: grid;
+    gap: 10px;
+}
+
+.box {
+    border: 3px solid #666;
+    background-color: #0d6efd;
+    color:white;
+    border-radius: .5em;
+    padding: 10px;
+    cursor: move;
+}

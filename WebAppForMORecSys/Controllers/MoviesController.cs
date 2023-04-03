@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using WebAppForMORecSys.Areas.Identity.Data;
@@ -30,11 +31,10 @@ namespace WebAppForMORecSys.Controllers
             SetAllGenres();
             SetAllDirectors();
             SetAllActors();
-            allItems = _context.Items;
         }
 
-        public async Task<IActionResult> Index(string search, string[] metricimportance, string director,
-          string actor, string[] genres, string type, string releasedateto, string releasedatefrom)
+        public async Task<IActionResult> Index(string search, string director,
+          string actor, string[] genres, string type, string releasedateto, string releasedatefrom, string[] metricsimportance)
         {            
             var viewModel = new MainViewModel();
             User user = GetCurrentUser();
@@ -45,12 +45,33 @@ namespace WebAppForMORecSys.Controllers
                                                where rating.UserID == viewModel.CurrentUser.Id
                                                select rating).ToListAsync();
             }
-            var metrics = from metric in _context.Metrics
-                          select metric;
-            viewModel.SearchValue = search ?? "";
-            viewModel.Metrics = await metrics.ToListAsync();
-            viewModel.Metrics = new List<Metric> { new Metric { Name = "Relevance" },
+            var metrics = await (_context.Metrics.ToListAsync());
+            metrics = new List<Metric> { new Metric { Name = "Relevance" },
                 new Metric { Name = "Novelty" }, new Metric { Name = "Diversity" } };//DELETE Later
+            int numberOfParts = 0;
+            for (int i = 0; i < metrics.Count(); i++)
+            {
+                numberOfParts += i + 1;
+            }
+            if (!metricsimportance.IsNullOrEmpty())
+            {
+                for (int i = 0; i < metrics.Count(); i++)
+                {
+                    viewModel.Metrics.Add(metrics[i],(int)double.Parse(metricsimportance[i], CultureInfo.InvariantCulture));
+                }               
+            }
+            else
+            {
+                for (int i = 0; i < metrics.Count; i++)
+                {
+                    if (Settings.SystemParameters.MetricsView == Settings.MetricsView.DragAndDrop)
+                        viewModel.Metrics.Add(metrics[i], ((int)(100.0 / numberOfParts * (metrics.Count - i))));
+                    else
+                        viewModel.Metrics.Add(metrics[i], 100 / metrics.Count());
+                }
+            }
+
+            viewModel.SearchValue = search ?? "";
             var blackList = user.GetAllBlockedItems(allItems);
             var whiteList = Movie.GetPossibleItems(_context.Items, user, search, director, actor, genres, type, releasedateto, releasedatefrom);
             viewModel.FilterValues.Add("Director", director);
@@ -59,7 +80,6 @@ namespace WebAppForMORecSys.Controllers
             viewModel.FilterValues.Add("ReleaseDateTo", releasedateto);
             viewModel.FilterValues.Add("Genres", string.Join(',', genres));
             var possibleItems = whiteList;
-            var x = possibleItems.ToList();
             viewModel.Items = possibleItems.Take(50);//Nahradit voláním RS
             return View(viewModel);
         }
@@ -200,7 +220,7 @@ namespace WebAppForMORecSys.Controllers
 
         public List<string> GetAllMovieNames(string prefix)
         {
-            return _context.Items.Where(m => m.Name.Contains(prefix, StringComparison.OrdinalIgnoreCase))
+            return _context.Items.Where(m => EF.Functions.Like(m.Name, $"%{prefix}%"))
                 .Select(m => m.Name).Take(15).ToList();
 
         }

@@ -4,7 +4,7 @@ namespace WebAppForMORecSys.Models.ViewModels
 {
     public class MainViewModel
     {
-        public List<Metric> Metrics { get; set; }
+        public Dictionary<Metric, int> Metrics { get; set; }
         public IQueryable<Item> Items { get; set; }
 
         public string SearchValue ="";
@@ -17,7 +17,7 @@ namespace WebAppForMORecSys.Models.ViewModels
         public Dictionary<string, string> FilterValues = new Dictionary<string, string>();
         public MainViewModel()
         {
-            this.Metrics = new List<Metric>();
+            this.Metrics = new Dictionary<Metric, int>();
         }
     }
 }

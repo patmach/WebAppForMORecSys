@@ -47,7 +47,7 @@ namespace WebAppForMORecSys.Models
             {
                 return FilterByMovieFilter(allItems, director, actor, genres, releasedatefrom, releasedateto);
             }
-            if (type == "Search")
+            if ((type == "Search") && (!search.IsNullOrEmpty()))
             {
                 possibleItems = possibleItems.Where(movie => movie.Name.Contains(search));
             }
