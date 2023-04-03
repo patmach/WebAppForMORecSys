@@ -21,7 +21,7 @@
     </form>
     <div id="DetailsDiv" style="margin-bottom:5px;"></div>
     <div id="Previews" style="width:100%">
-    @fore0ach (var item in Model.Items)
+    @foreach (var item in Model.Items)
     {
             @await Html.PartialAsync("../"+controller+"/Preview", new MovieUserUserratings(new Movie(item), Model.CurrentUser, Model.CurrentUserRatings))
     }
