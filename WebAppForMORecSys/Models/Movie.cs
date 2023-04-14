@@ -51,6 +51,7 @@ namespace WebAppForMORecSys.Models
             {
                 possibleItems = possibleItems.Where(movie => movie.Name.Contains(search));
             }
+
             return possibleItems;
         }
 

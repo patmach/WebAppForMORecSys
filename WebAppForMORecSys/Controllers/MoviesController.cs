@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NuGet.Protocol.Plugins;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -13,6 +14,7 @@ using WebAppForMORecSys.Helpers;
 using WebAppForMORecSys.Models;
 using WebAppForMORecSys.Models.ViewModels;
 using WebAppForMORecSys.Models.ViewModels;
+using WebAppForMORecSys.Settings;
 using static WebAppForMORecSys.Helpers.MovieHelper;
 
 namespace WebAppForMORecSys.Controllers
@@ -21,8 +23,8 @@ namespace WebAppForMORecSys.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<Account> _userManager;
+        static HttpClient client = new HttpClient();
 
-       IQueryable<Item> allItems;
 
         public MoviesController(ApplicationDbContext context, UserManager<Account> userManager)
         {
@@ -31,23 +33,26 @@ namespace WebAppForMORecSys.Controllers
             SetAllGenres();
             SetAllDirectors();
             SetAllActors();
+            SystemParameters.RecommenderSystem = context.RecommenderSystems.Where(rs => rs.Name == "SimpleMF").First();
         }
 
         public async Task<IActionResult> Index(string search, string director,
           string actor, string[] genres, string type, string releasedateto, string releasedatefrom, string[] metricsimportance)
-        {            
+        {
             var viewModel = new MainViewModel();
             User user = GetCurrentUser();
             if (user != null)
             {
                 viewModel.CurrentUser = user;
                 viewModel.CurrentUserRatings = await (from rating in _context.Ratings
-                                               where rating.UserID == viewModel.CurrentUser.Id
-                                               select rating).ToListAsync();
+                                                      where rating.UserID == viewModel.CurrentUser.Id
+                                                      select rating).ToListAsync();
             }
-            var metrics = await (_context.Metrics.ToListAsync());
-            metrics = new List<Metric> { new Metric { Name = "Relevance" },
-                new Metric { Name = "Novelty" }, new Metric { Name = "Diversity" } };//DELETE Later
+
+            var rs = SystemParameters.RecommenderSystem;
+            var metrics = await (_context.Metrics.Where(m=>m.RecommenderSystemID == rs.Id).ToListAsync());
+            /*metrics = new List<Metric> { new Metric { Name = "Relevance" },
+                new Metric { Name = "Novelty" }, new Metric { Name = "Diversity" } }*/;//DELETE Later
             int numberOfParts = 0;
             for (int i = 0; i < metrics.Count(); i++)
             {
@@ -57,8 +62,8 @@ namespace WebAppForMORecSys.Controllers
             {
                 for (int i = 0; i < metrics.Count(); i++)
                 {
-                    viewModel.Metrics.Add(metrics[i],(int)double.Parse(metricsimportance[i], CultureInfo.InvariantCulture));
-                }               
+                    viewModel.Metrics.Add(metrics[i], (int)double.Parse(metricsimportance[i], CultureInfo.InvariantCulture));
+                }
             }
             else
             {
@@ -72,15 +77,33 @@ namespace WebAppForMORecSys.Controllers
             }
 
             viewModel.SearchValue = search ?? "";
-            var blackList = user.GetAllBlockedItems(allItems);
+            var blackList = user.GetAllBlockedItems(_context.Items);
             var whiteList = Movie.GetPossibleItems(_context.Items, user, search, director, actor, genres, type, releasedateto, releasedatefrom);
             viewModel.FilterValues.Add("Director", director);
             viewModel.FilterValues.Add("Actor", actor);
             viewModel.FilterValues.Add("ReleaseDateFrom", releasedatefrom);
             viewModel.FilterValues.Add("ReleaseDateTo", releasedateto);
             viewModel.FilterValues.Add("Genres", string.Join(',', genres));
-            var possibleItems = whiteList;
-            viewModel.Items = possibleItems.Take(50);//Nahradit voláním RS
+            var possibleItems = whiteList.Where(item => !blackList.Contains(item.Id));
+            /*RecommenderQuery rq = new RecommenderQuery
+            {
+                PossibleItems = whiteList.Select(item => item.Id).ToArray(),
+                Metrics = metricsimportance.Select(m => (int)double.Parse(m, CultureInfo.InvariantCulture)).ToArray(),
+                Count = 50
+            };
+            JsonContent content = JsonContent.Create(rq);
+            HttpResponseMessage response = await client.PostAsync($"{rs.HTTPUri}getRecommendations/{user.Id}", content);
+            Dictionary<int, int[]> recommendations = new Dictionary<int, int[]>();
+            if (response.IsSuccessStatusCode)
+            {
+                recommendations = await response.Content.ReadFromJsonAsync<Dictionary<int, int[]>>();
+            }
+            if (recommendations.Count > 0)
+            {
+                viewModel.Items = _context.Items.Where(item=> recommendations.Keys.Contains(item.Id));
+            }
+            else*/
+                viewModel.Items = possibleItems.Take(50);//Nahradit voláním RS
             return View(viewModel);
         }
 
@@ -144,6 +167,7 @@ namespace WebAppForMORecSys.Controllers
                 else
                     HideGenre(genre);
             }
+            
             return message.ToString();
         }
 

@@ -62,8 +62,19 @@
     <br />
 
     <input type="hidden" name="type" placeholder="Type" value="MovieFilter" />
+    <div class="input-group container" id="input-copy-metrics-group">
+        @{
+        int index = 0;
 
-  
+        }
+        @foreach (var metric in Model.Metrics.Keys)
+        {
+            string id = "hidden_metric" + index;
+            <input class="custom-range range" type="hidden" min="0" max="100" name="MetricsImportance" id="@id"
+                   value="@Model.Metrics[metric]" placeholder="MetricsImportance"/>
+            index++;
+        }
+    </div>
     <input class="form-control rounded m-3" type="submit" class="btn-secondary" value="SEARCH" />
 </form>
 

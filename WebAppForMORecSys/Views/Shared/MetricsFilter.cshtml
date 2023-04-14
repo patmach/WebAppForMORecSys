@@ -33,7 +33,7 @@
                     @if (SystemParameters.MetricsView == MetricsView.TextBoxNumbers)
                     {
                         <label for="@id">@metric.Name</label>
-                    <input class="custom-range range" type="number" min="0" max="100" name="MetricsImportance" id="@id"
+                    <input class="custom-range range form-control rounded m-3" type="number" min="0" max="100" name="MetricsImportance" id="@id"
                            value="@Model[metric]" placeholder="MetricsImportance" oninput="changeValues(this.value, @index)"
                         onchange="changeValues(this.value, @index)" />
                     }
@@ -80,9 +80,19 @@
             }
         }
         setBubbles();
+        copyValuesToOtherForm(inputranges)
 
     }
 
+    /* load metrics importance values to item filter form */
+    function copyValuesToOtherForm(inputranges){
+        let inputhiddens = document.getElementById("input-copy-metrics-group").getElementsByTagName('input');
+        if (inputhiddens.length==0) return;
+        for (let i = 0; i < inputhiddens.length; i++) {
+            inputhiddens[i].value = inputranges[i].value;
+        }
+
+    }
     /* #For showing values under sliders */
     function setBubbles() {
         const allRanges = document.querySelectorAll(".range-wrap");
@@ -125,6 +135,7 @@
                 let index = parseInt(inputranges[i].id.replace(/^range/, ''));
                 inputranges[index].value = 100 / numberOfParts * (length - i);
             }
+            copyValuesToOtherForm(inputranges) 
         }
 
         function handleDragStart(e) {
@@ -162,6 +173,7 @@
                 this.innerHTML = e.dataTransfer.getData('text/html');
             }
             set_input_hidden_values()
+
             return false;
         }
 

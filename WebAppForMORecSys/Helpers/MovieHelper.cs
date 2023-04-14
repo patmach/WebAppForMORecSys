@@ -5,6 +5,10 @@ using System.Text.Json.Nodes;
 using WebAppForMORecSys.Models;
 using static WebAppForMORecSys.Helpers.UserHelper;
 using NuGet.Packaging;
+using System.IO;
+using System.Text;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Primitives;
 
 namespace WebAppForMORecSys.Helpers
 {
@@ -126,9 +130,68 @@ namespace WebAppForMORecSys.Helpers
             return UserHelper.GetStringValuesInBlackList(user, "Genre");
         }
 
-        public static List<int> ComputeAllBlockedMovies(this User user, IQueryable<Item> allItems)
+        public static List<int> ComputeAllBlockedMovies(this User user, DbSet<Item> allItems)
         {
-            var blackList = new List<int>();
+            StringBuilder filterSQL = new StringBuilder($"SELECT * FROM dbo.{nameof(Item)}s WHERE ");
+            var idsBL = UserHelper.GetItemsInBlackList(user);
+            var directorsBL = GetDirectorsInBlackList(user);
+            var actorsBL = GetActorsInBlackList(user);
+            var genresBL = GetGenresInBlackList(user);
+
+            if (!directorsBL.IsNullOrEmpty() || !genresBL.IsNullOrEmpty() || !actorsBL.IsNullOrEmpty())
+                filterSQL.Append($" (ISJSON({nameof(Item.JSONParams)}) > 0) and (1!=1 ");
+            
+            if (!idsBL.IsNullOrEmpty())
+            {;
+                filterSQL.Append(" or ");
+                filterSQL.Append($"Id = '{idsBL.First()}' "); ;
+                for (int i = 1; i < idsBL.Count; i++)
+                {
+                    filterSQL.Append(" or ");
+                    filterSQL.Append($"Id  = '{idsBL[i]}' ");
+                }
+
+                
+            }
+            if (!genresBL.IsNullOrEmpty())
+            {
+                filterSQL.Append(" or ");
+                filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Genres') like '%{genresBL.First()}%' ");
+                for (int i = 1; i < genresBL.Count; i++)
+                {
+                    filterSQL.Append(" or ");
+                    filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Genres') like '%{genresBL[i]}%' ");
+                }
+
+            }
+            if (!directorsBL.IsNullOrEmpty())
+            {
+                filterSQL.Append(" or ");
+                filterSQL.Append($"JSON_VALUE({nameof(Item.JSONParams)}, '$.Director') = '{directorsBL.First()}' "); ;
+                for (int i = 1; i < directorsBL.Count; i++)
+                {
+                    filterSQL.Append(" or ");
+                    filterSQL.Append($"JSON_VALUE({nameof(Item.JSONParams)}, '$.Director')  = '{directorsBL[i]}' ");
+                }
+
+                
+            }
+            if (!actorsBL.IsNullOrEmpty())
+            {
+                filterSQL.Append(" or ");
+                filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Actors') like '%{actorsBL.First()}%' ");
+                for (int i = 1; i < actorsBL.Count; i++)
+                {
+                    filterSQL.Append(" or ");
+                    filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Actors') like '%{actorsBL[i]}%' ");
+                }
+
+            }
+            
+            filterSQL.Append(")");
+            
+            return allItems.FromSqlRaw(filterSQL.ToString()).Select(item=> item.Id).ToList();
+            /*
             blackList.AddRange(UserHelper.GetItemsInBlackList(user));
             var directorsBL = GetDirectorsInBlackList(user);
             var actorsBL = GetActorsInBlackList(user);
@@ -138,7 +201,7 @@ namespace WebAppForMORecSys.Helpers
                                                     (m.Genres.Intersect(genresBL).Count() > 0) ||
                                                     (directorsBL.Contains(m.Director)))
                                                     .Select(m=> m.Id).ToList());            
-            return blackList;
+            return blackList;*/
         }
     }
 }

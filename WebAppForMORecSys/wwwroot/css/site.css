@@ -8,6 +8,10 @@ html {
   }
 }
 
+footer{
+    position:relative !important;
+}
+
 input, .filter-option{
     font-size:1.3vw !important;
 }

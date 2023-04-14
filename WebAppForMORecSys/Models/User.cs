@@ -28,24 +28,27 @@ namespace WebAppForMORecSys.Models
 
         public Account account;
 
-        public List<int> GetAllBlockedItems(IQueryable<Item> allItems)
+        public List<int> GetAllBlockedItems(DbSet<Item> allItems)
         {
             if (recomputeBlocked.ContainsKey(Id) && recomputeBlocked[Id])
-            {
-                if (!BlockedItemIDs.ContainsKey(Id))
-                {
-                    BlockedItemIDs.Add(Id,ComputeAllBlockedItems(allItems));
-                }
-                else
-                {
-                    BlockedItemIDs[Id] = ComputeAllBlockedItems(allItems);
-                }
-                recomputeBlocked[Id] = false; 
-            }
+                UpdateBlockedItems(allItems);
             return BlockedItemIDs.ContainsKey(Id) ? BlockedItemIDs[Id] : new List<int>();
         }
 
-        private List<int> ComputeAllBlockedItems(IQueryable<Item> allItems)
+        public void UpdateBlockedItems(DbSet<Item> allItems)
+        {
+            if (!BlockedItemIDs.ContainsKey(Id))
+            {
+                BlockedItemIDs.TryAdd(Id, new List<int>());
+            }
+            lock (BlockedItemIDs[Id]) { 
+                var updatedBlackList = ComputeAllBlockedItems(allItems);
+                BlockedItemIDs[Id] = updatedBlackList;
+            }
+            recomputeBlocked[Id] = false;
+        }
+
+        private List<int> ComputeAllBlockedItems(DbSet<Item> allItems)
         {
             if (SystemParameters.Controller == "Movies")
             {

@@ -46,10 +46,14 @@
             });
     }
 
+    var xcoord_b4_details = 0;
+    var ycoord_b4_details = 0;
     $(document).ready(function () {
         $(".ajaxdetail").on("click", function (e) {
             e.preventDefault();
-            var elementUrl = $(this).attr('href');
+            xcoord_b4_details = window.scrollX;
+            ycoord_b4_details = window.scrollY;
+            var elementUrl = $(this).attr('id');
             $.ajax({
                 url: elementUrl,
                 cache: false,
@@ -57,6 +61,7 @@
                     $('#DetailsDiv').html(data);
                     document.getElementById("DetailsDiv").style.display = ""
                     document.getElementById("Previews").style.display = "none";
+                    window.scrollTo(0, 0);
                 }
             });
         });
@@ -66,6 +71,7 @@
         document.getElementById('DetailsDiv').style.display = "none";
         document.getElementById('DetailsDiv').innerHTML = "";
         document.getElementById("Previews").style.display = "";
+        window.scrollTo(xcoord_b4_details, ycoord_b4_details);
     }
 
     function hide(itemId) {

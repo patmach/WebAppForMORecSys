@@ -14,9 +14,7 @@
     <div id="openfilterbtn"><button id="openfilterbtn " class="openbtn" onclick="openNav()">&#9776; Create block rule</button></div>
     <div id="closefilterbtn" style="display:none"> <button class="openbtn" onclick="closeNav()">&#9776; Close</button></div>
 
-    <div class="PropertyBlocks">
-        @await Html.PartialAsync("../"+controller+"/PropertiesBlockRules")
-    </div>
+    
 
     @if (Model.Items.Count > 40)
     {
@@ -28,6 +26,9 @@
     }
     <div id="DetailsDiv" style="margin-bottom:5px;"></div>
     <div id="Previews" style="width:100%">
+        <div class="PropertyBlocks">
+            @await Html.PartialAsync("../"+controller+"/PropertiesBlockRules")
+        </div>
         @foreach (var item in Model.Items)
         {
             @await Html.PartialAsync("../"+controller+"/Preview", new MovieUserUserratings(new Movie(item), Model.CurrentUser, Model.CurrentUserRatings))

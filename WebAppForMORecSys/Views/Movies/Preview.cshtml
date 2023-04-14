@@ -14,7 +14,7 @@
     }
 }
 <div style="opacity:@opacity" class="MovieItem horizontal @moviepreviewclass">
-    <a href='@Url.Action("Details","Movies", new { id=Model.movie.Id })' class="ajaxdetail"><h4>@Model.movie.Name</h4></a>
+    <a href="javascript:void(0);" resource=""  id='@Url.Action("Details","Movies", new { id=Model.movie.Id })' class="ajaxdetail"><h4>@Model.movie.Name</h4></a>
     
     <div id="logo-holder">
         @{
