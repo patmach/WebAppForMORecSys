@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "provider": "unpkg",
+      "library": "@popperjs/core@2.11.7",
+      "destination": "wwwroot/lib/popperjs/core/"
+    }
+  ]
+}

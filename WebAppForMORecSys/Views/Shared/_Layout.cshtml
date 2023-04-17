@@ -4,10 +4,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - WebAppForMORecSys</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/WebAppForMORecSys.styles.css" asp-append-version="true" />
+
     <link href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="Stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.css" />
+    <link rel="stylesheet" href="~/WebAppForMORecSys.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/popperjs/core/dist/umd/popper.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js"></script>
+    <script src="~/lib/jquery-ui-1.13.2.custom/jquery-ui.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
 
 </head>
 <body>
@@ -49,13 +58,7 @@
    
     
     
-    <script src="~/lib/jquery/dist/jquery.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-    <!--<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>-->
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/lib/jquery-ui-1.13.2.custom/jquery-ui.js"></script>
-    <!--<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>-->
+    
     @await RenderSectionAsync("Scripts", required: false)
     @Html.Raw(TempData["msg"])
 </body>
