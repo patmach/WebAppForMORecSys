@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
 using WebAppForMORecSys.Areas.Identity.Data;
 using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Helpers;
@@ -27,7 +29,7 @@ namespace WebAppForMORecSys.Models
         public List<Interaction> Interactions { get; set; }
 
         public Account account;
-
+        /*
         public List<int> GetAllBlockedItems(DbSet<Item> allItems)
         {
             if (recomputeBlocked.ContainsKey(Id) && recomputeBlocked[Id])
@@ -59,7 +61,16 @@ namespace WebAppForMORecSys.Models
 
         public static Dictionary<int, bool> recomputeBlocked = new Dictionary<int, bool>();
         public static Dictionary<int, List<int>> BlockedItemIDs = new Dictionary<int, List<int>>();
+        */
 
+        public IQueryable<Item> GetAllNotBlockedItems(DbSet<Item> allItems)
+        {
+            if (SystemParameters.Controller == "Movies")
+            {
+                return this.ComputeAllNotBlockedMovies(allItems);
+            }
+            throw new NotImplementedException();
+        }
         public User()
         {
 

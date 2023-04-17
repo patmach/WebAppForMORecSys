@@ -12,7 +12,7 @@
             @if (SystemParameters.MetricsView == MetricsView.DragAndDrop)
             {
 
-                <div draggable="true" id="@("drag_" +@index)" class="drag box dragbox" style="width:90%">
+                <div draggable="true" id="@("drag_" +@index)" class="drag box dragbox" style="background-color: @SystemParameters.MetricsColors[index]">
                     @metric.Name
                     <input class="custom-range range" type="hidden" min="0" max="100" name="MetricsImportance" id="@id"
                            value="@Model[metric]" placeholder="MetricsImportance" />
@@ -21,21 +21,23 @@
             }
             else
             {
-                <div class="range-wrap">
+            <div class="range-wrap" style="color: @SystemParameters.MetricsColors[index]">
                     @if (SystemParameters.MetricsView == MetricsView.Sliders)
                     {
-                        <label for="@id">@metric.Name</label>
+                    <label for="@id">@metric.Name</label>
                     <input class="custom-range range" type="range" min="0" max="100" name="MetricsImportance" id="@id"
                            value="@Model[metric]" placeholder="MetricsImportance" oninput="changeValues(this.value, @index)"
+                           
                         onchange="changeValues(this.value, @index)" />
-                        <output class="bubble"></output>
+                    <output style="background-color: @SystemParameters.MetricsColors[index]" class="bubble"></output>
                     }
                     @if (SystemParameters.MetricsView == MetricsView.TextBoxNumbers)
                     {
                         <label for="@id">@metric.Name</label>
                     <input class="custom-range range form-control rounded m-3" type="number" min="0" max="100" name="MetricsImportance" id="@id"
                            value="@Model[metric]" placeholder="MetricsImportance" oninput="changeValues(this.value, @index)"
-                        onchange="changeValues(this.value, @index)" />
+                           onchange="changeValues(this.value, @index)" 
+                           style="border: 3px; border-color:@SystemParameters.MetricsColors[index];" />
                     }
 
                 </div>

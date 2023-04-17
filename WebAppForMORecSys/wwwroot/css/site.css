@@ -71,7 +71,7 @@ body {
     background: #0d6efd;
     color: white;
     padding: 4px 12px;
-    margin-top: 18px;
+    margin-top: 22px;
     position: absolute;
     border-radius: 4px;
     left: 50%;
@@ -92,11 +92,13 @@ body {
     margin: 2rem;
 }
 
-.MovieItem {
+.ItemPreview {
     margin: 3px;
     width: 19%;
-    aspect-ratio: 1 / 2 ;
+    aspect-ratio: 1 / 2;
     text-overflow: ellipsis;
+    /*border: 3px solid;
+    padding: 3px;*/
 }
 
 .horizontal {

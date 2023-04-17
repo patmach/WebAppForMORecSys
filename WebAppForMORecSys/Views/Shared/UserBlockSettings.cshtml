@@ -31,7 +31,7 @@
         </div>
         @foreach (var item in Model.Items)
         {
-            @await Html.PartialAsync("../"+controller+"/Preview", new MovieUserUserratings(new Movie(item), Model.CurrentUser, Model.CurrentUserRatings))
+            @await Html.PartialAsync("../"+controller+"/Preview", new PreviewDetailViewModel(new Movie(item), Model.CurrentUser, Model.CurrentUserRatings))
         }
     </div>
 

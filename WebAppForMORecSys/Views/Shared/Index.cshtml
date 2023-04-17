@@ -1,9 +1,11 @@
 ﻿@using System.Text.Json;
 @using static WebAppForMORecSys.Helpers.MovieHelper
+@using static WebAppForMORecSys.Settings.SystemParameters
 @model WebAppForMORecSys.Models.ViewModels.MainViewModel
 @{
     ViewData["Title"] = "Home Page";
     string controller = WebAppForMORecSys.Settings.SystemParameters.Controller;
+    int index = 0;
 }
 
 <div id="mySidebar" class="sidebar">
@@ -23,7 +25,13 @@
     <div id="Previews" style="width:100%">
     @foreach (var item in Model.Items)
     {
-            @await Html.PartialAsync("../"+controller+"/Preview", new MovieUserUserratings(new Movie(item), Model.CurrentUser, Model.CurrentUserRatings))
+        var metricsContribution = Model.ItemsToMetricImportance != null ? Model.ItemsToMetricImportance[index] : null;
+        <div>
+        
+            @await Html.PartialAsync("../"+controller+"/Preview", new PreviewDetailViewModel(new Movie(item), Model.CurrentUser, Model.CurrentUserRatings, metricsContribution))
+        
+        </div>
+        index++;
     }
     </div>
     
@@ -34,7 +42,27 @@
         SetAutoComplete("titlesearch", "Movies/GetAllMovieNames");
         SetAutoComplete("idirector", "Movies/GetAllDirectors");
         SetAutoComplete("iactor", "Movies/GetAllActors");
+        popoverExplanationOptions = {
+            content: function () {
+                // Get the content from the hidden sibling.
+                return $(this).siblings('.popover-content').html();
+            },
+            trigger: 'hover',
+            animation: true,
+            placement: 'top',
+            html: true,
+            title: 'Why is this item recommended?'
+        };
+        $('.ItemPreview').popover(popoverExplanationOptions);
+    });
 
+
+
+    $(document).ready(function () {
+        $('[data-toggle="modal"]').modal({
+            placement: 'top',
+            trigger: 'hover'
+        });
     });
 </script>
 

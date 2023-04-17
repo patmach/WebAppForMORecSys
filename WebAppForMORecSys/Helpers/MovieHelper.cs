@@ -9,21 +9,24 @@ using System.IO;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
+using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Helpers
 {
     public static class MovieHelper
     {
 
-        public class MovieUserUserratings {
+        public class PreviewDetailViewModel {
             public Movie movie;
             public User user;
             public List<Rating> userRatings;
-            public MovieUserUserratings(Movie movie, User user, List<Rating> userRatings)
+            public int[] metricsContribution;
+            public PreviewDetailViewModel(Movie movie, User user, List<Rating> userRatings, int[] metricsContribution = null)
             {
                 this.movie = movie;
                 this.user = user;
                 this.userRatings = userRatings;
+                this.metricsContribution = metricsContribution;
             }
         }
         public static string getPropertyStringValueFromJSON(Item movie, string property)
@@ -129,79 +132,99 @@ namespace WebAppForMORecSys.Helpers
         {
             return UserHelper.GetStringValuesInBlackList(user, "Genre");
         }
-
-        public static List<int> ComputeAllBlockedMovies(this User user, DbSet<Item> allItems)
+        
+        public static IQueryable<Item> ComputeAllNotBlockedMovies(this User user, DbSet<Item> allItems)
         {
-            StringBuilder filterSQL = new StringBuilder($"SELECT * FROM dbo.{nameof(Item)}s WHERE ");
+            StringBuilder filterSQL = new StringBuilder($"SELECT * FROM dbo.{nameof(Item)}s WHERE 1= 1 and ");
+            filterSQL.Append(getAllNotBlockedItemsSQLWhere(user));
+            return allItems.FromSqlRaw(filterSQL.ToString());
+            
+        }
+
+        public static string getAllNotBlockedItemsSQLWhere(User user)
+        {
+            StringBuilder filterSQL = new StringBuilder();
             var idsBL = UserHelper.GetItemsInBlackList(user);
             var directorsBL = GetDirectorsInBlackList(user);
             var actorsBL = GetActorsInBlackList(user);
             var genresBL = GetGenresInBlackList(user);
 
             if (!directorsBL.IsNullOrEmpty() || !genresBL.IsNullOrEmpty() || !actorsBL.IsNullOrEmpty())
-                filterSQL.Append($" (ISJSON({nameof(Item.JSONParams)}) > 0) and (1!=1 ");
-            
+                filterSQL.Append($" ((ISJSON({nameof(Item.JSONParams)}) > 0) ");
+
             if (!idsBL.IsNullOrEmpty())
-            {;
-                filterSQL.Append(" or ");
-                filterSQL.Append($"Id = '{idsBL.First()}' "); ;
+            {
+                ;
+                filterSQL.Append(" and ");
+                filterSQL.Append($"(Id != {idsBL.First()} )"); ;
                 for (int i = 1; i < idsBL.Count; i++)
                 {
-                    filterSQL.Append(" or ");
-                    filterSQL.Append($"Id  = '{idsBL[i]}' ");
+                    filterSQL.Append(" and ");
+                    filterSQL.Append($"(Id  != {idsBL[i]}) ");
                 }
 
-                
+
             }
             if (!genresBL.IsNullOrEmpty())
             {
-                filterSQL.Append(" or ");
-                filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Genres') like '%{genresBL.First()}%' ");
+                filterSQL.Append(" and ");
+                filterSQL.Append($"(JSON_QUERY({nameof(Item.JSONParams)}, '$.Genres') not like '%{genresBL.First()}%' )");
                 for (int i = 1; i < genresBL.Count; i++)
                 {
-                    filterSQL.Append(" or ");
-                    filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Genres') like '%{genresBL[i]}%' ");
+                    filterSQL.Append(" and ");
+                    filterSQL.Append($"(JSON_QUERY({nameof(Item.JSONParams)}, '$.Genres') not like '%{genresBL[i]}%' )");
                 }
 
             }
             if (!directorsBL.IsNullOrEmpty())
             {
-                filterSQL.Append(" or ");
-                filterSQL.Append($"JSON_VALUE({nameof(Item.JSONParams)}, '$.Director') = '{directorsBL.First()}' "); ;
+                filterSQL.Append(" and ");
+                filterSQL.Append($"(JSON_VALUE({nameof(Item.JSONParams)}, '$.Director') != '{directorsBL.First()}' )"); ;
                 for (int i = 1; i < directorsBL.Count; i++)
                 {
-                    filterSQL.Append(" or ");
-                    filterSQL.Append($"JSON_VALUE({nameof(Item.JSONParams)}, '$.Director')  = '{directorsBL[i]}' ");
+                    filterSQL.Append(" and ");
+                    filterSQL.Append($"(JSON_VALUE({nameof(Item.JSONParams)}, '$.Director')  != '{directorsBL[i]}' )");
                 }
 
-                
+
             }
             if (!actorsBL.IsNullOrEmpty())
             {
-                filterSQL.Append(" or ");
-                filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Actors') like '%{actorsBL.First()}%' ");
+                filterSQL.Append(" and ");
+                filterSQL.Append($"(JSON_QUERY({nameof(Item.JSONParams)}, '$.Actors') not like '%{actorsBL.First()}%' )");
                 for (int i = 1; i < actorsBL.Count; i++)
                 {
-                    filterSQL.Append(" or ");
-                    filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Actors') like '%{actorsBL[i]}%' ");
+                    filterSQL.Append(" and ");
+                    filterSQL.Append($"(JSON_QUERY({nameof(Item.JSONParams)}, '$.Actors') not like '%{actorsBL[i]}%' )");
                 }
 
             }
-            
+
             filterSQL.Append(")");
-            
-            return allItems.FromSqlRaw(filterSQL.ToString()).Select(item=> item.Id).ToList();
-            /*
-            blackList.AddRange(UserHelper.GetItemsInBlackList(user));
-            var directorsBL = GetDirectorsInBlackList(user);
-            var actorsBL = GetActorsInBlackList(user);
-            var genresBL = GetGenresInBlackList(user);
-            blackList.AddRange(allItems.Select(i => new Movie(i)).AsEnumerable().
-                                        Where(m => (m.Actors.Intersect(actorsBL).Count() > 0) ||
-                                                    (m.Genres.Intersect(genresBL).Count() > 0) ||
-                                                    (directorsBL.Contains(m.Director)))
-                                                    .Select(m=> m.Id).ToList());            
-            return blackList;*/
+            return filterSQL.ToString();
+        }
+
+        //change destination of method
+        public static string MetricsContributionToBorderImage(int[] metricsContribution)
+        {
+            StringBuilder borderImage = new StringBuilder();
+            borderImage.Append("linear-gradient(to bottom right");
+            int lastpoint = 0;
+            int sum = 0;
+            for (int i = 0; i < metricsContribution.Length; i++)
+            {
+                sum += metricsContribution[i];
+                borderImage.Append(',');
+                borderImage.Append(SystemParameters.MetricsColors[i]);
+                borderImage.Append(' ');
+                borderImage.Append(lastpoint);
+                borderImage.Append("% ");
+                borderImage.Append(sum);
+                borderImage.Append('%');
+                lastpoint = sum;
+            }
+            borderImage.Append(") 1");
+            return borderImage.ToString();
         }
     }
 }

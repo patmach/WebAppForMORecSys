@@ -42,20 +42,26 @@ namespace WebAppForMORecSys.Models
         public static IQueryable<Item> GetPossibleItems(DbSet<Item> allItems, User user, string search, string director,
           string actor, string[] genres, string type, string releasedateto, string releasedatefrom)
         {
+            
             IQueryable<Item> possibleItems = allItems;
             if (type == "MovieFilter")
             {
-                return FilterByMovieFilter(allItems, director, actor, genres, releasedatefrom, releasedateto);
+                return FilterByMovieFilter(user, allItems, director, actor, genres, releasedatefrom, releasedateto);
             }
-            if ((type == "Search") && (!search.IsNullOrEmpty()))
+            else if ((type == "Search") && (!search.IsNullOrEmpty()))
             {
+                possibleItems = user.GetAllNotBlockedItems(allItems);
                 possibleItems = possibleItems.Where(movie => movie.Name.Contains(search));
+            }
+            else
+            {
+                possibleItems = user.ComputeAllNotBlockedMovies(allItems);
             }
 
             return possibleItems;
         }
 
-        public static IQueryable<Item> FilterByMovieFilter(DbSet<Item> possibleitems, string director, string actor, string[] genres,
+        public static IQueryable<Item> FilterByMovieFilter(User user, DbSet<Item> possibleitems, string director, string actor, string[] genres,
             string releasedatefrom, string releasedateto)
         {
             StringBuilder filterSQL = new StringBuilder($"SELECT * FROM dbo.{nameof(Item)}s WHERE ISJSON({nameof(Item.JSONParams)}) > 0");
@@ -91,6 +97,8 @@ namespace WebAppForMORecSys.Models
                 filterSQL.Append(" and ");
                 filterSQL.Append($"CONVERT(DATETIME,JSON_VALUE({nameof(Item.JSONParams)}, '$.ReleaseDate')) <= CONVERT(DATETIME,'{releasedateto}') ");
             }
+            filterSQL.Append(" and ");
+            filterSQL.Append(MovieHelper.getAllNotBlockedItemsSQLWhere(user));
             return possibleitems.FromSqlRaw(filterSQL.ToString()); 
         }
     }

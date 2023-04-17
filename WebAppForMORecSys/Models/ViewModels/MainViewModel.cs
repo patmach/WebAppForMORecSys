@@ -7,6 +7,8 @@ namespace WebAppForMORecSys.Models.ViewModels
         public Dictionary<Metric, int> Metrics { get; set; }
         public IQueryable<Item> Items { get; set; }
 
+        public int[][] ItemsToMetricImportance { get;set;}
+
         public string SearchValue ="";
 
         public User CurrentUser { get; set; }

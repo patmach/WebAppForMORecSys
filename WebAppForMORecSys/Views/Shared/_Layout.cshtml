@@ -11,6 +11,7 @@
 
 </head>
 <body>
+    
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -46,12 +47,15 @@
         </div>
     </footer>
    
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    
+    
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <!--<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>-->
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/lib/jquery-ui-1.13.2.custom/jquery-ui.js"></script>
     <!--<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>-->
-
     @await RenderSectionAsync("Scripts", required: false)
     @Html.Raw(TempData["msg"])
 </body>

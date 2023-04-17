@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Elfie.Serialization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NuGet.Protocol;
 using NuGet.Protocol.Plugins;
 using System.Globalization;
 using System.IO;
@@ -76,18 +78,16 @@ namespace WebAppForMORecSys.Controllers
                 }
             }
 
-            viewModel.SearchValue = search ?? "";
-            var blackList = user.GetAllBlockedItems(_context.Items);
-            var whiteList = Movie.GetPossibleItems(_context.Items, user, search, director, actor, genres, type, releasedateto, releasedatefrom);
+            viewModel.SearchValue = search ?? "";            
+            var possibleItems = Movie.GetPossibleItems(_context.Items, user, search, director, actor, genres, type, releasedateto, releasedatefrom);
             viewModel.FilterValues.Add("Director", director);
             viewModel.FilterValues.Add("Actor", actor);
             viewModel.FilterValues.Add("ReleaseDateFrom", releasedatefrom);
             viewModel.FilterValues.Add("ReleaseDateTo", releasedateto);
-            viewModel.FilterValues.Add("Genres", string.Join(',', genres));
-            var possibleItems = whiteList.Where(item => !blackList.Contains(item.Id));
+            viewModel.FilterValues.Add("Genres", string.Join(',', genres));            
             /*RecommenderQuery rq = new RecommenderQuery
             {
-                PossibleItems = whiteList.Select(item => item.Id).ToArray(),
+                PossibleItems = await possibleItems.Select(item => item.Id).ToArrayAsync(),
                 Metrics = metricsimportance.Select(m => (int)double.Parse(m, CultureInfo.InvariantCulture)).ToArray(),
                 Count = 50
             };
@@ -101,6 +101,7 @@ namespace WebAppForMORecSys.Controllers
             if (recommendations.Count > 0)
             {
                 viewModel.Items = _context.Items.Where(item=> recommendations.Keys.Contains(item.Id));
+                viewModel.ItemsToMetricImportance = recommendations.Values.ToArray();
             }
             else*/
                 viewModel.Items = possibleItems.Take(50);//Nahradit voláním RS
@@ -182,7 +183,7 @@ namespace WebAppForMORecSys.Controllers
                                  where rating.UserID == user.Id
                                  select rating).ToListAsync();
             }
-            return PartialView(new MovieUserUserratings(
+            return PartialView(new PreviewDetailViewModel(
                 new Movie(_context.Items.First(x => x.Id == id)),
                 user,
                 ratings
@@ -202,7 +203,7 @@ namespace WebAppForMORecSys.Controllers
                                                      where rating.UserID == user.Id
                                                      select rating).ToListAsync();
             }
-            return PartialView(new MovieUserUserratings(
+            return PartialView(new PreviewDetailViewModel(
                 new Movie(_context.Items.First(x => x.Id == id)),
                 user,
                 ratings

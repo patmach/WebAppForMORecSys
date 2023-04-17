@@ -1,5 +1,7 @@
-﻿@using static WebAppForMORecSys.Helpers.UserHelper
-@model WebAppForMORecSys.Helpers.MovieHelper.MovieUserUserratings
+﻿@using System.Text;
+@using static WebAppForMORecSys.Helpers.UserHelper
+@using static WebAppForMORecSys.Helpers.MovieHelper
+@model WebAppForMORecSys.Helpers.MovieHelper.PreviewDetailViewModel
 @{
 
     string moviepreviewclass = "preview_" + Model.movie.Id;
@@ -12,8 +14,13 @@
         showDisplay = "";
         opacity = "0.5";
     }
+    string borderImage = "";
+    if (Model.metricsContribution != null)
+    {
+        borderImage = MetricsContributionToBorderImage(Model.metricsContribution);
+    }
 }
-<div style="opacity:@opacity" class="MovieItem horizontal @moviepreviewclass">
+<div style="opacity:@opacity" class="ItemPreview horizontal @moviepreviewclass">
     <a href="javascript:void(0);" resource=""  id='@Url.Action("Details","Movies", new { id=Model.movie.Id })' class="ajaxdetail"><h4>@Model.movie.Name</h4></a>
     
     <div id="logo-holder">
@@ -24,8 +31,8 @@
                 ImageURL = @Url.Content("~/Resources/Images/grey_no_image.png");
             }
         }
-        <img class="image" style="width:95%" src="@ImageURL" />
-        <div class="text" style="width:95%; height:100%">@Model.movie.ShortDescription</div>
+        <img class="image previewimage" style="width:95%; border: 3px solid; border-image:@borderImage;" src="@ImageURL" />
+        <div class="text" style="width:95%; height:100%; padding:6px;">@Model.movie.ShortDescription</div>
     </div>
     <div>
         <a style="position: absolute; right: 1px; display:@hideDisplay" id="hideimg" class="hideimg" onclick="hide(@Model.movie.Id)" href='@Url.Action("Hide","Movies", new { id=Model.movie.Id })'>
@@ -41,6 +48,16 @@
         @Model.movie.Director
     </div>
     @await Html.PartialAsync("../Movies/Rating", Model)
+
 </div>
+@if (Model.metricsContribution != null)
+{
+    <div class="popover-content" id="explanationPopover">
+        blah blah blah @Model.movie.Name
+    </div>
+}
+
+
+
 
 

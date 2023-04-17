@@ -9,6 +9,8 @@ namespace WebAppForMORecSys.Settings
         public static MetricsView MetricsView { get; set; }
 
         public static RecommenderSystem RecommenderSystem { get; set; }
+
+        public static string[] MetricsColors { get; set; }
     }
 
     public enum MetricsView
