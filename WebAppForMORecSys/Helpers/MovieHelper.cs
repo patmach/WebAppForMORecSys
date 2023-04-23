@@ -20,8 +20,8 @@ namespace WebAppForMORecSys.Helpers
             public Movie movie;
             public User user;
             public List<Rating> userRatings;
-            public int[] metricsContribution;
-            public PreviewDetailViewModel(Movie movie, User user, List<Rating> userRatings, int[] metricsContribution = null)
+            public Dictionary<Metric, int> metricsContribution;
+            public PreviewDetailViewModel(Movie movie, User user, List<Rating> userRatings, Dictionary<Metric, int> metricsContribution = null)
             {
                 this.movie = movie;
                 this.user = user;

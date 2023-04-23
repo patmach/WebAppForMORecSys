@@ -6,6 +6,7 @@
     ViewData["Title"] = "Home Page";
     string controller = WebAppForMORecSys.Settings.SystemParameters.Controller;
     int index = 0;
+    Metric[] metricsArr = Model.Metrics.Keys.ToArray();
 }
 
 <div id="mySidebar" class="sidebar">
@@ -25,12 +26,28 @@
     <div id="Previews" style="width:100%">
     @foreach (var item in Model.Items)
     {
-        var metricsContribution = Model.ItemsToMetricImportance != null ? Model.ItemsToMetricImportance[index] : null;
-        <div>
+        Dictionary<Metric,int> metricsContribution =  null;
+            
+        if(Model.ItemsToMetricImportance!=null){
+                metricsContribution = Enumerable.Range(0, Model.Metrics.Count)
+                    .ToDictionary(i => metricsArr[i], i => Model.ItemsToMetricImportance[index][i]);
+        }       
         
-            @await Html.PartialAsync("../"+controller+"/Preview", new PreviewDetailViewModel(new Movie(item), Model.CurrentUser, Model.CurrentUserRatings, metricsContribution))
-        
-        </div>
+        @await Html.PartialAsync("../"+controller+"/Preview", new PreviewDetailViewModel(new Movie(item), Model.CurrentUser, Model.CurrentUserRatings, metricsContribution))
+        @if (metricsContribution != null)
+        {
+            var ordered = metricsContribution.OrderByDescending(mc => mc.Value).ToDictionary(mc => mc.Key, mc => mc.Value);
+            var keys = ordered.Keys.ToArray();
+            var values = ordered.Values.ToArray();
+            var className = "popover-content" + "preview_" + item.Id; //druhá část MUSÍ odpovídat názvu hlavního elementu v Preview
+            <div class="@className popover-content" id="explanationPopover" style="display:none">
+                @for (int i = 0; i < (ordered?.Count ?? 0); i++)
+                {
+                    <p><b>@keys[i].Name - @values[i] % </b></p>
+                    <p>@keys[i].DefaultExplanation</p>
+                }
+            </div>
+        }
         index++;
     }
     </div>
@@ -44,8 +61,8 @@
         SetAutoComplete("iactor", "Movies/GetAllActors");
         popoverExplanationOptions = {
             content: function () {
-                // Get the content from the hidden sibling.
-                return $(this).siblings('.popover-content').html();
+                var classname = '.popover-content' + this.id;
+                return $(this).siblings(classname).html();
             },
             trigger: 'hover',
             animation: true,

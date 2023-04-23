@@ -15,12 +15,14 @@
         opacity = "0.5";
     }
     string borderImage = "";
+    string borderSize = "0px";
     if (Model.metricsContribution != null)
     {
-        borderImage = MetricsContributionToBorderImage(Model.metricsContribution);
+        borderImage = MetricsContributionToBorderImage(Model.metricsContribution.Values.ToArray());
+        borderSize = "5px";
     }
 }
-<div style="opacity:@opacity" class="ItemPreview horizontal @moviepreviewclass">
+<div style="opacity:@opacity" class="ItemPreview horizontal @moviepreviewclass" id="@moviepreviewclass">
     <a href="javascript:void(0);" resource=""  id='@Url.Action("Details","Movies", new { id=Model.movie.Id })' class="ajaxdetail"><h4>@Model.movie.Name</h4></a>
     
     <div id="logo-holder">
@@ -31,7 +33,7 @@
                 ImageURL = @Url.Content("~/Resources/Images/grey_no_image.png");
             }
         }
-        <img class="image previewimage" style="width:95%; border: 3px solid; border-image:@borderImage;" src="@ImageURL" />
+        <img class="image previewimage" style="width:95%; border: @borderSize solid; border-image:@borderImage;" src="@ImageURL" />
         <div class="text" style="width:95%; height:100%; padding:6px;">@Model.movie.ShortDescription</div>
     </div>
     <div>
@@ -50,12 +52,6 @@
     @await Html.PartialAsync("../Movies/Rating", Model)
 
 </div>
-@if (Model.metricsContribution != null)
-{
-    <div class="popover-content" id="explanationPopover">
-        blah blah blah @Model.movie.Name
-    </div>
-}
 
 
 

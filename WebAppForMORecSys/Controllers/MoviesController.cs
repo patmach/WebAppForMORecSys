@@ -85,7 +85,7 @@ namespace WebAppForMORecSys.Controllers
             viewModel.FilterValues.Add("ReleaseDateFrom", releasedatefrom);
             viewModel.FilterValues.Add("ReleaseDateTo", releasedateto);
             viewModel.FilterValues.Add("Genres", string.Join(',', genres));            
-            /*RecommenderQuery rq = new RecommenderQuery
+            RecommenderQuery rq = new RecommenderQuery
             {
                 PossibleItems = await possibleItems.Select(item => item.Id).ToArrayAsync(),
                 Metrics = metricsimportance.Select(m => (int)double.Parse(m, CultureInfo.InvariantCulture)).ToArray(),
@@ -103,7 +103,7 @@ namespace WebAppForMORecSys.Controllers
                 viewModel.Items = _context.Items.Where(item=> recommendations.Keys.Contains(item.Id));
                 viewModel.ItemsToMetricImportance = recommendations.Values.ToArray();
             }
-            else*/
+            else
                 viewModel.Items = possibleItems.Take(50);//Nahradit voláním RS
             return View(viewModel);
         }
