@@ -9,6 +9,65 @@
     Metric[] metricsArr = Model.Metrics.Keys.ToArray();
 }
 
+<div class="text-center">
+    <h4 class="display-4">Students Score Details By Doughnut Chart</h4>
+    <h3><a href="~/Home/Index">Back</a></h3>
+    <div class="card">
+        <div class="card-header">
+            <div style="max-width:15%" class="chart">
+                <canvas id="doughnutchart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var doughnutchartCanvas = document.getElementById("doughnutchart");
+    var studentname = [];
+    var score = [];
+    @if (Model.Items.Count() > 0)
+    {
+        foreach (var item in Model.Items.Take(4))
+        {
+            @:studentname.push('@item.Name');
+            @:score.push(1);
+        }
+    }
+        var doughnutChart = new Chart(doughnutchartCanvas, {
+            type: 'doughnut',
+            data: {
+                labels: studentname,
+                datasets: [{
+                    data: score,
+                    borderWidth: 0,
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(157, 230, 41)',
+                        'rgb(41, 224, 230)',
+                        'rgb(255, 255, 0)'
+                    ],
+                    hoverBackgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(157, 230, 41)',
+                        'rgb(41, 224, 230)',
+                        'rgb(255, 255, 0)'
+                    ]
+                }]
+            },
+            options: {
+                plugins: {
+                responsive: true,
+                
+                legend: {
+                    display:false,                    
+                }
+                }
+                
+            }
+        });
+</script>
 <div id="mySidebar" class="sidebar">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     @await Html.PartialAsync("../"+controller+"/Filter")
@@ -36,17 +95,7 @@
         @await Html.PartialAsync("../"+controller+"/Preview", new PreviewDetailViewModel(new Movie(item), Model.CurrentUser, Model.CurrentUserRatings, metricsContribution))
         @if (metricsContribution != null)
         {
-            var ordered = metricsContribution.OrderByDescending(mc => mc.Value).ToDictionary(mc => mc.Key, mc => mc.Value);
-            var keys = ordered.Keys.ToArray();
-            var values = ordered.Values.ToArray();
-            var className = "popover-content" + "preview_" + item.Id; //druhá část MUSÍ odpovídat názvu hlavního elementu v Preview
-            <div class="@className popover-content" id="explanationPopover" style="display:none">
-                @for (int i = 0; i < (ordered?.Count ?? 0); i++)
-                {
-                    <p><b>@keys[i].Name - @values[i] % </b></p>
-                    <p>@keys[i].DefaultExplanation</p>
-                }
-            </div>
+                @await Html.PartialAsync("../Shared/Explanations", new PreviewDetailViewModel(new Movie(item), Model.CurrentUser, Model.CurrentUserRatings, metricsContribution))
         }
         index++;
     }

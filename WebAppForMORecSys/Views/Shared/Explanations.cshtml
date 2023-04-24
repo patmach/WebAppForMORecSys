@@ -1,0 +1,72 @@
+﻿@using WebAppForMORecSys.Settings
+@model WebAppForMORecSys.Helpers.MovieHelper.PreviewDetailViewModel
+@{
+
+    var ordered = Model.metricsContribution.OrderByDescending(mc => mc.Value).ToDictionary(mc => mc.Key, mc => mc.Value);
+    var keys = ordered.Keys.ToArray();
+    var values = ordered.Values.ToArray();
+    var className = "popover-content" + "preview_" + Model.item.Id; //druhá část MUSÍ odpovídat názvu hlavního elementu v Preview
+    var doughnutChartId = "doughnutchart" + Model.item.Id;
+}
+<div class="@className popover-content" id="explanationPopover" style="display:none">
+    <div style="float:left;" class="card">
+        <div class="card-header">
+            <div style="max-width:15%" class="chart"><canvas id="@doughnutChartId" width="600" height="400"></canvas></div>
+        </div>
+    </div>
+    <div>
+    @for (int i = 0; i < (ordered?.Count ?? 0); i++)
+    {
+        <p><b>@keys[i].Name - @values[i] % </b></p>
+        <p>@keys[i].DefaultExplanation</p>
+    }
+    </div>
+</div>
+
+
+<script>
+    var doughnutchartCanvas = document.getElementById("@doughnutChartId");
+    var metricname = [];
+    var score = [];
+    var backgroundColors = [];
+    
+    @if (Model.metricsContribution.Count > 0)
+    {
+        int index = 0;
+        foreach (var metricContribution in Model.metricsContribution)
+        {
+            
+            @:metricname.push('@metricContribution.Key.Name');
+            @:score.push(@metricContribution.Value);
+            @:backgroundColors.push('@SystemParameters.MetricsColors[index]');
+            index++;
+        }
+    }
+    var doughnutChart = new Chart(doughnutchartCanvas, {
+        type: 'doughnut',
+        data: {
+            labels: metricname,
+            datasets: [{
+                data: score,
+                borderWidth: 0,
+                backgroundColor: backgroundColors/*,
+                hoverBackgroundColor: [
+                    'rgb(255, 99, 132)',
+                    'rgb(54, 162, 235)',
+                    'rgb(157, 230, 41)',
+                    'rgb(41, 224, 230)',
+                    'rgb(255, 255, 0)'
+                ]*/
+            }]
+        },
+        options: {
+            plugins:{
+            responsive: true,
+           
+            legend: {
+                display: false
+            }
+            }
+        }
+    });
+</script>

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NuGet.Packaging;
 using System.Collections.Generic;
@@ -64,25 +65,31 @@ namespace WebAppForMORecSys.Models
         public static IQueryable<Item> FilterByMovieFilter(User user, DbSet<Item> possibleitems, string director, string actor, string[] genres,
             string releasedatefrom, string releasedateto)
         {
+
             StringBuilder filterSQL = new StringBuilder($"SELECT * FROM dbo.{nameof(Item)}s WHERE ISJSON({nameof(Item.JSONParams)}) > 0");
+            var sqlp = new List<SqlParameter>();
             if (!director.IsNullOrEmpty())
             {
                 filterSQL.Append(" and ");
-                filterSQL.Append($"JSON_VALUE({nameof(Item.JSONParams)}, '$.Director') like '%{director}%' ");
+                filterSQL.Append($"JSON_VALUE({nameof(Item.JSONParams)}, '$.Director') like @director ");
+                sqlp.Add(new SqlParameter("@director", $"%{director}%"));
             }
             if (!actor.IsNullOrEmpty())
             {
                 filterSQL.Append(" and ");
-                filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Actors') like '%{actor}%' ");
+                filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Actors') like @actor");
+                sqlp.Add(new SqlParameter("@actor", $"%{actor}%"));
             }
             if (genres != null && genres.Length != 0)
             {
                 filterSQL.Append(" and (");
-                filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Genres') like '%{genres.First()}%' ");
+                filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Genres') like @genres0 ");
+                sqlp.Add(new SqlParameter("@genres0", $"%{genres.First()}%"));
                 for (int i = 1; i < genres.Length; i++)
                 {
                     filterSQL.Append(" or ");
-                    filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Genres') like '%{genres[i]}%' ");
+                    filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Genres') like  @genres{i} ");
+                    sqlp.Add(new SqlParameter($"@genres{i}", $"%{genres[i]}%"));
                 }
 
                 filterSQL.Append(')');
@@ -90,16 +97,18 @@ namespace WebAppForMORecSys.Models
             if (!releasedatefrom.IsNullOrEmpty())
             {
                 filterSQL.Append(" and ");
-                filterSQL.Append($"CONVERT(DATETIME,JSON_VALUE({nameof(Item.JSONParams)}, '$.ReleaseDate')) >= CONVERT(DATETIME,'{releasedatefrom}') ");
+                filterSQL.Append($"CONVERT(DATETIME,JSON_VALUE({nameof(Item.JSONParams)}, '$.ReleaseDate')) >= CONVERT(DATETIME,@releasedatefrom) ");
+                sqlp.Add(new SqlParameter($"@releasedatefrom", releasedatefrom));
             }
             if (!releasedateto.IsNullOrEmpty())
             {
                 filterSQL.Append(" and ");
-                filterSQL.Append($"CONVERT(DATETIME,JSON_VALUE({nameof(Item.JSONParams)}, '$.ReleaseDate')) <= CONVERT(DATETIME,'{releasedateto}') ");
+                filterSQL.Append($"CONVERT(DATETIME,JSON_VALUE({nameof(Item.JSONParams)}, '$.ReleaseDate')) <= CONVERT(DATETIME,@releasedateto) ");
+                sqlp.Add(new SqlParameter($"@releasedateto", releasedateto));
             }
             filterSQL.Append(" and ");
             filterSQL.Append(MovieHelper.getAllNotBlockedItemsSQLWhere(user));
-            return possibleitems.FromSqlRaw(filterSQL.ToString()); 
+            return possibleitems.FromSqlRaw(filterSQL.ToString(), sqlp.ToArray()); 
         }
     }
 }

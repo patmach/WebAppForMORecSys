@@ -4,11 +4,11 @@
 @model WebAppForMORecSys.Helpers.MovieHelper.PreviewDetailViewModel
 @{
 
-    string moviepreviewclass = "preview_" + Model.movie.Id;
+    string moviepreviewclass = "preview_" + Model.item.Id;
     string hideDisplay = "";
     string showDisplay = "none";
     string opacity = "1";
-    if (Model.user.IsItemInBlackList(Model.movie.Id))
+    if (Model.user.IsItemInBlackList(Model.item.Id))
     {
         hideDisplay = "none";
         showDisplay = "";
@@ -23,31 +23,32 @@
     }
 }
 <div style="opacity:@opacity" class="ItemPreview horizontal @moviepreviewclass" id="@moviepreviewclass">
-    <a href="javascript:void(0);" resource=""  id='@Url.Action("Details","Movies", new { id=Model.movie.Id })' class="ajaxdetail"><h4>@Model.movie.Name</h4></a>
+    <a href="javascript:void(0);" resource=""  id='@Url.Action("Details","Movies", new { id=Model.item.Id })' class="ajaxdetail"><h4>@Model.item.Name</h4></a>
     
     <div id="logo-holder">
         @{
-            string ImageURL = Model.movie.ImageURL;
+            string ImageURL = Model.item.ImageURL;
             if (String.IsNullOrEmpty(ImageURL))
             {
                 ImageURL = @Url.Content("~/Resources/Images/grey_no_image.png");
             }
         }
         <img class="image previewimage" style="width:95%; border: @borderSize solid; border-image:@borderImage;" src="@ImageURL" />
-        <div class="text" style="width:95%; height:100%; padding:6px;">@Model.movie.ShortDescription</div>
+        <div class="text" style="width:95%; height:100%; padding:6px;">@Model.item.ShortDescription</div>
     </div>
     <div>
-        <a style="position: absolute; right: 1px; display:@hideDisplay" id="hideimg" class="hideimg" onclick="hide(@Model.movie.Id)" href='@Url.Action("Hide","Movies", new { id=Model.movie.Id })'>
+        <a style="position: absolute; right: 1px; display:@hideDisplay" id="hideimg" class="hideimg" onclick="hide(@Model.item.Id)" href='@Url.Action("Hide","Movies", new { id=Model.item.Id })'>
             <img src="@Url.Content("~/Resources/Images/hide.png")" title="Don't recommend this movie" />
         </a>
-        <a style="position: absolute; right: 1px; display:@showDisplay" id="showimg" class="showimg" onclick="show(@Model.movie.Id)" href='@Url.Action("Show","Movies", new { id=Model.movie.Id })'>
+        <a style="position: absolute; right: 1px; display:@showDisplay" id="showimg" class="showimg" onclick="show(@Model.item.Id)" href='@Url.Action("Show","Movies", new { id=Model.item.Id })'>
             <img src="@Url.Content("~/Resources/Images/show.png")" title="Show movie again." />
         </a>
     </div>
     <div style="margin-top:1px">
-        <b>@Html.DisplayNameFor(model => model.movie.Director):</b>
+        <b>@Html.DisplayNameFor(model => new Movie (model.item).Director):</b>
         <br/>
-        @Model.movie.Director
+        @Model.item.Director;
+        
     </div>
     @await Html.PartialAsync("../Movies/Rating", Model)
 

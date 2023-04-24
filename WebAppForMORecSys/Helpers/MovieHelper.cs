@@ -16,14 +16,15 @@ namespace WebAppForMORecSys.Helpers
     public static class MovieHelper
     {
 
+        /*TODO Mimo tento soubor */
         public class PreviewDetailViewModel {
-            public Movie movie;
+            public Movie item;
             public User user;
             public List<Rating> userRatings;
             public Dictionary<Metric, int> metricsContribution;
-            public PreviewDetailViewModel(Movie movie, User user, List<Rating> userRatings, Dictionary<Metric, int> metricsContribution = null)
+            public PreviewDetailViewModel(Movie item, User user, List<Rating> userRatings, Dictionary<Metric, int> metricsContribution = null)
             {
-                this.movie = movie;
+                this.item = item;
                 this.user = user;
                 this.userRatings = userRatings;
                 this.metricsContribution = metricsContribution;

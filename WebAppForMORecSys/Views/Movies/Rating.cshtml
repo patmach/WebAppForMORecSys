@@ -5,11 +5,11 @@
     <span>
         @{
             string aclass = Model.user != null ? "" : "disabled";
-            string ratingClass = "ratingstar" + Model.movie.Id;
+            string ratingClass = "ratingstar" + Model.item.Id;
         }
         @for (int i = 0; i < 10; i++)
         {
-            <a onclick="shownewvalue(@Html.Raw(i+1), @Model.movie.Id)" class="@aclass" href='@Url.Action("Rate","Movies", new { id=Model.movie.Id, score= i+1 })'>
+            <a onclick="shownewvalue(@Html.Raw(i+1), @Model.item.Id)" class="@aclass" href='@Url.Action("Rate","Movies", new { id=Model.item.Id, score= i+1 })'>
                 <i class="@ratingClass fa fa-star-o" aria-hidden="true"></i>
             </a>
         }
@@ -20,10 +20,10 @@
     @{
         int ratingScore = 0;
         if (Model.user != null)
-            ratingScore = Model.userRatings.Where(r => r.ItemID == Model.movie.Id).FirstOrDefault()?.RatingScore ?? 0;
+            ratingScore = Model.userRatings.Where(r => r.ItemID == Model.item.Id).FirstOrDefault()?.RatingScore ?? 0;
     }
         var ratingValue = @Html.Raw(ratingScore);
-        var movieId = @Html.Raw(Model.movie.Id);
+        var movieId = @Html.Raw(Model.item.Id);
         var startlist = $('.ratingstar' + movieId);
         for (var i = 0; i < ratingValue; i++) {
             startlist[i].classList.remove('fa-star-o');
