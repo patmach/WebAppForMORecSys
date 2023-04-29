@@ -41,7 +41,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 SystemParameters.Controller = "Movies";
 SystemParameters.MetricsView = MetricsView.Sliders;
-SystemParameters.MetricsColors = new string[] { "#002D62", "#0000FF", "#007FFF", "#00FFFF", "#F0F8FF" };
+SystemParameters.Colors = new string[] { "#002D62", "#0000FF", "#007FFF", "#00FFFF", "#F0F8FF" };
 
 var app = builder.Build();
 

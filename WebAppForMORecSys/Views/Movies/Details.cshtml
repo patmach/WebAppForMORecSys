@@ -29,9 +29,9 @@
             <img src="@Url.Content("~/Resources/Images/show.png")" title="Show movie again." />
         </a>
         <hr />
-        <img class="image" style="max-width:48%; max-height:90%; float:right;" src="@Model.item.ImageURL" />
+        <img class="ImageInDetail image"  src="@Model.item.ImageURL" />
 
-        <dl class="row" style="max-width:48%; display:grid;">
+        <dl class="InfoInDetail row">
              @if (Model.user!=null)
             {
                 <dt class="col-sm-2">
@@ -70,12 +70,12 @@
                             hideDisplayGenre = "none";
                             showDisplayGenre = "";                       
                         }
-                        <a style="display:@hideDisplayGenre; position: absolute; right: 1px;" class="@hideClassGenre"
+                        <a style="display:@hideDisplayGenre; left: 5px;" class="@hideClassGenre"
                            onclick="hide_by_property('genre',@i)"
                            href='@Url.Action("HideGenre","Movies", new { genre=Model.item.Genres[i] })'>
                             <img src="@Url.Content("~/Resources/Images/hide.png")" title="Don't recommend movies of this genre" />
                         </a>
-                        <a style="display:@showDisplayGenre; position: absolute; right: 1px"
+                        <a style="display:@showDisplayGenre; left: 5px"
                            onclick="show_by_property('genre',@i)"
                         class="@showClassGenre" href='@Url.Action("ShowGenre","Movies", new { genre=Model.item.Genres[i] })'>
                             <img src="@Url.Content("~/Resources/Images/show.png")" title="Show movies of this genre again" />
@@ -119,12 +119,12 @@
                         showDisplayDirector = "";
                         }
                     }
-                    <a style="display:@hideDisplayDirector; position: absolute; right: 1px;" class="@hideClassDirector"
+                    <a style="display:@hideDisplayDirector; left: 5px" class="@hideClassDirector"
                        onclick="hide_by_property('director','')"
                        href='@Url.Action("HideDirector","Movies", new { director=Model.item.Director })'>
                         <img src="@Url.Content("~/Resources/Images/hide.png")" title="Don't recommend movies of this director" />
                     </a>
-                    <a style="display:@showDisplayDirector; position: absolute; right: 1px"
+                    <a style="display:@showDisplayDirector;left: 5px"
                        onclick="show_by_property('director','')"
                        class="@showClassDirector" href='@Url.Action("ShowDirector","Movies", new { director=Model.item.Director })'>
                         <img src="@Url.Content("~/Resources/Images/show.png")" title="Show movies of this director again" />
@@ -150,12 +150,12 @@
                             hideDisplayActor = "none";
                             showDisplayActor = "";
                         }
-                        <a style="display:@hideDisplayActor; position: absolute; right: 1px;" class="@hideClassActor"
+                        <a style="display:@hideDisplayActor; left: 5px;" class="@hideClassActor"
                            onclick="hide_by_property('actor',@i)"
                            href='@Url.Action("HideActor","Movies", new { actor=Model.item.Actors[i] })'>
                             <img src="@Url.Content("~/Resources/Images/hide.png")" title="Don't recommend movies with this actor" />
                         </a>
-                        <a style="display:@showDisplayActor; position: absolute; right: 1px"
+                        <a style="display:@showDisplayActor; left: 5px"
                            onclick="show_by_property('actor',@i)"
                            class="@showClassActor" href='@Url.Action("ShowActor","Movies", new { actor=Model.item.Actors[i] })'>
                             <img src="@Url.Content("~/Resources/Images/show.png")" title="Show movies with this actor again" />

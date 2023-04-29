@@ -35,7 +35,7 @@ namespace WebAppForMORecSys.Controllers
             SetAllGenres();
             SetAllDirectors();
             SetAllActors();
-            SystemParameters.RecommenderSystem = context.RecommenderSystems.Where(rs => rs.Name == "SimpleMF").First();
+            
         }
 
         public async Task<IActionResult> Index(string search, string director,
@@ -79,7 +79,8 @@ namespace WebAppForMORecSys.Controllers
             }
 
             viewModel.SearchValue = search ?? "";            
-            var possibleItems = Movie.GetPossibleItems(_context.Items, user, search, director, actor, genres, type, releasedateto, releasedatefrom);
+            var whitelist = Movie.GetPossibleItems(_context.Items, user, search, director, actor, genres, type, releasedateto, releasedatefrom);
+            var blacklist = user.GetAllBlockedItems(_context.Items);
             viewModel.FilterValues.Add("Director", director);
             viewModel.FilterValues.Add("Actor", actor);
             viewModel.FilterValues.Add("ReleaseDateFrom", releasedatefrom);
@@ -87,7 +88,8 @@ namespace WebAppForMORecSys.Controllers
             viewModel.FilterValues.Add("Genres", string.Join(',', genres));            
             RecommenderQuery rq = new RecommenderQuery
             {
-                PossibleItems = await possibleItems.Select(item => item.Id).ToArrayAsync(),
+                WhiteListItemIDs = (whitelist==null) ? new int[0] :await whitelist.Select(item => item.Id).ToArrayAsync(),
+                BlackListItemIDs = await blacklist.Select(item => item.Id).ToArrayAsync(),
                 Metrics = metricsimportance.Select(m => (int)double.Parse(m, CultureInfo.InvariantCulture)).ToArray(),
                 Count = 50
             };
@@ -104,7 +106,7 @@ namespace WebAppForMORecSys.Controllers
                 viewModel.ItemsToMetricImportance = recommendations.Values.ToArray();
             }
             else
-                viewModel.Items = possibleItems.Take(50);//Nahradit voláním RS
+                viewModel.Items = _context.Items.Take(50);//Nahradit voláním RS
             return View(viewModel);
         }
 
@@ -218,7 +220,7 @@ namespace WebAppForMORecSys.Controllers
                 var genres = new List<string>();
                 _context.Items.ToList().ForEach(m => genres.AddRange(MovieHelper.GetGenres(m)));
                 Movie.AllGenres = genres.Distinct().ToList();
-                Movie.AllGenres.Remove("(nogenreslisted)");
+                Movie.AllGenres.Remove("(no genres listed)");
             }
         }
 
@@ -245,20 +247,40 @@ namespace WebAppForMORecSys.Controllers
 
         public List<string> GetAllMovieNames(string prefix)
         {
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return null;
+            }
             return _context.Items.Where(m => EF.Functions.Like(m.Name, $"%{prefix}%"))
+                /*.Except(user.GetAllBlockedItems(_context.Items))*/
                 .Select(m => m.Name).Take(15).ToList();
 
         }
         public List<string> GetAllDirectors(string prefix)
         {
-            return Movie.AllDirectors.Where(d => d.Contains(prefix, StringComparison.OrdinalIgnoreCase)).Take(10).ToList();
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return null;
+            }
+            return Movie.AllDirectors.Where(d => d.Contains(prefix, StringComparison.OrdinalIgnoreCase))
+                .Except(user.GetDirectorsInBlackList()).Take(10).ToList();
 
         }
         public List<string> GetAllActors(string prefix)
         {
-            return Movie.AllActors.Where(a => a.Contains(prefix, StringComparison.OrdinalIgnoreCase)).Take(10).ToList();
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return null;
+            }
+            return Movie.AllActors.Where(a => a.Contains(prefix, StringComparison.OrdinalIgnoreCase))
+                .Except(user.GetActorsInBlackList()).Take(10).ToList();
 
         }
+
+        
 
 
 

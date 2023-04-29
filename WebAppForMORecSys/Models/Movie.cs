@@ -51,13 +51,14 @@ namespace WebAppForMORecSys.Models
             }
             else if ((type == "Search") && (!search.IsNullOrEmpty()))
             {
-                possibleItems = user.GetAllNotBlockedItems(allItems);
+                /*possibleItems = user.GetAllNotBlockedItems(allItems);*/
                 possibleItems = possibleItems.Where(movie => movie.Name.Contains(search));
             }
             else
             {
-                possibleItems = user.ComputeAllNotBlockedMovies(allItems);
+                return null;
             }
+        
 
             return possibleItems;
         }
@@ -106,9 +107,10 @@ namespace WebAppForMORecSys.Models
                 filterSQL.Append($"CONVERT(DATETIME,JSON_VALUE({nameof(Item.JSONParams)}, '$.ReleaseDate')) <= CONVERT(DATETIME,@releasedateto) ");
                 sqlp.Add(new SqlParameter($"@releasedateto", releasedateto));
             }
-            filterSQL.Append(" and ");
-            filterSQL.Append(MovieHelper.getAllNotBlockedItemsSQLWhere(user));
+            /*filterSQL.Append(" and ");
+            filterSQL.Append(MovieHelper.getAllNotBlockedItemsSQLWhere(user));*/
             return possibleitems.FromSqlRaw(filterSQL.ToString(), sqlp.ToArray()); 
         }
+
     }
 }

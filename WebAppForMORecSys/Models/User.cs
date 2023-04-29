@@ -63,11 +63,11 @@ namespace WebAppForMORecSys.Models
         public static Dictionary<int, List<int>> BlockedItemIDs = new Dictionary<int, List<int>>();
         */
 
-        public IQueryable<Item> GetAllNotBlockedItems(DbSet<Item> allItems)
+        public IQueryable<Item> GetAllBlockedItems(DbSet<Item> allItems)
         {
             if (SystemParameters.Controller == "Movies")
             {
-                return this.ComputeAllNotBlockedMovies(allItems);
+                return this.ComputeAllBlockedMovies(allItems);
             }
             throw new NotImplementedException();
         }

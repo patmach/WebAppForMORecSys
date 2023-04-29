@@ -18,7 +18,7 @@
             {
 
                 <div draggable="true" id="@("drag_" +@index)" class="drag box dragbox" 
-                    style="background-color: @SystemParameters.MetricsColors[index] ; @margin">
+                    style="background-color: @SystemParameters.Colors[index] ; @margin">
                     @metric.Name
                     <input class="custom-range range" type="hidden" min="0" max="100" name="MetricsImportance" id="@id"
                            value="@Model[metric]" placeholder="MetricsImportance" />
@@ -27,7 +27,7 @@
             }
             else
             {
-            <div class="range-wrap" style="color: @SystemParameters.MetricsColors[index]">
+            <div class="range-wrap" style="color: @SystemParameters.Colors[index]">
                     @if (SystemParameters.MetricsView == MetricsView.Sliders)
                     {
                     <label for="@id">@metric.Name</label>
@@ -35,7 +35,7 @@
                            value="@Model[metric]" placeholder="MetricsImportance" oninput="changeValues(this.value, @index)"
                            
                         onchange="changeValues(this.value, @index)" />
-                    <output style="background-color: @SystemParameters.MetricsColors[index]" class="bubble"></output>
+                    <output style="background-color: @SystemParameters.Colors[index]" class="bubble"></output>
                     }
                     @if (SystemParameters.MetricsView == MetricsView.TextBoxNumbers)
                     {
@@ -43,7 +43,7 @@
                     <input class="custom-range range form-control rounded m-3" type="number" min="0" max="100" name="MetricsImportance" id="@id"
                            value="@Model[metric]" placeholder="MetricsImportance" oninput="changeValues(this.value, @index)"
                            onchange="changeValues(this.value, @index)" 
-                           style="border: 3px solid @SystemParameters.MetricsColors[index];" />
+                           style="border: 3px solid @SystemParameters.Colors[index];" />
                     }
 
                 </div>

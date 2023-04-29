@@ -96,14 +96,54 @@ body {
     margin: 2rem;
 }
 
+
+
 .ItemPreview {
     margin: 3px;
-    width: 19%;
     aspect-ratio: 1 / 2;
     text-overflow: ellipsis;
+    width: 19%;
     /*border: 3px solid;
     padding: 3px;*/
 }
+.ImageInDetail {
+    max-width:48%;
+    max-height:90%; 
+    float:right;
+
+}
+
+.InfoInDetail {
+    max-width: 48%;
+    display: grid;
+}
+@media screen and (max-width: 700px) {
+    .ItemPreview {
+        width: 45%;
+    }
+    .ImageInDetail {
+        float: none;
+        max-width:75%;
+        margin:auto;
+    }
+    .InfoInDetail {
+        max-width: 90%;
+    }
+}
+@media screen and (max-width: 1000px) and (min-width:700px) {
+    .ItemPreview {
+        width: 30%;
+    }
+    .ImageInDetail {
+        float: none;
+        margin: auto;
+    }
+
+    .InfoInDetail {
+        max-width: 90%;
+    }
+}
+
 
 
 .horizontal {
@@ -241,3 +281,4 @@ a.disabled {
     padding: 10px;
     cursor: move;
 }
+

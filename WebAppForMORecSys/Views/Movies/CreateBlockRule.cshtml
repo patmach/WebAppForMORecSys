@@ -1,4 +1,5 @@
 ﻿@model WebAppForMORecSys.Models.ViewModels.UserBlockRule
+@using static WebAppForMORecSys.Helpers.MovieHelper
 <form asp-controller="Movies" asp-action="UserBlockSettings" method="post" class="moviecreateblockrule">
     
    
@@ -6,7 +7,7 @@
     <label for="igenre">Genre</label>
 
     <select class="selectpicker" multiple data-live-search="true" name="genres" placeholder="Genres">
-        @foreach (var genre in Movie.AllGenres)
+        @foreach (var genre in Movie.AllGenres.Except(Model.CurrentUser.GetGenresInBlackList()))
         {
             <option>@genre</option>
             
