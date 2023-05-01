@@ -1,4 +1,4 @@
-﻿@using static WebAppForMORecSys.Helpers.MovieHelper
+﻿@using WebAppForMORecSys.Models.ViewModels
 @model WebAppForMORecSys.Models.ViewModels.UserBlockRule
 @{
     ViewData["Title"] = "Manage my block rules";
@@ -31,12 +31,10 @@
         </div>
         @foreach (var item in Model.Items)
         {
-            @await Html.PartialAsync("../"+controller+"/Preview", new PreviewDetailViewModel(new Movie(item), Model.CurrentUser, Model.CurrentUserRatings))
+            @await Html.PartialAsync("../"+controller+"/Preview", new PreviewDetailViewModel(item, Model.CurrentUser, Model.CurrentUserRatings))
         }
     </div>
 
 
 </div>
 
-
-@await Html.PartialAsync("../"+controller+"/Scripts")

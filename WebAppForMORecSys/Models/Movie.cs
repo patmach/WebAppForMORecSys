@@ -8,31 +8,20 @@ using System.Drawing.Text;
 using System.Text;
 using System.Text.Json.Nodes;
 using WebAppForMORecSys.Controllers;
+using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Helpers;
 
 namespace WebAppForMORecSys.Models
 {
-    public class Movie : Item
+    public static class Movie 
     {
-        public string Director => MovieHelper.getPropertyStringValueFromJSON(this, "Director") ?? "";
-        public string[] Actors => MovieHelper.getPropertyListValueFromJSON(this,"Actors");
-        
-        [Display(Name = "Release date")]
-        public DateTime ReleaseDate => DateTime.Parse(MovieHelper.getPropertyStringValueFromJSON(this, "ReleaseDate"));
-        public string[] Genres => MovieHelper.getPropertyListValueFromJSON(this, "Genres");
+        public static string GetDirector(this Item movie) => ItemHelper.getPropertyStringValueFromJSON(movie, "Director") ?? "";
+        public static string[] GetActors(this Item movie) => ItemHelper.getPropertyListValueFromJSON(movie, "Actors");
+
+        public static DateTime GetReleaseDate(this Item movie) => DateTime.Parse(ItemHelper.getPropertyStringValueFromJSON(movie, "ReleaseDate"));
+        public static string[] GetGenres(this Item movie) => ItemHelper.getPropertyListValueFromJSON(movie, "Genres");
 
         
-        public Movie(Item item)
-        {
-            this.Id = item.Id;
-            this.ImageURL = item.ImageURL;
-            this.Name= item.Name;
-            this.Interactions = item.Interactions;
-            this.Ratings = item.Ratings;
-            this.Description = item.Description;
-            this.ShortDescription= item.ShortDescription;
-            this.JSONParams = item.JSONParams;
-        }
 
         public static List<string> AllGenres;
 
@@ -52,15 +41,13 @@ namespace WebAppForMORecSys.Models
             else if ((type == "Search") && (!search.IsNullOrEmpty()))
             {
                 /*possibleItems = user.GetAllNotBlockedItems(allItems);*/
-                possibleItems = possibleItems.Where(movie => movie.Name.Contains(search));
+                return possibleItems.Where(movie => movie.Name.Contains(search));
             }
             else
             {
                 return null;
-            }
-        
+            }        
 
-            return possibleItems;
         }
 
         public static IQueryable<Item> FilterByMovieFilter(User user, DbSet<Item> possibleitems, string director, string actor, string[] genres,
@@ -83,25 +70,19 @@ namespace WebAppForMORecSys.Models
             }
             if (genres != null && genres.Length != 0)
             {
-                filterSQL.Append(" and (");
-                filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Genres') like @genres0 ");
-                sqlp.Add(new SqlParameter("@genres0", $"%{genres.First()}%"));
-                for (int i = 1; i < genres.Length; i++)
-                {
-                    filterSQL.Append(" or ");
-                    filterSQL.Append($"JSON_QUERY({nameof(Item.JSONParams)}, '$.Genres') like  @genres{i} ");
-                    sqlp.Add(new SqlParameter($"@genres{i}", $"%{genres[i]}%"));
-                }
-
-                filterSQL.Append(')');
+                filterSQL.Append(" and (EXISTS(");
+                filterSQL.Append("SELECT value FROM OPENJSON(JSON_QUERY(JSONParams, '$.Genres'))  WHERE value IN ");
+                filterSQL.Append($"(@genres))) ");
+                sqlp.Add(new SqlParameter("@genres", $"%{String.Join(",", genres.Select(g => $"'{g}'"))}%"));
             }
-            if (!releasedatefrom.IsNullOrEmpty())
+            DateTime dt;
+            if (!releasedatefrom.IsNullOrEmpty() && DateTime.TryParse(releasedatefrom, out dt))
             {
                 filterSQL.Append(" and ");
                 filterSQL.Append($"CONVERT(DATETIME,JSON_VALUE({nameof(Item.JSONParams)}, '$.ReleaseDate')) >= CONVERT(DATETIME,@releasedatefrom) ");
                 sqlp.Add(new SqlParameter($"@releasedatefrom", releasedatefrom));
             }
-            if (!releasedateto.IsNullOrEmpty())
+            if (!releasedateto.IsNullOrEmpty() && DateTime.TryParse(releasedateto, out dt))
             {
                 filterSQL.Append(" and ");
                 filterSQL.Append($"CONVERT(DATETIME,JSON_VALUE({nameof(Item.JSONParams)}, '$.ReleaseDate')) <= CONVERT(DATETIME,@releasedateto) ");
@@ -110,6 +91,38 @@ namespace WebAppForMORecSys.Models
             /*filterSQL.Append(" and ");
             filterSQL.Append(MovieHelper.getAllNotBlockedItemsSQLWhere(user));*/
             return possibleitems.FromSqlRaw(filterSQL.ToString(), sqlp.ToArray()); 
+        }
+
+
+        public static void SetAllGenres(ApplicationDbContext context)
+        {
+            if (Movie.AllGenres == null)
+            {
+                var genres = new List<string>();
+                context.Items.ToList().ForEach(m => genres.AddRange(MovieHelper.GetGenres(m)));
+                Movie.AllGenres = genres.Distinct().ToList();
+                Movie.AllGenres.Remove("(no genres listed)");
+            }
+        }
+
+        public static void SetAllDirectors(ApplicationDbContext context)
+        {
+            if (AllDirectors == null)
+            {
+                var directors = new List<string>();
+                context.Items.ToList().ForEach(m => directors.Add(MovieHelper.GetDirector(m)));
+                AllDirectors = directors.Distinct().ToList();
+            }
+        }
+
+        public static void SetAllActors(ApplicationDbContext context)
+        {
+            if (AllActors == null)
+            {
+                var actors = new List<string>();
+                context.Items.ToList().ForEach(m => actors.AddRange(MovieHelper.GetActors(m)));
+                AllActors = actors.Distinct().ToList();
+            }
         }
 
     }

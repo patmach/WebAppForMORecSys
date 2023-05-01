@@ -11,66 +11,21 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 using WebAppForMORecSys.Settings;
 
+
 namespace WebAppForMORecSys.Helpers
 {
     public static class MovieHelper
     {
 
-        /*TODO Mimo tento soubor */
-        public class PreviewDetailViewModel {
-            public Movie item;
-            public User user;
-            public List<Rating> userRatings;
-            public Dictionary<Metric, int> metricsContribution;
-            public PreviewDetailViewModel(Movie item, User user, List<Rating> userRatings, Dictionary<Metric, int> metricsContribution = null)
-            {
-                this.item = item;
-                this.user = user;
-                this.userRatings = userRatings;
-                this.metricsContribution = metricsContribution;
-            }
-        }
-        public static string getPropertyStringValueFromJSON(Item movie, string property)
-        {
-            try
-            {
-                if (movie.JSONParams == null) return "";
-                JsonObject? Params = (JsonObject?)JsonObject.Parse(movie.JSONParams);
-                JsonNode jsonNode;
-                if (Params != null && Params.TryGetPropertyValue(property, out jsonNode))
-                {
-                    return jsonNode.ToString();
-                }
-            }
-            catch (Exception e)
-            {
-                var x = e.Message;
-            }
-            return "";
-        }
-
-        public static string[] getPropertyListValueFromJSON(Item movie, string property)
-        {
-            string stringResult = getPropertyStringValueFromJSON(movie, property);
-            if (!stringResult.IsNullOrEmpty())
-            {
-                stringResult = stringResult.Replace("[", "").Replace("]", "").Replace("\"", "").Replace(", ",",")
-                    .Replace(" ,",",").Replace(Environment.NewLine, "");
-                var list =  stringResult.Split(',').ToList();
-                return list.Select(g => g.Trim()).ToArray();
-            }
-            return new string[0];
-        }
-
-        public static string GetDirector(Item movie) => MovieHelper.getPropertyStringValueFromJSON(movie, "Director") ?? "";
-        public static string[] GetActors(Item movie) => MovieHelper.getPropertyListValueFromJSON(movie, "Actors");
+        public static string GetDirector(Item movie) => ItemHelper.getPropertyStringValueFromJSON(movie, "Director") ?? "";
+        public static string[] GetActors(Item movie) => ItemHelper.getPropertyListValueFromJSON(movie, "Actors");
         public static DateTime? GetReleaseDate(Item movie)
         {
-            var stringDate = MovieHelper.getPropertyStringValueFromJSON(movie, "ReleaseDate");
+            var stringDate = ItemHelper.getPropertyStringValueFromJSON(movie, "ReleaseDate");
             if (stringDate.IsNullOrEmpty()) return null;
             return DateTime.Parse(stringDate);
         }
-        public static string[] GetGenres(Item movie) => MovieHelper.getPropertyListValueFromJSON(movie, "Genres");
+        public static string[] GetGenres(Item movie) => ItemHelper.getPropertyListValueFromJSON(movie, "Genres");
 
 
         public static void AddDirectorToBlackList(this User user, string director)
@@ -160,47 +115,25 @@ namespace WebAppForMORecSys.Helpers
             if (!idsBL.IsNullOrEmpty())
             {
                 filterSQL.Append(" or ");
-                filterSQL.Append($"(Id = {idsBL.First()} )"); ;
-                for (int i = 1; i < idsBL.Count; i++)
-                {
-                    filterSQL.Append(" or ");
-                    filterSQL.Append($"(Id  = {idsBL[i]}) ");
-                }
-
-
+                filterSQL.Append($"(Id IN ({String.Join(",", idsBL)}) ) ");         
             }
             if (!genresBL.IsNullOrEmpty())
             {
-                filterSQL.Append(" or ");
-                filterSQL.Append($"(JSON_QUERY({nameof(Item.JSONParams)}, '$.Genres')  like '%{genresBL.First()}%' )");
-                for (int i = 1; i < genresBL.Count; i++)
-                {
-                    filterSQL.Append(" or ");
-                    filterSQL.Append($"(JSON_QUERY({nameof(Item.JSONParams)}, '$.Genres')  like '%{genresBL[i]}%' )");
-                }
+                filterSQL.Append(" or EXISTS(");
+                filterSQL.Append("SELECT value FROM OPENJSON(JSON_QUERY(JSONParams, '$.Genres'))  WHERE value IN ");
+                filterSQL.Append($"({String.Join(",", genresBL.Select(g=> $"'{g}'"))})) ");
 
             }
             if (!directorsBL.IsNullOrEmpty())
             {
                 filterSQL.Append(" or ");
-                filterSQL.Append($"(JSON_VALUE({nameof(Item.JSONParams)}, '$.Director') = '{directorsBL.First()}' )"); ;
-                for (int i = 1; i < directorsBL.Count; i++)
-                {
-                    filterSQL.Append(" or ");
-                    filterSQL.Append($"(JSON_VALUE({nameof(Item.JSONParams)}, '$.Director')  = '{directorsBL[i]}' )");
-                }
-
-
+                filterSQL.Append($"(JSON_VALUE(JSONParams, '$.Director') IN ({String.Join(",",directorsBL.Select(d => $"'{d}'"))}))");
             }
             if (!actorsBL.IsNullOrEmpty())
             {
-                filterSQL.Append(" or ");
-                filterSQL.Append($"(JSON_QUERY({nameof(Item.JSONParams)}, '$.Actors')  like '%{actorsBL.First()}%' )");
-                for (int i = 1; i < actorsBL.Count; i++)
-                {
-                    filterSQL.Append(" or ");
-                    filterSQL.Append($"(JSON_QUERY({nameof(Item.JSONParams)}, '$.Actors')  like '%{actorsBL[i]}%' )");
-                }
+                filterSQL.Append(" or EXISTS(");
+                filterSQL.Append("SELECT value FROM OPENJSON(JSON_QUERY(JSONParams, '$.Actors'))  WHERE value IN ");
+                filterSQL.Append($"({String.Join(",", actorsBL.Select(a => $"'{a}'"))})) ");
 
             }
 
@@ -209,7 +142,7 @@ namespace WebAppForMORecSys.Helpers
         }
 
         //change destination of method
-        public static string MetricsContributionToBorderImage(int[] metricsContribution, string direction = "bottom right")
+        public static string MetricsContributionToBorderImage(User user,int[] metricsContribution, string direction = "bottom right")
         {
             StringBuilder borderImage = new StringBuilder();
             borderImage.Append($"linear-gradient(to {direction}");
@@ -219,7 +152,7 @@ namespace WebAppForMORecSys.Helpers
             {
                 sum += metricsContribution[i];
                 borderImage.Append(',');
-                borderImage.Append(SystemParameters.Colors[i]);
+                borderImage.Append(user.GetColors()[i]);
                 borderImage.Append(' ');
                 borderImage.Append(lastpoint);
                 borderImage.Append("% ");

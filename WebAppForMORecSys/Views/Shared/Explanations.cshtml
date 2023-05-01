@@ -1,6 +1,7 @@
 ﻿@using WebAppForMORecSys.Settings
 @using static WebAppForMORecSys.Helpers.MovieHelper
-@model WebAppForMORecSys.Helpers.MovieHelper.PreviewDetailViewModel
+@using static WebAppForMORecSys.Helpers.UserHelper
+@model WebAppForMORecSys.Models.ViewModels.PreviewDetailViewModel
 @{
 
     var ordered = Model.metricsContribution.OrderByDescending(mc => mc.Value).ToDictionary(mc => mc.Key, mc => mc.Value);
@@ -9,13 +10,13 @@
     string itempreviewclass = "preview_" + Model.item.Id;//MUSÍ odpovídat názvu hlavního elementu v Preview
     string className = "popover-content" + itempreviewclass;
     string doughnutChartId = "doughnutchart" + Model.item.Id;
-    string borderImage = MetricsContributionToBorderImage(Model.metricsContribution.Values.ToArray(),"right");
+    string borderImage = MetricsContributionToBorderImage(Model.user, Model.metricsContribution.Values.ToArray(),"right");
 }
 <div class="@className popover-content" id="explanationPopover" style="display:none;">
 <div style="border-right:3px; border-image:@borderImage">
     @for (int i = 0; i < (ordered?.Count ?? 0); i++)
     {
-        <p style="color: @SystemParameters.MetricsToColors[keys[i]]"><b>@keys[i].Name - @values[i] % </b></p>
+        <p style="color: @Model.user.GetMetricsToColors()[keys[i]]"><b>@keys[i].Name - @values[i] % </b></p>
         <p>@keys[i].DefaultExplanation</p>
         <br/>
     }

@@ -5,12 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualBasic;
 using NuGet.Protocol;
 using NuGet.Protocol.Plugins;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using WebAppForMORecSys.Areas.Identity.Data;
+using WebAppForMORecSys.Cache;
 using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Helpers;
 using WebAppForMORecSys.Models;
@@ -18,6 +20,7 @@ using WebAppForMORecSys.Models.ViewModels;
 using WebAppForMORecSys.Models.ViewModels;
 using WebAppForMORecSys.Settings;
 using static WebAppForMORecSys.Helpers.MovieHelper;
+using Interaction = WebAppForMORecSys.Models.Interaction;
 
 namespace WebAppForMORecSys.Controllers
 {
@@ -32,9 +35,9 @@ namespace WebAppForMORecSys.Controllers
         {
             _context = context;
             _userManager = userManager;
-            SetAllGenres();
-            SetAllDirectors();
-            SetAllActors();
+            Movie.SetAllGenres(context);
+            Movie.SetAllDirectors(context);
+            Movie.SetAllActors(context);
             
         }
 
@@ -53,8 +56,6 @@ namespace WebAppForMORecSys.Controllers
 
             var rs = SystemParameters.RecommenderSystem;
             var metrics = await (_context.Metrics.Where(m=>m.RecommenderSystemID == rs.Id).ToListAsync());
-            /*metrics = new List<Metric> { new Metric { Name = "Relevance" },
-                new Metric { Name = "Novelty" }, new Metric { Name = "Diversity" } }*/;//DELETE Later
             int numberOfParts = 0;
             for (int i = 0; i < metrics.Count(); i++)
             {
@@ -71,7 +72,7 @@ namespace WebAppForMORecSys.Controllers
             {
                 for (int i = 0; i < metrics.Count; i++)
                 {
-                    if (Settings.SystemParameters.MetricsView == Settings.MetricsView.DragAndDrop)
+                    if (user.GetMetricsView() == MetricsView.DragAndDrop)
                         viewModel.Metrics.Add(metrics[i], ((int)(100.0 / numberOfParts * (metrics.Count - i))));
                     else
                         viewModel.Metrics.Add(metrics[i], 100 / metrics.Count());
@@ -80,7 +81,7 @@ namespace WebAppForMORecSys.Controllers
 
             viewModel.SearchValue = search ?? "";            
             var whitelist = Movie.GetPossibleItems(_context.Items, user, search, director, actor, genres, type, releasedateto, releasedatefrom);
-            var blacklist = user.GetAllBlockedItems(_context.Items);
+            var blacklist = BlockedItemsCache.GetBlockedItemIdsForUser(user.Id.ToString(),_context);
             viewModel.FilterValues.Add("Director", director);
             viewModel.FilterValues.Add("Actor", actor);
             viewModel.FilterValues.Add("ReleaseDateFrom", releasedatefrom);
@@ -89,7 +90,7 @@ namespace WebAppForMORecSys.Controllers
             RecommenderQuery rq = new RecommenderQuery
             {
                 WhiteListItemIDs = (whitelist==null) ? new int[0] :await whitelist.Select(item => item.Id).ToArrayAsync(),
-                BlackListItemIDs = await blacklist.Select(item => item.Id).ToArrayAsync(),
+                BlackListItemIDs = blacklist.ToArray(),
                 Metrics = metricsimportance.Select(m => (int)double.Parse(m, CultureInfo.InvariantCulture)).ToArray(),
                 Count = 50
             };
@@ -186,7 +187,7 @@ namespace WebAppForMORecSys.Controllers
                                  select rating).ToListAsync();
             }
             return PartialView(new PreviewDetailViewModel(
-                new Movie(_context.Items.First(x => x.Id == id)),
+                _context.Items.First(x => x.Id == id),
                 user,
                 ratings
                 ));
@@ -205,44 +206,15 @@ namespace WebAppForMORecSys.Controllers
                                                      where rating.UserID == user.Id
                                                      select rating).ToListAsync();
             }
+            Interaction.Save(id, user.Id, TypeOfInteraction.Click, _context);
             return PartialView(new PreviewDetailViewModel(
-                new Movie(_context.Items.First(x => x.Id == id)),
+                _context.Items.First(x => x.Id == id),
                 user,
                 ratings
                 ));
 
         }
 
-        public void SetAllGenres()
-        {            
-            if (Movie.AllGenres == null)
-            {
-                var genres = new List<string>();
-                _context.Items.ToList().ForEach(m => genres.AddRange(MovieHelper.GetGenres(m)));
-                Movie.AllGenres = genres.Distinct().ToList();
-                Movie.AllGenres.Remove("(no genres listed)");
-            }
-        }
-
-        public void SetAllDirectors()
-        {
-            if (Movie.AllDirectors == null)
-            {
-                var directors = new List<string>();
-                _context.Items.ToList().ForEach(m => directors.Add(MovieHelper.GetDirector(m)));
-                Movie.AllDirectors = directors.Distinct().ToList();
-            }
-        }
-
-        public void SetAllActors()
-        {
-            if (Movie.AllActors == null)
-            {
-                var actors = new List<string>();
-                _context.Items.ToList().ForEach(m => actors.AddRange(MovieHelper.GetActors(m)));
-                Movie.AllActors = actors.Distinct().ToList();
-            }
-        }
 
 
         public List<string> GetAllMovieNames(string prefix)
@@ -280,36 +252,15 @@ namespace WebAppForMORecSys.Controllers
 
         }
 
-        
 
-
-
-        public IResult Rate(int id, int score)
+        public IResult Rate(int id, byte score)
         {
             User user = GetCurrentUser();
             if (user == null)
             {
                 return Results.Unauthorized();
             }
-            var rating = _context.Ratings.Where(r => r.ItemID == id && r.UserID == user.Id).FirstOrDefault();
-            if (rating == null)
-            {
-                var newRating = new Rating
-                {
-                    UserID = user.Id,
-                    ItemID = id,
-                    RatingScore = (byte)score,
-                    Date = DateTime.Now,
-                };
-                _context.Add(newRating);
-            }
-            else
-            {
-                rating.RatingScore = (byte)score;
-                rating.Date = DateTime.Now;
-                _context.Update(rating);
-            }
-            _context.SaveChanges();
+            Rating.Save(id, user.Id, score, _context);
             return Results.NoContent();
         }
 
@@ -323,20 +274,7 @@ namespace WebAppForMORecSys.Controllers
             }
             return user;
         }
-        public IResult Hide(int id)
-        {
-            if (_context.Items.Where(m=>m.Id==id).Count()==0)
-                return Results.NoContent();
-            User user = GetCurrentUser();
-            if (user == null)
-            {
-                return Results.Unauthorized();
-            }
-            user.AddItemToBlackList(id);
-            _context.Update(user);
-            _context.SaveChanges();
-            return Results.NoContent();
-        }
+        
 
         public IResult HideDirector(string director)
         {
@@ -378,19 +316,6 @@ namespace WebAppForMORecSys.Controllers
                 return Results.Unauthorized();
             }
             user.AddGenreToBlackList(genre);
-            _context.Update(user);
-            _context.SaveChanges();
-            return Results.NoContent();
-        }
-
-        public IResult Show(int id)
-        {
-            User user = GetCurrentUser();
-            if (user == null)
-            {
-                return Results.Unauthorized();
-            }
-            user.RemoveItemFromBlackList(id);
             _context.Update(user);
             _context.SaveChanges();
             return Results.NoContent();

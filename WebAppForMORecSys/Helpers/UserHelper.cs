@@ -3,14 +3,23 @@ using WebAppForMORecSys.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using WebAppForMORecSys.Cache;
+using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Helpers
 {
     public static class UserHelper
     {
-        public static dynamic GetBlockRuleDynamic(User user)
+        private static dynamic GetBlockRuleDynamic(User user)
         {
             dynamic jsonObj = JsonConvert.DeserializeObject(user.JSONBlockRules??"");
+            return jsonObj;
+
+        }
+
+        private static dynamic GetUserChoicesDynamic(User user)
+        {
+            dynamic jsonObj = JsonConvert.DeserializeObject(user.UserChoices ?? "");
             return jsonObj;
 
         }
@@ -26,19 +35,22 @@ namespace WebAppForMORecSys.Helpers
             if ((!jarray?.ToObject<List<int>>()?.Contains(itemId)) ?? false)
                 ((JArray)jsonObj["Id"]).Add(itemId);
             user.JSONBlockRules = JsonConvert.SerializeObject(jsonObj);
-            /*if (User.recomputeBlocked.ContainsKey(user.Id))
-                User.recomputeBlocked[user.Id] = true; 
-            else
-                User.recomputeBlocked.Add(user.Id, true);*/
+            BlockedItemsCache.RemoveBlockedItemIdsForUser(user.Id.ToString());
         }
 
         public static void AddStringValueToBlackList(this User user, string name, string value)
         {
-            var jsonObj = GetBlockRuleDynamic(user);
+            var jsonObj = AddStringValue(GetBlockRuleDynamic(user), user, name, value);
+            user.JSONBlockRules = JsonConvert.SerializeObject(jsonObj);
+
+            BlockedItemsCache.RemoveBlockedItemIdsForUser(user.Id.ToString());
+        }
+
+        public static dynamic AddStringValue(dynamic jsonObj,User user ,string name, string value)
+        {
             if (jsonObj == null)
             {
-                user.JSONBlockRules = "{\"" + name + "\":[\"" + value + "\"]}";
-                return;
+                jsonObj = new JObject();
             }
             if (!jsonObj.ContainsKey(name))
             {
@@ -47,11 +59,24 @@ namespace WebAppForMORecSys.Helpers
             var jarray = (JArray)jsonObj[name];
             if ((!jarray?.ToObject<List<string>>()?.Contains(value)) ?? false)
                 ((JArray)jsonObj[name]).Add(value);
-            user.JSONBlockRules = JsonConvert.SerializeObject(jsonObj);
-            /*if (User.recomputeBlocked.ContainsKey(user.Id))
-                User.recomputeBlocked[user.Id] = true;
-            else
-                User.recomputeBlocked.Add(user.Id, true);*/
+            return jsonObj;
+        }
+
+        private static dynamic SetStringValue(dynamic jsonObj, User user, string name, string value)
+        {
+            if (jsonObj == null)
+            {
+                jsonObj = new JObject();
+            }
+            if (!jsonObj.ContainsKey(name))
+            {
+                ((JObject)jsonObj).Add(name, value);
+            }
+            else 
+            {
+                jsonObj[name] = value;
+            }
+            return jsonObj;
         }
 
 
@@ -69,29 +94,34 @@ namespace WebAppForMORecSys.Helpers
             else return;
             jsonObj["Id"] = JArray.FromObject(listOfIDs);
             user.JSONBlockRules = JsonConvert.SerializeObject(jsonObj);
-            /*if (User.recomputeBlocked.ContainsKey(user.Id))
-                User.recomputeBlocked[user.Id] = true;
-            else
-                User.recomputeBlocked.Add(user.Id, true);*/
+            BlockedItemsCache.RemoveBlockedItemIdsForUser(user.Id.ToString());
         }
 
 
         public static void RemoveStringValueFromBlackList(this User user, string name, string value)
         {
-            var jsonObj = GetBlockRuleDynamic(user);
+            var jsonObj = RemoveStringValue(GetBlockRuleDynamic(user), user, name, value);
+            user.JSONBlockRules = JsonConvert.SerializeObject(jsonObj);
+            BlockedItemsCache.RemoveBlockedItemIdsForUser(user.Id.ToString());
+        }
+
+        public static void RemoveStringValueFromUserChoices(this User user, string name, string value)
+        {
+            var jsonObj = RemoveStringValue(GetUserChoicesDynamic(user), user, name, value);
+            user.UserChoices = JsonConvert.SerializeObject(jsonObj);
+        }
+
+        private static dynamic RemoveStringValue(dynamic jsonObj, User user, string name, string value)
+        {
             if ((jsonObj == null) || (!jsonObj.ContainsKey(name)))
             {
-                return;
+                return jsonObj;
             }
             var listOfValues = ((JArray)jsonObj[name])?.ToObject<List<string>>();
             if ((listOfValues?.Contains(value)) ?? false)
                 listOfValues.Remove(value);
             jsonObj[name] = JArray.FromObject(listOfValues);
-            user.JSONBlockRules = JsonConvert.SerializeObject(jsonObj);
-            /*if (User.recomputeBlocked.ContainsKey(user.Id))
-                User.recomputeBlocked[user.Id] = true;
-            else
-                User.recomputeBlocked.Add(user.Id, true);*/
+            return jsonObj;
         }
 
         public static bool IsItemInBlackList(this User user, int itemId)
@@ -134,14 +164,94 @@ namespace WebAppForMORecSys.Helpers
         public static List<string> GetStringValuesInBlackList(this User user, string name)
         {
             var jsonObj = GetBlockRuleDynamic(user);
+            return GetStringValues(user, name, jsonObj);
+        }
+
+        public static List<string> GetStringValuesInUserChoices(this User user, string name)
+        {
+            var jsonObj = GetUserChoicesDynamic(user);
+            return GetStringValues(user, name, jsonObj);
+        }
+
+        private static List<string> GetStringValues(User user, string name, dynamic jsonObj) {
             if ((jsonObj == null) || (jsonObj[name] == null))
             {
                 return new List<string>();
             }
             var listOfValues = ((JArray)jsonObj[name])?.ToObject<List<string>>();
             return listOfValues;
+        
         }
 
+        private static string GetStringValueInUserChoices(this User user, string name)
+        {
+            var jsonObj = GetUserChoicesDynamic(user);
+            if ((jsonObj == null) || (jsonObj[name] == null))
+            {
+                return null;
+            }
+            return ((JToken)jsonObj[name]).ToString();
+        }
+
+
+        private static void SetStringValueToUserChoices(this User user, string name, string value)
+        {
+            var jsonObj = SetStringValue(GetUserChoicesDynamic(user), user, name, value);
+            user.UserChoices = JsonConvert.SerializeObject(jsonObj);
+        }
+
+        private static void AddStringValueToUserChoices(this User user, string name, string value)
+        {
+            var jsonObj = AddStringValue(GetUserChoicesDynamic(user), user, name, value);
+            user.UserChoices = JsonConvert.SerializeObject(jsonObj);
+        }
+
+        public static void SetMetricsView(this User user, int value)
+        {
+            SetStringValueToUserChoices(user, "MetricsView", value.ToString());
+        }
+
+        public static MetricsView GetMetricsView(this User user)
+        {
+            var metricsview = GetStringValueInUserChoices(user, "MetricsView");
+            int value;
+            if ((metricsview == null) || !int.TryParse(metricsview, out value))
+            {
+                return SystemParameters.MetricsView;
+            }
+            else
+            {
+                return (MetricsView)value;
+            }
+        }
+
+        public static void SetColors(this User user, string[] value)
+        {
+            foreach (var color in GetStringValuesInUserChoices(user, "Colors")) {
+                RemoveStringValueFromUserChoices(user, "Colors", color);
+            }
+            foreach (var color in value)
+            {
+                AddStringValueToUserChoices(user, "Colors", color);
+            }
+        }
+
+        public static string[] GetColors(this User user)
+        {
+            var colors = GetStringValuesInUserChoices(user, "Colors");
+            if ((colors == null) || (colors.Count == 0))
+                return SystemParameters.Colors;
+            return colors.ToArray(); 
+        }
+
+        public static Dictionary<Metric,string> GetMetricsToColors(this User user)
+        {
+            var colors = GetStringValuesInUserChoices(user, "Colors");
+            if ((colors == null) || (colors.Count == 0))
+                colors = SystemParameters.Colors.ToList();
+            var metrics = SystemParameters.MetricsToColors.Keys.ToList();
+            return Enumerable.Range(0, metrics.Count).ToDictionary(i => metrics[i], i => colors[i]);
+        }
 
     }
 }

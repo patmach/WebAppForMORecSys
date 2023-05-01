@@ -71,6 +71,11 @@ body {
     width: 100%;
 }
 
+.input-metrics-group {
+    text-align: center;
+    margin-top: 10px;
+}
+
 .bubble {
     background: #0d6efd;
     color: white;
@@ -96,7 +101,21 @@ body {
     margin: 2rem;
 }
 
+.progressbox {
+    height: 50px;
+    display: inline-block;
+    margin-auto;
+    width: 84%;
+    border-radius: 0.5rem;
+    text-align: center
+}
 
+
+.progressbutton {
+    height: 40px;
+    width: 5%;
+    border-radius: 0.5rem;
+}
 
 .ItemPreview {
     margin: 3px;
@@ -117,23 +136,9 @@ body {
     max-width: 48%;
     display: grid;
 }
-@media screen and (max-width: 700px) {
-    .ItemPreview {
-        width: 45%;
-    }
-    .ImageInDetail {
-        float: none;
-        max-width:75%;
-        margin:auto;
-    }
-    .InfoInDetail {
-        max-width: 90%;
-    }
-}
-@media screen and (max-width: 1000px) and (min-width:700px) {
-    .ItemPreview {
-        width: 30%;
-    }
+
+@media screen and (max-width: 1000px) {
+
     .ImageInDetail {
         float: none;
         margin: auto;
@@ -142,6 +147,29 @@ body {
     .InfoInDetail {
         max-width: 90%;
     }
+
+    .progressbox {
+        width: 70%;
+    }
+
+
+    .progressbutton {
+        width: 12%;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .ItemPreview {
+        width: 45%;
+    }
+}
+
+
+@media screen and (max-width: 1000px) and (min-width:700px) {
+    .ItemPreview {
+        width: 30%;
+    }
+
 }
 
 

@@ -1,0 +1,77 @@
+﻿
+@using WebAppForMORecSys.Settings
+@using WebAppForMORecSys.Models.ViewModels
+@using static WebAppForMORecSys.Helpers.UserHelper
+
+@model WebAppForMORecSys.Models.ViewModels.MainViewModel
+@{
+    ViewData["Title"] = "Settings";
+}
+<div id="main">
+
+    <h2>APP SETTINGS</h2>
+    @{
+        byte index = 0;
+    }
+    <h4>Which metrics filter do you want to use?</h4>
+    <div style="width:100%">
+    @foreach (var value in Enum.GetValues(typeof(MetricsView))){
+        
+        <span style="margin:auto">
+            <a href='@Url.Action("SetMetricsView","Home", new { metricsview=index })'>
+                @value
+            </a>
+        </span>
+            index++;
+    }
+    </div>
+    @await Html.PartialAsync("../Shared/MetricsFilter", new MetricsFilterViewModel{Metrics= Model.Metrics, User= Model.CurrentUser})
+    <br/>
+    <br/>
+    <br/>
+    <br />
+    <br />
+    @{
+        index = 0;
+    }
+    <h4>Choose Metric Colors</h4>
+    <form asp-controller="Home" asp-action="SetMetricsColors" method="post">
+        <div class="input-group color-group" style="width:100%">
+            @foreach (var metric in Model.Metrics.Keys)
+            {
+            
+                string id = "metriccolor" + index;
+                <span style="margin:auto">
+                    <input type="color" id="@id" name="metriccolor" value="@Model.CurrentUser.GetColors()[index]"/>
+                    <label for="@id">@metric.Name</label>
+                </span>
+                index++;
+            }
+        </div>
+        <div><a class="btn btn-dark" onclick="resetcolors()">Set default colors</a></div>
+        <br />
+        <div><input  type="submit" value="SAVE COLORS" class="btn btn-primary" /></div>
+        
+    </form>
+
+    
+
+</div>
+
+<script>
+    function resetcolors(){
+        let num_of_metrics = @Model.Metrics.Keys.Count;
+        let colors=[];
+        @for (int i = 0; i < @Model.Metrics.Keys.Count; i++)
+        {
+            @:colors.push('@SystemParameters.Colors[i]');
+        }
+        for (let i = 0; i < num_of_metrics;i++){
+            let id = 'metriccolor' + i;
+            metriccolor = document.getElementById(id);
+            metriccolor.value = colors[i];
+        }
+
+    }
+</script>
+

@@ -1,49 +1,66 @@
-﻿@model Dictionary<WebAppForMORecSys.Models.Metric, int>
-@using WebAppForMORecSys.Settings
-<div class="input-group" id="input-metrics-group">
+﻿@model WebAppForMORecSys.Models.ViewModels.MetricsFilterViewModel
+@using WebAppForMORecSys.Settings;
+@using WebAppForMORecSys.Helpers;
+
+<div class="input-group" id="input-metrics-group" >
     @{
         int index = 0;
 
     }
-    @foreach (var metric in Model.Keys)
+    @foreach (var metric in Model.Metrics.Keys)
         {
             string id = "range" + index;        
             string valueAsNumber = id + ".valueAsNumber";
             string margin = "";
             if(index==0)
                 margin = "margin-left:auto;";
-            else if (index==Model.Keys.Count-1)
+            else if (index==Model.Metrics.Keys.Count-1)
                 margin = "margin-right:auto;";
-        @if (SystemParameters.MetricsView == MetricsView.DragAndDrop)
+        @if (Model.User.GetMetricsView() == MetricsView.DragAndDrop)
             {
 
                 <div draggable="true" id="@("drag_" +@index)" class="drag box dragbox" 
-                    style="background-color: @SystemParameters.Colors[index] ; @margin">
+                    style="background-color: @Model.User.GetColors()[index] ; @margin">
                     @metric.Name
                     <input class="custom-range range" type="hidden" min="0" max="100" name="MetricsImportance" id="@id"
-                           value="@Model[metric]" placeholder="MetricsImportance" />
+                           value="@Model.Metrics[metric]" placeholder="MetricsImportance" />
                 </div>
                 
             }
+        else if (Model.User.GetMetricsView() == MetricsView.PlusMinusButtons)
+            {
+                <div style="width:100%">
+                <span class="btn btn-light progressbutton" style="border-color:  @Model.User.GetColors()[index]"
+                                onclick="decrease(@index)">-</span>
+                <span id="@("box_" +@index)" class="box progressbox"
+                     style="">
+                            @metric.Name
+                            <input class="" type="hidden" min="0" max="100" name="MetricsImportance" id="@id"
+                           value="@Model.Metrics[metric]" placeholder="MetricsImportance" />
+                            </span>
+                <span class="btn btn-dark progressbutton" style="background-color: @Model.User.GetColors()[index]"
+                                onclick="increase(@index)">+</span>
+                </div>
+            }
             else
             {
-            <div class="range-wrap" style="color: @SystemParameters.Colors[index]">
-                    @if (SystemParameters.MetricsView == MetricsView.Sliders)
+            <div class="range-wrap" style="color: @Model.User.GetColors()[index]">
+                    @if (Model.User.GetMetricsView() == MetricsView.Sliders)
                     {
                     <label for="@id">@metric.Name</label>
                     <input class="custom-range range" type="range" min="0" max="100" name="MetricsImportance" id="@id"
-                           value="@Model[metric]" placeholder="MetricsImportance" oninput="changeValues(this.value, @index)"
+                           value="@Model.Metrics[metric]" placeholder="MetricsImportance" oninput="changeValues(this.value, @index)"
                            
                         onchange="changeValues(this.value, @index)" />
-                    <output style="background-color: @SystemParameters.Colors[index]" class="bubble"></output>
+                    <output style="background-color: @Model.User.GetColors()[index]" class="bubble"></output>
                     }
-                    @if (SystemParameters.MetricsView == MetricsView.TextBoxNumbers)
+                @if (Model.User.GetMetricsView() == MetricsView.TextBoxNumbers)
                     {
                         <label for="@id">@metric.Name</label>
                     <input class="custom-range range form-control rounded m-3" type="number" min="0" max="100" name="MetricsImportance" id="@id"
-                           value="@Model[metric]" placeholder="MetricsImportance" oninput="changeValues(this.value, @index)"
-                           onchange="changeValues(this.value, @index)" 
-                           style="border: 3px solid @SystemParameters.Colors[index];" />
+                           value="@Model.Metrics[metric]" placeholder="MetricsImportance" oninput="changeValues(this.value, @index)"
+                           onchange="changeValues(this.value, @index)"
+                           style="border: 3px solid @Model.User.GetColors()s[index];" />
                     }
 
                 </div>
@@ -67,6 +84,24 @@
     function getRandomInt(max) {
         return Math.floor(Math.random() * max);
     }
+    function increase(index){
+        let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
+        let value = parseInt(inputranges[index].value) + 10;
+        value = Math.max(0, Math.min(100, value));
+        inputranges[index].value = value;
+        changeValues(value, index);
+        setBackgroundOfBoxes();
+    }
+
+    function decrease(index) {
+        let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
+        let value = parseInt(inputranges[index].value) - 10;
+        value = Math.max(0, Math.min(100, value));
+        inputranges[index].value = value;
+        changeValues(value, index);
+        setBackgroundOfBoxes();
+    }
+
     function changeValues(value, index) {
         let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
         let length = inputranges.length;
@@ -94,8 +129,10 @@
 
     /* load metrics importance values to item filter form */
     function copyValuesToOtherForm(inputranges){
+        let group = document.getElementById("input-copy-metrics-group");
+        if (group === null) return;
         let inputhiddens = document.getElementById("input-copy-metrics-group").getElementsByTagName('input');
-        if (inputhiddens.length==0) return;
+        if ((inputhiddens== null) || (inputhiddens.length == 0)) return;
         for (let i = 0; i < inputhiddens.length; i++) {
             inputhiddens[i].value = inputranges[i].value;
         }
@@ -114,9 +151,14 @@
             setBubble(range, bubble);
         });
     }
-
+    var colors = []
+    @for (int i = 0; i < Model.User.GetColors().Length; i++)
+    {
+        @:colors.push('@Model.User.GetColors()[i]');
+    }
     setBubbles();
-
+    setBackgroundOfBoxes();
+ 
     function setBubble(range, bubble) {
         const val = range.value;
         const min = range.min ? range.min : 0;
@@ -127,6 +169,24 @@
         // Sorta magic numbers based on size of the native UI thumb
         bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
     }
+
+    //Boxes when using plus minus buttons
+    function setBackgroundOfBoxes(){
+        let boxes = document.getElementsByClassName("progressbox");
+        let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
+        if(boxes === null) return;
+        for (let i=0; i< boxes.length;i++){
+            boxes[i].style.background = 'linear-gradient(to right,' + colors[i] + ' '
+                + (parseInt(inputranges[i].value) - 20) + '%, white ' + (parseInt(inputranges[i].value) + 20) + '% 100% ) ';
+            if (parseInt(inputranges[i].value) > 50) {
+                boxes[i].style.color = "white";
+            }
+            else{
+                boxes[i].style.color = "black";
+            }
+        }
+    }
+
 
     //Drag and drop
     document.addEventListener('DOMContentLoaded', (event) => {
