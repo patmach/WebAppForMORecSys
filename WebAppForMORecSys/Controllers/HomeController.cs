@@ -60,7 +60,22 @@ namespace WebAppForMORecSys.Controllers
                 return Unauthorized();
             }
             user.SetMetricsView(metricsview);
-            var debug = user.GetMetricsView();
+            _context.Update(user);
+            _context.SaveChanges();
+            return RedirectToAction("AppSettings");
+
+        }
+
+        public IActionResult SetAddBlockRuleView(int addblockruleview)
+        {
+            if ((addblockruleview < 0) || (addblockruleview >= Enum.GetValues(typeof(AddBlockRuleView)).Length))
+                return RedirectToAction("AppSettings");
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+            user.SetAddBlockRuleView(addblockruleview);
             _context.Update(user);
             _context.SaveChanges();
             return RedirectToAction("AppSettings");

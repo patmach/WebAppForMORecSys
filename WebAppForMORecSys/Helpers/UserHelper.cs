@@ -23,6 +23,14 @@ namespace WebAppForMORecSys.Helpers
             return jsonObj;
 
         }
+
+        private static dynamic GetJSONFilterDynamic(User user)
+        {
+            dynamic jsonObj = JsonConvert.DeserializeObject(user.JSONFilter ?? "");
+            return jsonObj;
+
+        }
+
         public static void AddItemToBlackList(this User user, int itemId)
         {
             var jsonObj = GetBlockRuleDynamic(user);
@@ -111,6 +119,12 @@ namespace WebAppForMORecSys.Helpers
             user.UserChoices = JsonConvert.SerializeObject(jsonObj);
         }
 
+        public static void RemoveStringValueFromJSONFilter(this User user, string name, string value)
+        {
+            var jsonObj = RemoveStringValue(GetJSONFilterDynamic(user), user, name, value);
+            user.JSONFilter = JsonConvert.SerializeObject(jsonObj);
+        }
+
         private static dynamic RemoveStringValue(dynamic jsonObj, User user, string name, string value)
         {
             if ((jsonObj == null) || (!jsonObj.ContainsKey(name)))
@@ -167,9 +181,15 @@ namespace WebAppForMORecSys.Helpers
             return GetStringValues(user, name, jsonObj);
         }
 
-        public static List<string> GetStringValuesInUserChoices(this User user, string name)
+        private static List<string> GetStringValuesInUserChoices(this User user, string name)
         {
             var jsonObj = GetUserChoicesDynamic(user);
+            return GetStringValues(user, name, jsonObj);
+        }
+
+        private static List<string> GetStringValuesInJSONFilter(this User user, string name)
+        {
+            var jsonObj = GetJSONFilterDynamic(user);
             return GetStringValues(user, name, jsonObj);
         }
 
@@ -206,6 +226,12 @@ namespace WebAppForMORecSys.Helpers
             user.UserChoices = JsonConvert.SerializeObject(jsonObj);
         }
 
+        private static void AddStringValueToJSONFilter(this User user, string name, string value)
+        {
+            var jsonObj = AddStringValue(GetJSONFilterDynamic(user), user, name, value);
+            user.JSONFilter = JsonConvert.SerializeObject(jsonObj);
+        }
+
         public static void SetMetricsView(this User user, int value)
         {
             SetStringValueToUserChoices(user, "MetricsView", value.ToString());
@@ -222,6 +248,25 @@ namespace WebAppForMORecSys.Helpers
             else
             {
                 return (MetricsView)value;
+            }
+        }
+
+        public static void SetAddBlockRuleView(this User user, int value)
+        {
+            SetStringValueToUserChoices(user, "AddBlockRuleView", value.ToString());
+        }
+
+        public static AddBlockRuleView GetAddBlockRuleView(this User user)
+        {
+            var addBlockRuleView = GetStringValueInUserChoices(user, "AddBlockRuleView");
+            int value;
+            if ((addBlockRuleView == null) || !int.TryParse(addBlockRuleView, out value))
+            {
+                return SystemParameters.AddBlockRuleView;
+            }
+            else
+            {
+                return (AddBlockRuleView)value;
             }
         }
 
@@ -251,6 +296,26 @@ namespace WebAppForMORecSys.Helpers
                 colors = SystemParameters.Colors.ToList();
             var metrics = SystemParameters.MetricsToColors.Keys.ToList();
             return Enumerable.Range(0, metrics.Count).ToDictionary(i => metrics[i], i => colors[i]);
+        }
+
+        public static string[] GetMetricsImportance(this User user)
+        {
+            var metricsImportance = GetStringValuesInJSONFilter(user, "metricsImportance");
+            if ((metricsImportance == null) || (metricsImportance.Count == 0))
+                return null;
+            return metricsImportance.ToArray();
+        }
+
+        public static void SetMetricsImportance(this User user, string[] value)
+        {
+            foreach (var metricImportance in GetStringValuesInJSONFilter(user, "metricsImportance"))
+            {
+                RemoveStringValueFromJSONFilter(user, "metricsImportance", metricImportance);
+            }
+            foreach (var color in value)
+            {
+                AddStringValueToJSONFilter(user, "metricsImportance", color);
+            }
         }
 
     }

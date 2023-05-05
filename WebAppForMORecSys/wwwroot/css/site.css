@@ -12,7 +12,7 @@ footer{
     position:relative !important;
 }
 
-input, .filter-option{
+input, .filter-option,.btn{
     font-size:1.3vw !important;
 }
 
@@ -255,9 +255,23 @@ body {
 }
 
 .moviefilter, .moviecreateblockrule {
-    margin-top:25px;
+    margin-top: 25px;
+    
 }
 
+/*Umístìní ikonek v hlavním menu*/
+.navbar-collapse > ul {
+    margin-left:27%;
+}
+
+.navbar-toggler > ul {
+    margin-left: 0% !important;
+}
+
+.navbar-toggler {
+    margin-left: 27%;
+    float:right;
+}
 
 
 .dropdown-menu {

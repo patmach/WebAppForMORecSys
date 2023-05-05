@@ -55,28 +55,33 @@ namespace WebAppForMORecSys.Controllers
             }
 
             var rs = SystemParameters.RecommenderSystem;
-            var metrics = await (_context.Metrics.Where(m=>m.RecommenderSystemID == rs.Id).ToListAsync());
+            var metrics = await (_context.Metrics.Where(m => m.RecommenderSystemID == rs.Id).ToListAsync());
             int numberOfParts = 0;
             for (int i = 0; i < metrics.Count(); i++)
             {
                 numberOfParts += i + 1;
             }
-            if (!metricsimportance.IsNullOrEmpty())
+            metricsimportance = metricsimportance.IsNullOrEmpty() ? user.GetMetricsImportance() : metricsimportance; 
+            if (metricsimportance.IsNullOrEmpty())
             {
+                metricsimportance = new string[metrics.Count];
                 for (int i = 0; i < metrics.Count(); i++)
                 {
-                    viewModel.Metrics.Add(metrics[i], (int)double.Parse(metricsimportance[i], CultureInfo.InvariantCulture));
+                    if (user.GetMetricsView() == MetricsView.DragAndDrop)
+                        metricsimportance[i] = ((int)(100.0 / numberOfParts * (metrics.Count - i))).ToString();
+                    else
+                        metricsimportance[i] =  (100 / metrics.Count()).ToString();
                 }
             }
             else
             {
-                for (int i = 0; i < metrics.Count; i++)
-                {
-                    if (user.GetMetricsView() == MetricsView.DragAndDrop)
-                        viewModel.Metrics.Add(metrics[i], ((int)(100.0 / numberOfParts * (metrics.Count - i))));
-                    else
-                        viewModel.Metrics.Add(metrics[i], 100 / metrics.Count());
-                }
+                user.SetMetricsImportance(metricsimportance);
+                _context.Update(user);
+                _context.SaveChanges();
+            }
+            for (int i = 0; i < metrics.Count(); i++)
+            {
+                viewModel.Metrics.Add(metrics[i], (int)double.Parse(metricsimportance[i], CultureInfo.InvariantCulture));
             }
 
             viewModel.SearchValue = search ?? "";            
@@ -111,14 +116,18 @@ namespace WebAppForMORecSys.Controllers
             return View(viewModel);
         }
 
-        public async Task<IActionResult> UserBlockSettings(string search, string director,string actor, 
+        public async Task<IActionResult> UserBlockSettings(string search, string block, string director,string actor, 
             string[] genres)
         {
             User user = GetCurrentUser();
             string method = HttpContext.Request.Method;
             if (method == "POST")
             {
-                string message = AddBlockRules(user, director, actor, genres);
+                string message = "";
+                if (block.IsNullOrEmpty())
+                    message = AddMultipleBlockRules(user, director, actor, genres);
+                else
+                    message = AddSingleBlockRule(user, block);
                 if (!message.IsNullOrEmpty())
                 {
                     TempData["msg"] = "<script>alert('"+message+"');</script>";
@@ -147,29 +156,66 @@ namespace WebAppForMORecSys.Controllers
             return View(viewModel);
         }
 
-        private string AddBlockRules(User user, string director, string actor, string[] genres)
+        private string AddSingleBlockRule(User user, string block)
+        {
+            var blockedValue = block.Split(':');
+            if(blockedValue.Length == 2) {
+                switch(blockedValue[0].ToLower().Trim())
+                {
+                    case "actor":
+                        return AddMultipleBlockRules(user, actor: blockedValue[1].Trim());
+                    case "director":
+                        return AddMultipleBlockRules(user, director: blockedValue[1].Trim());
+                    case "genre":
+                        return AddMultipleBlockRules(user, genres: new string[] { blockedValue[1].Trim() });
+                    default:
+                        return $"There is no property \"{blockedValue[0]}\" which values can be blocked!";
+                }
+            }
+            else if (blockedValue.Length == 1) {
+                string message = AddMultipleBlockRules(user, director: blockedValue[0].Trim()); 
+                if(!message.IsNullOrEmpty())
+                    message = AddMultipleBlockRules(user, actor: blockedValue[0].Trim());
+                if (!message.IsNullOrEmpty())
+                    message = AddMultipleBlockRules(user, genres: new string[] { blockedValue[0].Trim() });
+                if (message.IsNullOrEmpty())
+                    return $"No property contains a value \"{blockedValue[0]}\" that can be blocked!";
+
+            }
+            else
+            {
+                return $"Please specify blocked value in format \"property:value\" or \"value\".";
+            }
+            return "";
+
+        }
+
+        private string AddMultipleBlockRules(User user, string director=null, string actor=null, string[] genres= null)
         {
             var message = new StringBuilder();
             if (!actor.IsNullOrEmpty())
             {
                 if (!Movie.AllActors.Contains(actor))
-                    message.Append("Block rule for actor " + actor + " was not added. Because there is no actor of that exact name in the database.\\n");
+                    message.Append($"Block rule for actor \"{actor}\" was not added. Because there is no actor of that exact name in the database.\\n");
                 else
                     HideActor(actor);
             }
             if (!director.IsNullOrEmpty())
             {
                 if (!Movie.AllDirectors.Contains(director))
-                    message.Append("Block rule for director " + director + " was not added. Because there is no director of that exact name in the database.\\n");
+                    message.Append($"Block rule for director \"{director}\" was not added. Because there is no director of that exact name in the database.\\n");
                 else
                     HideDirector(director);
             }
-            foreach (var genre in genres) 
+            if (!genres.IsNullOrEmpty())
             {
-                if (!Movie.AllGenres.Contains(genre))
-                    message.Append("Block rule for genre " + genre + " was not added. Because there is no genre of that exact name in the database.\\n");
-                else
-                    HideGenre(genre);
+                foreach (var genre in genres)
+                {
+                    if (!Movie.AllGenres.Contains(genre))
+                        message.Append($"Block rule for genre \"{genre}\" was not added. Because there is no genre of that exact name in the database.\\n");
+                    else
+                        HideGenre(genre);
+                }
             }
             
             return message.ToString();
@@ -250,6 +296,27 @@ namespace WebAppForMORecSys.Controllers
             return Movie.AllActors.Where(a => a.Contains(prefix, StringComparison.OrdinalIgnoreCase))
                 .Except(user.GetActorsInBlackList()).Take(10).ToList();
 
+        }
+
+        public List<string> GetAllGenres(string prefix)
+        {
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return null;
+            }
+            return Movie.AllGenres.Where(g => g.Contains(prefix, StringComparison.OrdinalIgnoreCase))
+                .Except(user.GetGenresInBlackList()).Take(10).ToList();
+
+        }
+
+        public List<string> GetAllPossibleBlocks(string prefix)
+        {
+            List<string> possibleBlocks =  new List<string>();
+            possibleBlocks.AddRange(GetAllGenres(prefix).Take(5).Select(g=> $"Genre: {g}"));
+            possibleBlocks.AddRange(GetAllDirectors(prefix).Take(5).Select(d => $"Director: {d}"));
+            possibleBlocks.AddRange(GetAllActors(prefix).Take(5).Select(a => $"Actor: {a}"));
+            return possibleBlocks;
         }
 
 

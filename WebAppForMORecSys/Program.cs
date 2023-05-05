@@ -39,9 +39,6 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail = false;
 });
 
-SystemParameters.Controller = "Movies";
-SystemParameters.MetricsView = MetricsView.PlusMinusButtons;
-SystemParameters.Colors = new string[] { "#002D62", "#0000FF", "#007FFF", "#00FFFF", "#F0F8FF" };
 
 var app = builder.Build();
 

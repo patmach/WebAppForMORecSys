@@ -14,14 +14,12 @@
         byte index = 0;
     }
     <h4>Which metrics filter do you want to use?</h4>
-    <div style="width:100%">
+    <div style="display:flex; margin-bottom:3px; width:100%">
     @foreach (var value in Enum.GetValues(typeof(MetricsView))){
         
-        <span style="margin:auto">
-            <a href='@Url.Action("SetMetricsView","Home", new { metricsview=index })'>
+            <a style="margin:auto" class="btn btn-primary" href='@Url.Action("SetMetricsView","Home", new { metricsview=index })'>
                 @value
             </a>
-        </span>
             index++;
     }
     </div>
@@ -35,11 +33,11 @@
         index = 0;
     }
     <h4>Choose Metric Colors</h4>
-    <form asp-controller="Home" asp-action="SetMetricsColors" method="post">
+    <form asp-controller="Home" asp-action="SetMetricsColors" method="post" style="display:grid">
         <div class="input-group color-group" style="width:100%">
             @foreach (var metric in Model.Metrics.Keys)
             {
-            
+                
                 string id = "metriccolor" + index;
                 <span style="margin:auto">
                     <input type="color" id="@id" name="metriccolor" value="@Model.CurrentUser.GetColors()[index]"/>
@@ -48,13 +46,35 @@
                 index++;
             }
         </div>
-        <div><a class="btn btn-dark" onclick="resetcolors()">Set default colors</a></div>
-        <br />
-        <div><input  type="submit" value="SAVE COLORS" class="btn btn-primary" /></div>
+        <a style="margin:auto; margin-bottom:3px;" class="btn btn-dark btn-sm" onclick="resetcolors()">Set default colors</a>
+        <input  type="submit" style="margin:auto;" value="SAVE COLORS" class="btn btn-primary btn-lg" />
         
     </form>
 
-    
+    <br />
+    <br />
+    <br />
+    <br />
+    @{
+        index = 0;
+    }
+    <h4>Which type of creating new block rule do you want to use?</h4>
+    <div style="display:flex; margin-bottom:3px; width:100%">
+        @foreach (var value in Enum.GetValues(typeof(AddBlockRuleView)))
+        {
+
+            <a style="margin:auto" class="btn btn-primary" href='@Url.Action("SetAddBlockRuleView","Home", new { addBlockRuleView=index })'>
+                @value
+            </a>
+            index++;
+        }
+    </div>
+    <div style="width:33%;background-color: #0d6efd; margin:auto;" class=" rounded">
+    @await Html.PartialAsync("../"+SystemParameters.Controller+"/CreateBlockRule", 
+            new UserBlockRule{ CurrentUser=Model.CurrentUser, Disabled=true})
+    </div>
+
+
 
 </div>
 

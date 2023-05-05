@@ -19,8 +19,11 @@ function closeNav() {
     document.getElementById("openfilterbtn").style.display = "";
 }
 
-function SetAutoComplete(textbox, url) {
-    $("#" + textbox).autocomplete(
+function SetAutoComplete(textbox, url)
+{
+    if ($("#" + textbox))
+    {
+        $("#" + textbox).autocomplete(
         {
             source: function (request, response) {
                 $.ajax(
@@ -43,6 +46,7 @@ function SetAutoComplete(textbox, url) {
                 }
             }
         });
+    }
 }
 
 var xcoord_b4_details = 0;

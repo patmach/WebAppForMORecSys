@@ -1,54 +1,52 @@
 ﻿@model WebAppForMORecSys.Models.ViewModels.UserBlockRule
 @using static WebAppForMORecSys.Helpers.MovieHelper
+@using static WebAppForMORecSys.Helpers.UserHelper
+
+@using WebAppForMORecSys.Settings
 <form asp-controller="Movies" asp-action="UserBlockSettings" method="post" class="moviecreateblockrule">
-    
-   
+    @if (Model.CurrentUser.GetAddBlockRuleView() == AddBlockRuleView.Single)
+    {
+        <label for="iblock">Blocked property</label>
+        <input class="form-control rounded m-3" type="text" id="iblock" name="block" placeholder="Block" />
+        <br />
+        <br />
+        <input class="form-control rounded m-3 btn-light" type="submit" value="CREATE NEW BLOCK RULE" @(Model.Disabled ? "disabled" : "") />
+    }
+    else if (Model.CurrentUser.GetAddBlockRuleView() == AddBlockRuleView.Multiple)
+    {
+        <label for="igenre">Genre</label>
 
-    <label for="igenre">Genre</label>
+        <select class="selectpicker" multiple data-live-search="true" name="genres" placeholder="Genres">
+            @foreach (var genre in Movie.AllGenres.Except(Model.CurrentUser.GetGenresInBlackList()))
+            {
+                <option>@genre</option>
+            }
+        </select>
+        <br />
+        <br />
+        <label for="idirector">Director</label>
+        <input class="form-control rounded m-3" type="text" id="idirector" name="director" placeholder="Director"/>
+        <br />
+        <br />
+        <label for="iactor">Actor</label>
+        <input class="form-control rounded m-3" type="text" id="iactor" name="actor" placeholder="Actor" />
+        <br />
+        <br />
 
-    <select class="selectpicker" multiple data-live-search="true" name="genres" placeholder="Genres">
-        @foreach (var genre in Movie.AllGenres.Except(Model.CurrentUser.GetGenresInBlackList()))
-        {
-            <option>@genre</option>
-            
-        }
-    </select>
-    <br />
-    <br />
-    <label for="idirector">Director</label>
-    <input class="form-control rounded m-3" type="text" id="idirector" name="director" placeholder="Director"/>
-    <br />
-    <br />
-    <label for="iactor">Actor</label>
-    <input class="form-control rounded m-3" type="text" id="iactor" name="actor" placeholder="Actor" />
-    <br />
-    <br />
 
+        <input class="form-control rounded m-3 btn-light" type="submit" value="CREATE MULTIPLE NEW BLOCK RULES" @(Model.Disabled ? "disabled" : "") />
+    }
     <input type="hidden" name="type" placeholder="Type" value="Create" />
-
-
-    <input class="form-control rounded m-3" type="submit" class="btn-secondary" value="CREATE NEW BLOCK RULES" />
+    <br/>
 </form>
 
 <script>
     $('select').selectpicker();
-</script>
-<!--
-<script>
-    function validate(inputId, parameterName, method){
-        var value = $(this).attr('value');
-        var jsonText = JSON.stringify({ parameterName: value });
-        $.ajax({
-            url: '../Movies/' + method,
-            data: jsonText,
-            cache: false,
-            success: function (data) {
-                $('#DetailsDiv').html(data);
-                document.getElementById("DetailsDiv").style.display = ""
-                document.getElementById("Previews").style.display = "none";
-            }
+        $(document).ready(function () {
+            SetAutoComplete("idirector", "../Movies/GetAllDirectors");
+        SetAutoComplete("iactor", "../Movies/GetAllActors");
+        SetAutoComplete("iblock", "../Movies/GetAllPossibleBlocks");
         });
-    }
 </script>
--->
+
 

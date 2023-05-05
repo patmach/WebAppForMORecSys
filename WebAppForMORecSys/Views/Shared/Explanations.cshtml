@@ -13,7 +13,7 @@
     string borderImage = MetricsContributionToBorderImage(Model.user, Model.metricsContribution.Values.ToArray(),"right");
 }
 <div class="@className popover-content" id="explanationPopover" style="display:none;">
-<div style="border-right:3px; border-image:@borderImage">
+<div>
     @for (int i = 0; i < (ordered?.Count ?? 0); i++)
     {
         <p style="color: @Model.user.GetMetricsToColors()[keys[i]]"><b>@keys[i].Name - @values[i] % </b></p>
