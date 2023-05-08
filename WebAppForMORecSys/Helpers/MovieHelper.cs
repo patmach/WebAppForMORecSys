@@ -141,27 +141,74 @@ namespace WebAppForMORecSys.Helpers
             return filterSQL.ToString();
         }
 
-        //change destination of method
-        public static string MetricsContributionToBorderImage(User user,int[] metricsContribution, string direction = "bottom right")
+
+        public static string AddSingleBlockRule(this User user, string block)
         {
-            StringBuilder borderImage = new StringBuilder();
-            borderImage.Append($"linear-gradient(to {direction}");
-            int lastpoint = 0;
-            int sum = 0;
-            for (int i = 0; i < metricsContribution.Length; i++)
+            var blockedValue = block.Split(':');
+            if (blockedValue.Length == 2)
             {
-                sum += metricsContribution[i];
-                borderImage.Append(',');
-                borderImage.Append(user.GetColors()[i]);
-                borderImage.Append(' ');
-                borderImage.Append(lastpoint);
-                borderImage.Append("% ");
-                borderImage.Append(sum);
-                borderImage.Append('%');
-                lastpoint = sum;
+                switch (blockedValue[0].ToLower().Trim())
+                {
+                    case "actor":
+                        return AddMultipleBlockRules(user, actor: blockedValue[1].Trim());
+                    case "director":
+                        return AddMultipleBlockRules(user, director: blockedValue[1].Trim());
+                    case "genre":
+                        return AddMultipleBlockRules(user, genres: new string[] { blockedValue[1].Trim() });
+                    default:
+                        return $"There is no property \"{blockedValue[0]}\" which values can be blocked!";
+                }
             }
-            borderImage.Append(") 1");
-            return borderImage.ToString();
+            else if (blockedValue.Length == 1)
+            {
+                string message = AddMultipleBlockRules(user, director: blockedValue[0].Trim());
+                if (!message.IsNullOrEmpty())
+                    message = AddMultipleBlockRules(user, actor: blockedValue[0].Trim());
+                if (!message.IsNullOrEmpty())
+                    message = AddMultipleBlockRules(user, genres: new string[] { blockedValue[0].Trim() });
+                if (!message.IsNullOrEmpty())
+                    return $"No property contains a value \"{blockedValue[0]}\" that can be blocked!";
+
+            }
+            else
+            {
+                return $"Please specify blocked value in format \"property:value\" or \"value\".";
+            }
+            return "";
+
+        }
+
+        public static string AddMultipleBlockRules(this User user, string director = null, string actor = null, string[] genres = null)
+        {
+            var message = new StringBuilder();
+            if (!actor.IsNullOrEmpty())
+            {
+                if (!Movie.AllActors.Contains(actor))
+                    message.Append($"Block rule for actor \"{actor}\" was not added. Because there is no actor of that exact name in the database.\\n");
+                else
+                    user.AddActorToBlackList(actor);
+
+            }
+            if (!director.IsNullOrEmpty())
+            {
+                if (!Movie.AllDirectors.Contains(director))
+                    message.Append($"Block rule for director \"{director}\" was not added. Because there is no director of that exact name in the database.\\n");
+                else
+                    user.AddDirectorToBlackList(director);
+
+            }
+            if (!genres.IsNullOrEmpty())
+            {
+                foreach (var genre in genres)
+                {
+                    if (!Movie.AllGenres.Contains(genre))
+                        message.Append($"Block rule for genre \"{genre}\" was not added. Because there is no genre of that exact name in the database.\\n");
+                    else
+                        user.AddGenreToBlackList(genre);
+                }
+            }
+
+            return message.ToString();
         }
     }
 }

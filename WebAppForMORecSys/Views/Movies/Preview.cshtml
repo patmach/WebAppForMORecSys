@@ -18,7 +18,7 @@
     string borderSize = "0px";
     if (Model.metricsContribution != null)
     {
-        borderImage = MetricsContributionToBorderImage(Model.user,Model.metricsContribution.Values.ToArray());
+        borderImage = Model.MetricsContributionToBorderImage(Model.user,Model.metricsContribution.Values.ToArray());
         borderSize = "5px";
     }
 }

@@ -54,7 +54,7 @@ namespace WebAppForMORecSys.Helpers
             BlockedItemsCache.RemoveBlockedItemIdsForUser(user.Id.ToString());
         }
 
-        public static dynamic AddStringValue(dynamic jsonObj,User user ,string name, string value)
+        public static dynamic AddStringValue(dynamic jsonObj,User user ,string name, string value, bool uniqueValues = true)
         {
             if (jsonObj == null)
             {
@@ -65,7 +65,7 @@ namespace WebAppForMORecSys.Helpers
                 ((JObject)jsonObj).Add(name, new JArray());
             }
             var jarray = (JArray)jsonObj[name];
-            if ((!jarray?.ToObject<List<string>>()?.Contains(value)) ?? false)
+            if (!uniqueValues || ((!jarray?.ToObject<List<string>>()?.Contains(value)) ?? false))
                 ((JArray)jsonObj[name]).Add(value);
             return jsonObj;
         }
@@ -220,15 +220,15 @@ namespace WebAppForMORecSys.Helpers
             user.UserChoices = JsonConvert.SerializeObject(jsonObj);
         }
 
-        private static void AddStringValueToUserChoices(this User user, string name, string value)
+        private static void AddStringValueToUserChoices(this User user, string name, string value, bool uniqueValues = true)
         {
-            var jsonObj = AddStringValue(GetUserChoicesDynamic(user), user, name, value);
+            var jsonObj = AddStringValue(GetUserChoicesDynamic(user), user, name, value, uniqueValues);
             user.UserChoices = JsonConvert.SerializeObject(jsonObj);
         }
 
-        private static void AddStringValueToJSONFilter(this User user, string name, string value)
+        private static void AddStringValueToJSONFilter(this User user, string name, string value, bool uniqueValues = true)
         {
-            var jsonObj = AddStringValue(GetJSONFilterDynamic(user), user, name, value);
+            var jsonObj = AddStringValue(GetJSONFilterDynamic(user), user, name, value, uniqueValues);
             user.JSONFilter = JsonConvert.SerializeObject(jsonObj);
         }
 
@@ -277,7 +277,7 @@ namespace WebAppForMORecSys.Helpers
             }
             foreach (var color in value)
             {
-                AddStringValueToUserChoices(user, "Colors", color);
+                AddStringValueToUserChoices(user, "Colors", color, false);
             }
         }
 
@@ -312,9 +312,9 @@ namespace WebAppForMORecSys.Helpers
             {
                 RemoveStringValueFromJSONFilter(user, "metricsImportance", metricImportance);
             }
-            foreach (var color in value)
+            foreach (var metricImportance in value)
             {
-                AddStringValueToJSONFilter(user, "metricsImportance", color);
+                AddStringValueToJSONFilter(user, "metricsImportance", metricImportance, false);
             }
         }
 

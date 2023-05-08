@@ -10,7 +10,7 @@
     string itempreviewid = "preview_" + Model.item.Id;//MUSÍ odpovídat názvu hlavního elementu v Preview
     string className = "popover-content" + itempreviewid;
     string doughnutChartId = "doughnutchart" + Model.item.Id;
-    string borderImage = MetricsContributionToBorderImage(Model.user, Model.metricsContribution.Values.ToArray(),"right");
+    string borderImage = Model.MetricsContributionToBorderImage(Model.user, Model.metricsContribution.Values.ToArray(),"right");
 }
 <div class="@className popover-content" id="explanationPopover" style="display:none;">
     <div id="@className">
