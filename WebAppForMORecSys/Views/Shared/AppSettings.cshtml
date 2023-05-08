@@ -71,7 +71,7 @@
     </div>
     <div style="width:33%;background-color: #0d6efd; margin:auto;" class=" rounded">
     @await Html.PartialAsync("../"+SystemParameters.Controller+"/CreateBlockRule", 
-            new UserBlockRule{ CurrentUser=Model.CurrentUser, Disabled=true})
+            new UserBlockRuleViewModel{ CurrentUser=Model.CurrentUser, Disabled=true})
     </div>
 
 

@@ -7,13 +7,13 @@
     var ordered = Model.metricsContribution.OrderByDescending(mc => mc.Value).ToDictionary(mc => mc.Key, mc => mc.Value);
     var keys = ordered.Keys.ToArray();
     var values = ordered.Values.ToArray();
-    string itempreviewclass = "preview_" + Model.item.Id;//MUSÍ odpovídat názvu hlavního elementu v Preview
-    string className = "popover-content" + itempreviewclass;
+    string itempreviewid = "preview_" + Model.item.Id;//MUSÍ odpovídat názvu hlavního elementu v Preview
+    string className = "popover-content" + itempreviewid;
     string doughnutChartId = "doughnutchart" + Model.item.Id;
     string borderImage = MetricsContributionToBorderImage(Model.user, Model.metricsContribution.Values.ToArray(),"right");
 }
 <div class="@className popover-content" id="explanationPopover" style="display:none;">
-<div>
+    <div id="@className">
     @for (int i = 0; i < (ordered?.Count ?? 0); i++)
     {
         <p style="color: @Model.user.GetMetricsToColors()[keys[i]]"><b>@keys[i].Name - @values[i] % </b></p>
@@ -24,11 +24,14 @@
 </div>
 
 <script>
-    var itempreviewclass = '#@itempreviewclass';
-    $(itempreviewclass).on('inserted.bs.popover', function(){
-        var popoverbody = document.getElementsByClassName("popover-body")[0];        
-        popoverbody.style.borderTop = "5px solid";
-        popoverbody.style.borderImage = "@borderImage"
+    $('#@itempreviewid').on('inserted.bs.popover', function () {
+        let popoverbodies = document.getElementsByClassName("popover-body");
+        /*for is there because sometimes popover is inserted faster than other is hidden.*/ 
+        for (let i=0; i<popoverbodies.length; i++){
+            let popoverbody=popoverbodies[i];
+            popoverbody.style.borderTop = "5px solid";
+            popoverbody.style.borderImage = "@borderImage";
+        }
        
     });
 </script>

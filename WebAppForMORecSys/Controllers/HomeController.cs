@@ -9,10 +9,11 @@ using WebAppForMORecSys.Settings;
 using WebAppForMORecSys.Helpers;
 using WebAppForMORecSys.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebAppForMORecSys.Controllers
 {
-
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;

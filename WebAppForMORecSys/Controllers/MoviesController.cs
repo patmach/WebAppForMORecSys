@@ -1,4 +1,5 @@
 ﻿using Elfie.Serialization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +25,7 @@ using Interaction = WebAppForMORecSys.Models.Interaction;
 
 namespace WebAppForMORecSys.Controllers
 {
+    [Authorize]
     public class MoviesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -139,7 +141,7 @@ namespace WebAppForMORecSys.Controllers
             {
                 items = items.Where(x => x.Name.ToLower().Contains(search.ToLower()));
             }
-            var viewModel = new UserBlockRule
+            var viewModel = new UserBlockRuleViewModel
             {
                 Items = _context.Items.Where(item => itemIDs.Contains(item.Id)).ToList(),
                 SearchValue = search ?? "",
@@ -310,7 +312,7 @@ namespace WebAppForMORecSys.Controllers
 
         }
 
-        public List<string> GetAllPossibleBlocks(string prefix)
+        public List<string> GetAllPossibleValuesToBlock(string prefix)
         {
             List<string> possibleBlocks =  new List<string>();
             possibleBlocks.AddRange(GetAllGenres(prefix).Take(5).Select(g=> $"Genre: {g}"));

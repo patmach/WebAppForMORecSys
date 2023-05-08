@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using WebAppForMORecSys.Models;
 
-namespace WebAppForMORecSys.ParseHelpers
+namespace WebAppForMORecSys.Helpers.MovielensLoaders
 {
     public static class JArrayExtensions
     {
@@ -14,13 +14,13 @@ namespace WebAppForMORecSys.ParseHelpers
             => new JArray(array.Children().Where(GenerateFilter(field, value)));
 
         private static Func<JToken, bool> GenerateFilter(string field, string value)
-            => (JToken token) => string.Equals(token[field].Value<string>(), value, StringComparison.OrdinalIgnoreCase);
+            => (token) => string.Equals(token[field].Value<string>(), value, StringComparison.OrdinalIgnoreCase);
     }
     public static class JSONParse
     {
         public static void AddDetailsToMovie(string response, Item movie)
         {
-            JsonObject jsonResponse = (JsonObject)JsonObject.Parse(response);
+            JsonObject jsonResponse = (JsonObject)JsonNode.Parse(response);
             JsonNode overview;
             JsonNode image;
             JsonNode releaseDate;
@@ -28,15 +28,15 @@ namespace WebAppForMORecSys.ParseHelpers
             jsonResponse.TryGetPropertyValue("poster_path", out image);
             jsonResponse.TryGetPropertyValue("release_date", out releaseDate);
             movie.ShortDescription = overview?.ToString();
-            if (image!= null)
+            if (image != null)
                 movie.ImageURL = "https://image.tmdb.org/t/p/w500/" + image.ToString();
-            if (releaseDate!= null) 
+            if (releaseDate != null)
                 movie.JSONParams = movie.JSONParams + ",\n\"ReleaseDate\":\"" + releaseDate + '"';
 
         }
         public static void AddCastToMovie(string response, Item movie)
         {
-            JsonObject jsonResponse = (JsonObject)JsonObject.Parse(response);
+            JsonObject jsonResponse = (JsonObject)JsonNode.Parse(response);
             JsonNode crew;
             jsonResponse.TryGetPropertyValue("crew", out crew);
             JsonNode cast;
@@ -48,9 +48,9 @@ namespace WebAppForMORecSys.ParseHelpers
                 JArray directorObject = crewArr.Filter("job", "Director");
                 string director = directorObject?.First?.GetValue<string>("name");
                 if (director != null)
-                    movie.JSONParams = movie.JSONParams + (",\n\"Director\":\"" + director.Replace("\"","") + '"');                
+                    movie.JSONParams = movie.JSONParams + ",\n\"Director\":\"" + director.Replace("\"", "") + '"';
             }
-            if(cast!= null)
+            if (cast != null)
             {
                 JArray castArr = JArray.Parse(cast.ToString());
                 var castNames = castArr.Select(s => s.GetValue<string>("name"));
@@ -58,18 +58,18 @@ namespace WebAppForMORecSys.ParseHelpers
                 foreach (var castName in castNames)
                 {
                     castNamesSB.Append("\"");
-                    castNamesSB.Append(castName.Replace("\"",""));
+                    castNamesSB.Append(castName.Replace("\"", ""));
                     castNamesSB.Append("\",");
                 }
                 if (castNamesSB.Length > 0)
                 {
                     castNamesSB.Length--;
                 }
-                movie.JSONParams = movie.JSONParams + (",\n\"Actors\":[" + castNamesSB.ToString()+ "]");
+                movie.JSONParams = movie.JSONParams + ",\n\"Actors\":[" + castNamesSB.ToString() + "]";
             }
 
         }
-       
+
 
     }
 }

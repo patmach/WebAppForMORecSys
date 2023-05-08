@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Text.Json.Nodes;
 
-namespace WebAppForMORecSys.ParseHelpers
+namespace WebAppForMORecSys.Helpers.MovielensLoaders
 {
     public static class TMBDApiHelper
     {
@@ -16,8 +16,9 @@ namespace WebAppForMORecSys.ParseHelpers
             {
                 httpResponse.EnsureSuccessStatusCode();
             }
-            catch (HttpRequestException ex) {
-                Console.Write(link.TMBDID  + ex.ToString());
+            catch (HttpRequestException ex)
+            {
+                Console.Write(link.TMBDID + ex.ToString());
             }
 
             var jsonResponse = await httpResponse.Content.ReadAsStringAsync();

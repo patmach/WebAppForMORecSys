@@ -1,6 +1,6 @@
 ﻿namespace WebAppForMORecSys.Models.ViewModels
 {
-    public class UserBlockRule
+    public class UserBlockRuleViewModel
     {
         public List<Item> Items { get; set; }
         public Dictionary<string, List<string>> StringPropertiesBlocks = new Dictionary<string, List<string>>();

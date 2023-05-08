@@ -6,12 +6,12 @@ using System.Globalization;
 using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Models;
 
-namespace WebAppForMORecSys.ParseHelpers
+namespace WebAppForMORecSys.Helpers.MovielensLoaders
 {
     public static class CSVParsingMethods
     {
         public static List<Item> ParseMovies()
-        {            
+        {
             var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = true,
@@ -23,7 +23,7 @@ namespace WebAppForMORecSys.ParseHelpers
                 csv.Context.RegisterClassMap<MovieMap>();
                 movies = csv.GetRecords<Item>().ToList();
             }
-            movies.ForEach(x => { x.JSONParams = "\"Genres\":[\"" + x.JSONParams.Replace("|","\",\"") + "\"]"; });
+            movies.ForEach(x => { x.JSONParams = "\"Genres\":[\"" + x.JSONParams.Replace("|", "\",\"") + "\"]"; });
 
             return movies;
         }
@@ -97,8 +97,8 @@ namespace WebAppForMORecSys.ParseHelpers
         {
             Map(p => p.UserID).Convert(args => int.Parse(args.Row.GetField("userId")));
             Map(p => p.ItemID).Convert(args => int.Parse(args.Row.GetField("movieId")));
-            Map(p => p.RatingScore).Convert(args => 
-                (byte)(2*double.Parse(args.Row.GetField("rating"), CultureInfo.InvariantCulture)));
+            Map(p => p.RatingScore).Convert(args =>
+                (byte)(2 * double.Parse(args.Row.GetField("rating"), CultureInfo.InvariantCulture)));
             Map(p => p.Date).Convert(args => UnixTimeStampToDateTime(long.Parse(args.Row.GetField("timestamp"))));
 
         }
@@ -110,5 +110,5 @@ namespace WebAppForMORecSys.ParseHelpers
             return dateTime;
         }
     }
-    
+
 }

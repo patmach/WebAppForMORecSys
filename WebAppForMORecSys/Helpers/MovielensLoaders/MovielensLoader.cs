@@ -4,7 +4,7 @@ using System.Globalization;
 using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Models;
 
-namespace WebAppForMORecSys.ParseHelpers
+namespace WebAppForMORecSys.Helpers.MovielensLoaders
 {
     public class MovielensLoader
     {
@@ -13,20 +13,20 @@ namespace WebAppForMORecSys.ParseHelpers
         static readonly HttpClient httpClient = new HttpClient();
         static void PrintError(Exception e)
         {
-            System.IO.File.WriteAllText("log.txt", DateTime.Now.ToString() + e.Message + "\nInner exception:" 
+            File.WriteAllText("log.txt", DateTime.Now.ToString() + e.Message + "\nInner exception:"
                 + (e.InnerException?.Message ?? "") + "\n\nST:"
                 + e.StackTrace + "\n\n Inner ST:" + (e.InnerException?.StackTrace ?? ""));
         }
 
         public static void LoadMovielensData(ApplicationDbContext context)
         {
-            List<Item> movies = CSVParsingMethods.ParseMovies();            
+            List<Item> movies = CSVParsingMethods.ParseMovies();
             var links = CSVParsingMethods.ParseLinks();
-            string apiKey = System.IO.File.ReadAllText("apikeyTMBD.txt");
-            
+            string apiKey = File.ReadAllText("apikeyTMBD.txt");
+
             foreach (var link in links)
             {
-                var movie = movies.Where(m=> m.Id == int.Parse(link.Id)).FirstOrDefault();
+                var movie = movies.Where(m => m.Id == int.Parse(link.Id)).FirstOrDefault();
                 JSONParse.AddDetailsToMovie(TMBDApiHelper.getMovieDetail(link).Result, movie);
                 JSONParse.AddCastToMovie(TMBDApiHelper.getMovieCredits(link).Result, movie);
             }
@@ -43,7 +43,7 @@ namespace WebAppForMORecSys.ParseHelpers
             {
                 PrintError(ex);
             }
-            
+
             context.Database.OpenConnection();
             try
             {
@@ -55,12 +55,12 @@ namespace WebAppForMORecSys.ParseHelpers
 
                 var ratings = CSVParsingMethods.ParseRatings();
 
-                var users = ratings.DistinctBy(r=>r.UserID).Select(r => new User { Id = r.UserID, UserName = "movielensUser" + r.UserID });
-              
+                var users = ratings.DistinctBy(r => r.UserID).Select(r => new User { Id = r.UserID, UserName = "movielensUser" + r.UserID });
+
                 context.Database.ExecuteSql($"SET IDENTITY_INSERT dbo.Users ON;");
                 context.AddRange(users);
                 context.SaveChanges();
-                
+
                 context.Database.ExecuteSql($"SET IDENTITY_INSERT dbo.Users OFF;");
                 int partLength = 100000;
                 for (int i = 204; i <= ratings.Count / partLength; i++)
