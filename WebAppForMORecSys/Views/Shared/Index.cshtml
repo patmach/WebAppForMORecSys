@@ -45,10 +45,18 @@
 </div>
 
 <script>
+    var seen = [];
     $(document).ready(function () {
         SetAutoComplete("titlesearch", "Movies/GetAllMovieNames");
         SetAutoComplete("idirector", "Movies/GetAllDirectors");
         SetAutoComplete("iactor", "Movies/GetAllActors");
+
+        seen = $('.ItemPreview').map(function (ip) {
+            return false;
+        });
+
+        
+
         popoverExplanationOptions = {
             content: function () {
                 var classname = '.popover-content' + this.id;
@@ -61,8 +69,42 @@
             title: 'Why is this item recommended?'
         };
         $('.ItemPreview').popover(popoverExplanationOptions)
-            
+        
     });
+
+    window.onscroll = function(){
+        SaveSeenInteractions();
+    };
+
+    function SaveSeenInteractions() {
+        var itempreviews = $('.ItemPreview')
+        for (let i = 0; i < itempreviews.length; i++) {
+            if (seen[i]) continue;
+            var itempreviews_top = itempreviews[i].getBoundingClientRect().top;
+            var itempreviews_bottom = itempreviews[i].getBoundingClientRect().bottom;
+            if (isElementInView(itempreviews[i])) {
+                seen[i] = true;
+                var id = itempreviews[i].id.replace('preview_', '');
+                $.ajax(
+                    {
+                        url: "Home/SetInteraction",
+                        type: "POST",
+                        dataType: "json",
+                        data: { id: id, type: @((int)TypeOfInteraction.Seen) },
+                    }
+                )
+            }
+        }
+    }
+
+    function isElementInView(element) {
+        var pageTop = $(window).scrollTop();
+        var pageBottom = pageTop + $(window).height();
+        var elementTop = $(element).offset().top;
+        var elementBottom = elementTop + $(element).height();        
+        return ((pageTop < elementTop) && (pageBottom > elementBottom));        
+    }
+    
 </script>
 
 

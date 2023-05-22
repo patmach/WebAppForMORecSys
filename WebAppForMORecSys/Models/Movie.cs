@@ -13,12 +13,18 @@ using WebAppForMORecSys.Helpers;
 
 namespace WebAppForMORecSys.Models
 {
-    public static class Movie 
+    public static class Movie
     {
         public static string GetDirector(this Item movie) => ItemHelper.getPropertyStringValueFromJSON(movie, "Director") ?? "";
         public static string[] GetActors(this Item movie) => ItemHelper.getPropertyListValueFromJSON(movie, "Actors");
 
-        public static DateTime GetReleaseDate(this Item movie) => DateTime.Parse(ItemHelper.getPropertyStringValueFromJSON(movie, "ReleaseDate"));
+        public static DateTime? GetReleaseDate(this Item movie)
+        {
+                DateTime dt = DateTime.MinValue;
+                if (DateTime.TryParse(ItemHelper.getPropertyStringValueFromJSON(movie, "ReleaseDate"), out dt))
+                    return dt;
+                return null;
+        }
         public static string[] GetGenres(this Item movie) => ItemHelper.getPropertyListValueFromJSON(movie, "Genres");
 
         

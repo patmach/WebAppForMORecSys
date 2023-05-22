@@ -43,11 +43,12 @@ namespace WebAppForMORecSys.Controllers
             MainViewModel viewModel = new MainViewModel();
             var rs = SystemParameters.RecommenderSystem;
             var metrics = await (_context.Metrics.Where(m => m.RecommenderSystemID == rs.Id).ToListAsync());
-            for (int i = 0; i < metrics.Count; i++)
-            {
-                viewModel.Metrics.Add(metrics[i], 100 / metrics.Count());
-            }
             viewModel.CurrentUser = GetCurrentUser();
+            viewModel.CurrentUserRatings = await (from rating in _context.Ratings
+                                                  where rating.UserID == viewModel.CurrentUser.Id
+                                                  select rating).ToListAsync();
+            viewModel.Items = _context.Items.Take(5);
+            viewModel.SetMetricImportance(viewModel.CurrentUser, metrics, new string[0], _context);
             return View(viewModel);
         }
 
@@ -83,6 +84,22 @@ namespace WebAppForMORecSys.Controllers
 
         }
 
+        public IActionResult SetExplanationView(int explanationview)
+        {
+            if ((explanationview < 0) || (explanationview >= Enum.GetValues(typeof(ExplanationView)).Length))
+                return RedirectToAction("AppSettings");
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+            user.SetExplanationView(explanationview);
+            _context.Update(user);
+            _context.SaveChanges();
+            return RedirectToAction("AppSettings");
+
+        }
+
         public IActionResult SetMetricsColors(string[] metriccolor)
         {
             var rs = SystemParameters.RecommenderSystem;
@@ -109,6 +126,17 @@ namespace WebAppForMORecSys.Controllers
                 user = _context.Users.Where(u => u.UserName == account.UserName).FirstOrDefault();
             }
             return user;
+        }
+
+        public IResult SetInteraction(int id, TypeOfInteraction type)
+        {
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return Results.Unauthorized();
+            }
+            Interaction.Save(id, user.Id, type, _context);
+            return Results.NoContent();
         }
 
         public IResult Hide(int id)

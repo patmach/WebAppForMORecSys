@@ -121,19 +121,20 @@ namespace WebAppForMORecSys.Helpers
             {
                 filterSQL.Append(" or EXISTS(");
                 filterSQL.Append("SELECT value FROM OPENJSON(JSON_QUERY(JSONParams, '$.Genres'))  WHERE value IN ");
-                filterSQL.Append($"({String.Join(",", genresBL.Select(g=> $"'{g}'"))})) ");
+                filterSQL.Append($"({String.Join(",", genresBL.Select(g=> $"'{g.Replace("'", "''")}'"))})) ");
 
             }
             if (!directorsBL.IsNullOrEmpty())
             {
                 filterSQL.Append(" or ");
-                filterSQL.Append($"(JSON_VALUE(JSONParams, '$.Director') IN ({String.Join(",",directorsBL.Select(d => $"'{d}'"))}))");
+                filterSQL.Append($"(JSON_VALUE(JSONParams, '$.Director') IN ");
+                filterSQL.Append($"({String.Join(",",directorsBL.Select(d => $"'{d.Replace("'", "''")}'"))}))");
             }
             if (!actorsBL.IsNullOrEmpty())
             {
                 filterSQL.Append(" or EXISTS(");
                 filterSQL.Append("SELECT value FROM OPENJSON(JSON_QUERY(JSONParams, '$.Actors'))  WHERE value IN ");
-                filterSQL.Append($"({String.Join(",", actorsBL.Select(a => $"'{a}'"))})) ");
+                filterSQL.Append($"({String.Join(",", actorsBL.Select(a => $"'{a.Replace("'", "''")}'"))})) ");
 
             }
 

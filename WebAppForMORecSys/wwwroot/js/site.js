@@ -118,3 +118,23 @@ function show_by_property(name, index) {
     showlink[0].style.display = "none";
     hidelink[0].style.display = ""
 }
+
+function show_new_rating_value(newValue, itemId) {
+    var ratingValue = newValue
+    var startlist = $('.ratingstar' + itemId);
+    for (var i = 0; i < ratingValue; i++) {
+        startlist[i].classList.remove('fa-star-o');
+        startlist[i].classList.add('fa-star');
+    }
+    for (var i = ratingValue; i < 10; i++) {
+        startlist[i].classList.remove('fa-star');
+        startlist[i].classList.add('fa-star-o');
+    }
+    var removeLink = $('.remove' + itemId)[0];
+    if (newValue > 0) {
+        removeLink.style.display = '';
+    }
+    else {
+        removeLink.style.display = 'none';
+    }
+}

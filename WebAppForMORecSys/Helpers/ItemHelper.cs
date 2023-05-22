@@ -1,5 +1,10 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Unicode;
+using System.Web.Helpers;
 using WebAppForMORecSys.Models;
 
 namespace WebAppForMORecSys.Helpers
@@ -14,8 +19,8 @@ namespace WebAppForMORecSys.Helpers
                 JsonObject? Params = (JsonObject?)JsonObject.Parse(item.JSONParams);
                 JsonNode jsonNode;
                 if (Params != null && Params.TryGetPropertyValue(property, out jsonNode))
-                {
-                    return jsonNode.ToString();
+                {                    
+                    return System.Text.RegularExpressions.Regex.Unescape(jsonNode.ToString());
                 }
             }
             catch (Exception e)

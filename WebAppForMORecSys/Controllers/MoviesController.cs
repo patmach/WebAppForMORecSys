@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
@@ -11,6 +12,7 @@ using NuGet.Protocol;
 using NuGet.Protocol.Plugins;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Web.Razor.Parser.SyntaxTree;
 using WebAppForMORecSys.Areas.Identity.Data;
@@ -48,7 +50,7 @@ namespace WebAppForMORecSys.Controllers
           string actor, string[] genres, string type, string releasedateto, string releasedatefrom, string[] metricsimportance)
         {
             User user = GetCurrentUser();
-            var viewModel = new MainViewModel();            
+            var viewModel = new MainViewModel();
             if (user != null)
             {
                 viewModel.CurrentUser = user;
@@ -56,7 +58,6 @@ namespace WebAppForMORecSys.Controllers
                                                       where rating.UserID == viewModel.CurrentUser.Id
                                                       select rating).ToListAsync();
             }
-
             RecommenderSystem rs = SystemParameters.RecommenderSystem;
             List<Metric> metrics = await (_context.Metrics.Where(m => m.RecommenderSystemID == rs.Id).ToListAsync());
             viewModel.SetMetricImportance(user, metrics, metricsimportance, _context);
@@ -76,11 +77,23 @@ namespace WebAppForMORecSys.Controllers
                         viewModel.Metrics.Values.ToArray(), user.Id, rs.HTTPUri);
             if (recommendations.Count > 0)
             {
-                viewModel.Items = _context.Items.Where(item=> recommendations.Keys.Contains(item.Id));
+                viewModel.Items = _context.Items.Where(item => recommendations.Keys.Contains(item.Id));
                 viewModel.ItemsToMetricImportance = recommendations.Values.ToArray();
+                if (whitelist.IsNullOrEmpty() && (!search.IsNullOrEmpty() || !actor.IsNullOrEmpty() || !director.IsNullOrEmpty() || !genres.IsNullOrEmpty()
+                        || !releasedatefrom.IsNullOrEmpty() || !releasedateto.IsNullOrEmpty()))
+                {
+                    TempData["msg"] = "<script>alert('There are no results for your search.\\n\\nTry to make simpler search.');</script>";
+                }
             }
             else
-                viewModel.Items = _context.Items.Take(50);
+            {
+                if (!search.IsNullOrEmpty() || !actor.IsNullOrEmpty() || !director.IsNullOrEmpty() || !genres.IsNullOrEmpty()
+                        || !releasedatefrom.IsNullOrEmpty() || !releasedateto.IsNullOrEmpty())
+                {
+                    TempData["msg"] = "<script>alert('There are no results for your search.\\n\\nTry to make simpler search or check your block rules.');</script>";
+                }
+                viewModel.Items = _context.Items.Where(item => !blacklist.Contains(item.Id)).Take(50);
+            }
             return View(viewModel);
         }
 
@@ -112,8 +125,14 @@ namespace WebAppForMORecSys.Controllers
             viewModel.StringPropertiesBlocks.Add("Genres", user.GetGenresInBlackList());
             viewModel.StringPropertiesBlocks.Add("Directors", user.GetDirectorsInBlackList());
             viewModel.StringPropertiesBlocks.Add("Actors", user.GetActorsInBlackList());
-
-            return View(viewModel);
+            try
+            {
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         private void AddBlockRule(User user, string block, string director, string actor, string[] genres)
@@ -238,6 +257,17 @@ namespace WebAppForMORecSys.Controllers
                 return Results.Unauthorized();
             }
             Rating.Save(id, user.Id, score, _context);
+            return Results.NoContent();
+        }
+
+        public IResult Unrate(int id)
+        {
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return Results.Unauthorized();
+            }
+            Rating.Remove(id, user.Id, _context);
             return Results.NoContent();
         }
 

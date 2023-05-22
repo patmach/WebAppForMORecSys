@@ -95,13 +95,16 @@
                 </dd>
                 <br />
             }
-            <dt class="col-sm-2">
-                Release date
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.item.GetReleaseDate().Date)
-            </dd>      
-            <br />
+            @if (Model.item.GetReleaseDate() != null)
+            {
+                <dt class="col-sm-2">
+                    Release date
+                </dt>
+                <dd class="col-sm-10">
+                    @Model.item.GetReleaseDate().Value.ToShortDateString()
+                </dd>      
+                <br />
+            }
             @if (!string.IsNullOrEmpty(Model.item.GetDirector()))
             {
                 string director = Model.item.GetDirector();

@@ -251,6 +251,25 @@ namespace WebAppForMORecSys.Helpers
             }
         }
 
+        public static void SetExplanationView(this User user, int value)
+        {
+            SetStringValueToUserChoices(user, "ExplanationView", value.ToString());
+        }
+
+        public static ExplanationView GetExplanationView(this User user)
+        {
+            var Explanationview = GetStringValueInUserChoices(user, "ExplanationView");
+            int value;
+            if ((Explanationview == null) || !int.TryParse(Explanationview, out value))
+            {
+                return SystemParameters.ExplanationView;
+            }
+            else
+            {
+                return (ExplanationView)value;
+            }
+        }
+
         public static void SetAddBlockRuleView(this User user, int value)
         {
             SetStringValueToUserChoices(user, "AddBlockRuleView", value.ToString());
@@ -289,12 +308,12 @@ namespace WebAppForMORecSys.Helpers
             return colors.ToArray(); 
         }
 
-        public static Dictionary<Metric,string> GetMetricsToColors(this User user)
+        public static Dictionary<int,string> GetMetricIDsToColors(this User user)
         {
             var colors = GetStringValuesInUserChoices(user, "Colors");
             if ((colors == null) || (colors.Count == 0))
                 colors = SystemParameters.Colors.ToList();
-            var metrics = SystemParameters.MetricsToColors.Keys.ToList();
+            var metrics = SystemParameters.MetricsToColors.Keys.Select(metric => metric.Id).ToList();
             return Enumerable.Range(0, metrics.Count).ToDictionary(i => metrics[i], i => colors[i]);
         }
 

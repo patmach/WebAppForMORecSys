@@ -6,13 +6,22 @@
         @{
             string aclass = Model.user != null ? "" : "disabled";
             string ratingClass = "ratingstar" + Model.item.Id;
+            string removeClass = "remove" + Model.item.Id;
+            var rating = Model.userRatings.Where(r => r.ItemID == Model.item.Id).FirstOrDefault();
         }
         @for (int i = 0; i < 10; i++)
         {
-            <a onclick="shownewvalue(@Html.Raw(i+1), @Model.item.Id)" class="@aclass" href='@Url.Action("Rate","Movies", new { id=Model.item.Id, score= i+1 })'>
-                <i class="@ratingClass fa fa-star-o" aria-hidden="true"></i>
+            <a style="text-decoration:unset" onclick="show_new_rating_value(@Html.Raw(i+1), @Model.item.Id)" class="@aclass"
+               href='@Url.Action("Rate","Movies", new { id=Model.item.Id, score= i+1 })'>
+                <i class="@ratingClass fa fa-star-o" aria-hidden="true" title="@((i+1) + "/10")"></i>
             </a>
         }
+        <a style="text-decoration:unset; color:red" onclick="show_new_rating_value(0, @Model.item.Id)" class="@removeClass @aclass"
+            href='@Url.Action("Unrate","Movies", new { id=Model.item.Id})'>
+            <i class="fa fa-remove" aria-hidden="true" title="Remove my rating")"></i>
+        </a>
+        
+
     </span>
 </div>
 <script>
@@ -20,7 +29,7 @@
     @{
         int ratingScore = 0;
         if (Model.user != null)
-            ratingScore = Model.userRatings.Where(r => r.ItemID == Model.item.Id).FirstOrDefault()?.RatingScore ?? 0;
+            ratingScore = rating?.RatingScore ?? 0;
     }
         var ratingValue = @Html.Raw(ratingScore);
         var movieId = @Html.Raw(Model.item.Id);
@@ -29,20 +38,16 @@
             startlist[i].classList.remove('fa-star-o');
             startlist[i].classList.add('fa-star');
         }
+        var removeLink = $('.@removeClass')[0];
+        if (ratingValue > 0) {
+            removeLink.style.display = '';
+        }
+        else {
+            removeLink.style.display = 'none';
+        }
     })
 
-    function shownewvalue(newValue, movieId) {
-        var ratingValue = newValue
-        var startlist = $('.ratingstar' + movieId);
-        for (var i = 0; i < ratingValue; i++) {
-            startlist[i].classList.remove('fa-star-o');
-            startlist[i].classList.add('fa-star');
-        }
-        for (var i = ratingValue; i < 10; i++) {
-            startlist[i].classList.remove('fa-star');
-            startlist[i].classList.add('fa-star-o');
-        }
-    }
+   
 
 
 </script>

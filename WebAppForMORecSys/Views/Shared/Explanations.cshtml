@@ -5,24 +5,32 @@
 @{
 
     var ordered = Model.metricsContribution.OrderByDescending(mc => mc.Value).ToDictionary(mc => mc.Key, mc => mc.Value);
-    var keys = ordered.Keys.ToArray();
+    var orderedMetrics = ordered.Keys.ToArray();
+    var keys = orderedMetrics.Select(metric => metric.Id).ToArray();
     var values = ordered.Values.ToArray();
     string itempreviewid = "preview_" + Model.item.Id;//MUSÍ odpovídat názvu hlavního elementu v Preview
     string className = "popover-content" + itempreviewid;
     string doughnutChartId = "doughnutchart" + Model.item.Id;
     string borderImage = Model.MetricsContributionToBorderImage(Model.user, Model.metricsContribution.Values.ToArray(),"right");
+    ExplanationView view = Model.user.GetExplanationView();
+    int lastvalue = values!=null ? (values.Length>0 ? values[0] : 0) : 0;
 }
-<div class="@className popover-content" id="explanationPopover" style="display:none;">
-    <div id="@className">
-    @for (int i = 0; i < (ordered?.Count ?? 0); i++)
-    {
-        <p style="color: @Model.user.GetMetricsToColors()[keys[i]]"><b>@keys[i].Name - @values[i] % </b></p>
-        <p>@keys[i].DefaultExplanation</p>
-        <br/>
-    }
+@if ((view == ExplanationView.BestMetricPopover) || (view == ExplanationView.AllMetricsPopover))
+{
+    <div class="@className popover-content" id="explanationPopover" style="display:none;">
+        <div id="@className">
+            @for (int i = 0; i < (ordered?.Count ?? 0); i++)
+            {
+                if (@values[i] == 0) break;
+                if ((view == ExplanationView.BestMetricPopover) && (@values[i] != lastvalue)) break;
+                <p style="color: @Model.user.GetMetricIDsToColors()[keys[i]]"><b>@orderedMetrics[i].Name - @values[i] % </b></p>
+                <p>@orderedMetrics[i].DefaultExplanation</p>
+                <br/>
+                lastvalue = values[i];
+            }
+        </div>
     </div>
-</div>
-
+}
 <script>
     $('#@itempreviewid').on('inserted.bs.popover', function () {
         let popoverbodies = document.getElementsByClassName("popover-body");
@@ -35,4 +43,5 @@
        
     });
 </script>
+
 

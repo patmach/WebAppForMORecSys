@@ -52,5 +52,16 @@ namespace WebAppForMORecSys.Models
             }
             context.SaveChanges();
         }
+
+        public static void Remove(int itemID, int userID,ApplicationDbContext context)
+        {
+            var rating = context.Ratings.Where(r => r.ItemID == itemID && r.UserID == userID).FirstOrDefault();
+            if (rating != null)
+            {
+                context.Remove(rating);
+                context.SaveChanges();
+            }
+            
+        }
     }
 }

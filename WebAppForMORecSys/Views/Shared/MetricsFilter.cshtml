@@ -31,7 +31,7 @@
             {
                 <div style="width:100%">
                 <span class="btn btn-light progressbutton" style="border-color:  @Model.User.GetColors()[index]"
-                                onclick="decrease(@index)">-</span>
+                                onclick="decrease(@index)"><b>-</b></span>
                 <span id="@("box_" +@index)" class="box progressbox"
                      style="">
                             @metric.Name
@@ -39,7 +39,7 @@
                            value="@Model.Metrics[metric]" placeholder="MetricsImportance" />
                             </span>
                 <span class="btn btn-dark progressbutton" style="background-color: @Model.User.GetColors()[index]"
-                                onclick="increase(@index)">+</span>
+                                onclick="increase(@index)"><b>+</b></span>
                 </div>
             }
             else
@@ -60,7 +60,7 @@
                     <input class="custom-range range form-control rounded m-3" type="number" min="0" max="100" name="MetricsImportance" id="@id"
                            value="@Model.Metrics[metric]" placeholder="MetricsImportance" oninput="changeValues(this.value, @index)"
                            onchange="changeValues(this.value, @index)"
-                           style="border: 3px solid @Model.User.GetColors()s[index];" />
+                           style="border: 3px solid @Model.User.GetColors()[index];" />
                     }
 
                 </div>
@@ -268,6 +268,7 @@
             for (let i = 0; i < drag_ranges.length; i++) {
                 let index = sorted.indexOf(values[i]);
                 drag_ranges[index].innerHTML = temp[i];
+                sorted[index] = -1; //next call of indexOf on the same value would return same index
             }
             set_input_hidden_values()
             /*

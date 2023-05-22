@@ -19,7 +19,7 @@ namespace WebAppForMORecSys.Settings
 
         public static AddBlockRuleView AddBlockRuleView { get; set; } = AddBlockRuleView.Single;
 
-        
+        public static ExplanationView ExplanationView { get; set; } = ExplanationView.BestMetricPopover;
     }
 
     
