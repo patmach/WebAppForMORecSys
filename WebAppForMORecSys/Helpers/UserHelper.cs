@@ -305,14 +305,16 @@ namespace WebAppForMORecSys.Helpers
             var colors = GetStringValuesInUserChoices(user, "Colors");
             if ((colors == null) || (colors.Count == 0))
                 return SystemParameters.Colors;
+            for (int i = colors.Count; i < SystemParameters.Colors.Length; i++)
+            {
+                colors.Add(SystemParameters.Colors[i]);
+            }
             return colors.ToArray(); 
         }
 
         public static Dictionary<int,string> GetMetricIDsToColors(this User user)
         {
-            var colors = GetStringValuesInUserChoices(user, "Colors");
-            if ((colors == null) || (colors.Count == 0))
-                colors = SystemParameters.Colors.ToList();
+            var colors = GetColors(user);
             var metrics = SystemParameters.MetricsToColors.Keys.Select(metric => metric.Id).ToList();
             return Enumerable.Range(0, metrics.Count).ToDictionary(i => metrics[i], i => colors[i]);
         }

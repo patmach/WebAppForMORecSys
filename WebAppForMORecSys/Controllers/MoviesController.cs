@@ -19,6 +19,7 @@ using WebAppForMORecSys.Areas.Identity.Data;
 using WebAppForMORecSys.Cache;
 using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Helpers;
+using WebAppForMORecSys.Helpers.MovielensLoaders;
 using WebAppForMORecSys.Models;
 using WebAppForMORecSys.Models.ViewModels;
 using WebAppForMORecSys.Models.ViewModels;
@@ -35,7 +36,11 @@ namespace WebAppForMORecSys.Controllers
         private readonly UserManager<Account> _userManager;
         
 
-
+        /// <summary>
+        /// Gets connection to db and UserManager, saves possible values of movie properties
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="userManager"></param>
         public MoviesController(ApplicationDbContext context, UserManager<Account> userManager)
         {
             _context = context;
@@ -46,8 +51,20 @@ namespace WebAppForMORecSys.Controllers
             
         }
 
+        /// <summary>
+        /// Loads movies main page.Filters possible movies from user input and sends request to Recommender API.
+        /// </summary>
+        /// <param name="search">Main user search on title</param>
+        /// <param name="director">Movie filter user search on director</param>
+        /// <param name="actor">Movie filter user search on actor></param>
+        /// <param name="genres">Movie filter user search on genres</param>
+        /// <param name="typeOfSearch">Specifies if user clicked the search for main search or in movie filter</param>
+        /// <param name="releasedateto">Movie filter user search on the latest release date</param>
+        /// <param name="releasedatefrom">Movie filter user search on the earliest release date</param>
+        /// <param name="metricsimportance">Metrics importance in % according to user input</param>
+        /// <returns>View with recommended movies</returns>
         public async Task<IActionResult> Index(string search, string director,
-          string actor, string[] genres, string type, string releasedateto, string releasedatefrom, string[] metricsimportance)
+          string actor, string[] genres, string typeOfSearch, string releasedateto, string releasedatefrom, string[] metricsimportance)
         {
             User user = GetCurrentUser();
             var viewModel = new MainViewModel();
@@ -70,7 +87,7 @@ namespace WebAppForMORecSys.Controllers
             viewModel.FilterValues.Add("ReleaseDateTo", releasedateto);
             viewModel.FilterValues.Add("Genres", string.Join(',', genres));
 
-            IQueryable<Item> whitelist = Movie.GetPossibleItems(_context.Items, user, search, director, actor, genres, type, releasedateto, releasedatefrom);
+            IQueryable<Item> whitelist = Movie.GetPossibleItems(_context.Items, user, search, director, actor, genres, typeOfSearch, releasedateto, releasedatefrom);
             int[] whitelistIDs = (whitelist == null) ? new int[0] : await whitelist.Select(item => item.Id).ToArrayAsync();
             List<int> blacklist = BlockedItemsCache.GetBlockedItemIdsForUser(user.Id.ToString(),_context);
             var recommendations = await RecommenderCaller.GetRecommendations(whitelistIDs, blacklist.ToArray(), 
@@ -97,6 +114,15 @@ namespace WebAppForMORecSys.Controllers
             return View(viewModel);
         }
 
+        /// <summary>
+        /// Process new blocking rule if the method was POST and returns page with blocks management
+        /// </summary>
+        /// <param name="search">Search in blocked items. (Possible for user only if he blocks a lot of movies)</param>
+        /// <param name="block">New blocked value in format 'name_of_property: value'. Used with single block rule creation.</param>
+        /// <param name="director">New blocked value for property director. Used with multiple block rule creation.</param>
+        /// <param name="actor">New blocked value for property actor. Used with multiple block rule creation.</param>
+        /// <param name="genres">New blocked value for property genres. Used with multiple block rule creation.</param>
+        /// <returns>Page where user can manage her/his block settings.</returns>
         public async Task<IActionResult> UserBlockSettings(string search, string block, string director,string actor, 
             string[] genres)
         {
@@ -135,6 +161,14 @@ namespace WebAppForMORecSys.Controllers
             }
         }
 
+        /// <summary>
+        /// Adding new block rule. Choose method of addition that should be used.
+        /// </summary>
+        /// <param name="user">Currently logged user</param>
+        /// <param name="block">New blocked value in format 'name_of_property: value'. Used with single block rule creation.</param>
+        /// <param name="director">New blocked value for property director. Used with multiple block rule creation.</param>
+        /// <param name="actor">New blocked value for property actor. Used with multiple block rule creation.</param>
+        /// <param name="genres">New blocked value for property genres. Used with multiple block rule creation.</param>
         private void AddBlockRule(User user, string block, string director, string actor, string[] genres)
         {
             string message = "";
@@ -150,6 +184,10 @@ namespace WebAppForMORecSys.Controllers
             _context.SaveChanges();
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="id">Id of movie</param>
+        /// <returns>Preview partial view for a movie</returns>
         public async Task<IActionResult> Preview(int id)
         {
             User user = GetCurrentUser();
@@ -169,7 +207,10 @@ namespace WebAppForMORecSys.Controllers
         }
 
 
-
+        /// <summary>
+        /// </summary>
+        /// <param name="id">Movie ID</param>
+        /// <returns>Partial view of details of the movie</returns>
         public async Task<IActionResult> Details(int id)
         {
             User user = GetCurrentUser();
@@ -191,7 +232,10 @@ namespace WebAppForMORecSys.Controllers
         }
 
 
-
+        /// <summary>
+        /// </summary>
+        /// <param name="prefix">Searched value</param>
+        /// <returns>All movie names that contains searched value</returns>
         public List<string> GetAllMovieNames(string prefix)
         {
             User user = GetCurrentUser();
@@ -204,6 +248,11 @@ namespace WebAppForMORecSys.Controllers
                 .Select(m => m.Name).Take(15).ToList();
 
         }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="prefix">Searched value</param>
+        /// <returns>All movie directors that contains searched value</returns>
         public List<string> GetAllDirectors(string prefix)
         {
             User user = GetCurrentUser();
@@ -215,6 +264,11 @@ namespace WebAppForMORecSys.Controllers
                 .Except(user.GetDirectorsInBlackList()).Take(10).ToList();
 
         }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="prefix">Searched value</param>
+        /// <returns>All movie actors that contains searched value</returns>
         public List<string> GetAllActors(string prefix)
         {
             User user = GetCurrentUser();
@@ -227,6 +281,11 @@ namespace WebAppForMORecSys.Controllers
 
         }
 
+
+        /// <summary>
+        /// </summary>
+        /// <param name="prefix">Searched value</param>
+        /// <returns>All movie genres that contains searched value</returns>
         public List<string> GetAllGenres(string prefix)
         {
             User user = GetCurrentUser();
@@ -239,6 +298,10 @@ namespace WebAppForMORecSys.Controllers
 
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="prefix">Searched value</param>
+        /// <returns>All values of movie properties (in format 'name_of_property: value'  that contains searched value</returns>
         public List<string> GetAllPossibleValuesToBlock(string prefix)
         {
             List<string> possibleBlocks =  new List<string>();
@@ -248,7 +311,12 @@ namespace WebAppForMORecSys.Controllers
             return possibleBlocks;
         }
 
-
+        /// <summary>
+        /// Saves new user rating for a movie
+        /// </summary>
+        /// <param name="id">Movie ID</param>
+        /// <param name="score">Rating score</param>
+        /// <returns>HTTP response without content</returns>
         public IResult Rate(int id, byte score)
         {
             User user = GetCurrentUser();
@@ -260,6 +328,11 @@ namespace WebAppForMORecSys.Controllers
             return Results.NoContent();
         }
 
+        /// <summary>
+        /// Deletes user rating of a movie
+        /// </summary>
+        /// <param name="id">Movie ID</param>
+        /// <returns>HTTP response without content</returns>
         public IResult Unrate(int id)
         {
             User user = GetCurrentUser();
@@ -271,6 +344,9 @@ namespace WebAppForMORecSys.Controllers
             return Results.NoContent();
         }
 
+        /// <summary>
+        /// </summary>
+        /// <returns>Currently logged user that sent this request.</returns>
         private User GetCurrentUser()
         {
             var account = _userManager.GetUserAsync(User).Result;
@@ -281,8 +357,12 @@ namespace WebAppForMORecSys.Controllers
             }
             return user;
         }
-        
 
+        /// <summary>
+        /// Add director to blocked.
+        /// </summary>
+        /// <param name="director">Director to be blocked</param>
+        /// <returns>HTTP response without content</returns>
         public IResult HideDirector(string director)
         {
             if (!Movie.AllDirectors.Contains(director))
@@ -298,6 +378,11 @@ namespace WebAppForMORecSys.Controllers
             return Results.NoContent();
         }
 
+        /// <summary>
+        /// Add actor to blocked.
+        /// </summary>
+        /// <param name="actor">Actor to be blocked</param>
+        /// <returns>HTTP response without content</returns>
         public IResult HideActor(string actor)
         {
             if (!Movie.AllActors.Contains(actor))
@@ -313,6 +398,11 @@ namespace WebAppForMORecSys.Controllers
             return Results.NoContent();
         }
 
+        /// <summary>
+        /// Add genre to blocked.
+        /// </summary>
+        /// <param name="genre">Genre to be blocked</param>
+        /// <returns>HTTP response without content</returns>
         public IResult HideGenre(string genre)
         {
             if (!Movie.AllGenres.Contains(genre))
@@ -328,6 +418,11 @@ namespace WebAppForMORecSys.Controllers
             return Results.NoContent();
         }
 
+        /// <summary>
+        /// Remove director from blocked.
+        /// </summary>
+        /// <param name="director">Director to be unblocked</param>
+        /// <returns>HTTP response without content</returns>
         public IResult ShowDirector(string director)
         {
             User user = GetCurrentUser();
@@ -341,6 +436,11 @@ namespace WebAppForMORecSys.Controllers
             return Results.NoContent();
         }
 
+        /// <summary>
+        /// Remove actor from blocked.
+        /// </summary>
+        /// <param name="actor">Actor to be unblocked</param>
+        /// <returns>HTTP response without content</returns>
         public IResult ShowActor(string actor)
         {
             User user = GetCurrentUser();
@@ -354,6 +454,11 @@ namespace WebAppForMORecSys.Controllers
             return Results.NoContent();
         }
 
+        /// <summary>
+        /// Remove genre from blocked.
+        /// </summary>
+        /// <param name="genre">Genre to be unblocked</param>
+        /// <returns>HTTP response without content</returns>
         public IResult ShowGenre(string genre)
         {
             User user = GetCurrentUser();

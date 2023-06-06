@@ -104,7 +104,7 @@
     <div id="Previews" style="width:100%;">
     @foreach (var item in Model.Items)
     {
-        var metricsContribution = new Dictionary<Metric, int>();
+        var metricsContribution = new Dictionary<Metric, double>();
         for (int j = 0; j < Model.Metrics.Count; j++)
         {
             int valueToAdd = (j == 0) ? index * 5 : (j == (Model.Metrics.Count - 1) ? index * -5 : 0);

@@ -26,7 +26,7 @@
     <div id="Previews" style="width:100%">
     @foreach (var item in Model.Items)
     {
-        Dictionary<Metric,int> metricsContribution =  null;
+        Dictionary<Metric,double> metricsContribution =  null;
             
         if(Model.ItemsToMetricImportance!=null){
                 metricsContribution = Enumerable.Range(0, Model.Metrics.Count)

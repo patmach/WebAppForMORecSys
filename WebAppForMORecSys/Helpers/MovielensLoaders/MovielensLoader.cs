@@ -27,12 +27,15 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
             foreach (var link in links)
             {
                 var movie = movies.Where(m => m.Id == int.Parse(link.Id)).FirstOrDefault();
-                JSONParse.AddDetailsToMovie(TMBDApiHelper.getMovieDetail(link).Result, movie);
-                JSONParse.AddCastToMovie(TMBDApiHelper.getMovieCredits(link).Result, movie);
+                if (movie != null)
+                {
+                    JSONParse.AddDetailsToMovie(TMBDApiHelper.getMovieDetail(link).Result, movie);
+                    JSONParse.AddCastToMovie(TMBDApiHelper.getMovieCredits(link).Result, movie);
+                }
             }
             try
             {
-                movies.ForEach(m => { m.JSONParams = '{' + m.JSONParams.Replace("\n", "") + '}'; });
+                movies.ForEach(m => { m.JSONParams = '{' + m.JSONParams.Replace("\n", "").Replace("...","").Replace("\t","") + '}'; });
                 using (var writer = new StreamWriter("moviesloaded.csv"))
                 using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
                 {
@@ -63,7 +66,7 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
 
                 context.Database.ExecuteSql($"SET IDENTITY_INSERT dbo.Users OFF;");
                 int partLength = 100000;
-                for (int i = 204; i <= ratings.Count / partLength; i++)
+                for (int i = 0; i <= ratings.Count / partLength; i++)
                 {
                     var part = ratings.Skip(partLength * i).Take(partLength).ToList();
                     context.AddRange(part);

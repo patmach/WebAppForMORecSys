@@ -8,8 +8,8 @@ namespace WebAppForMORecSys.Models.ViewModels
         public Item item;
         public User user;
         public List<Rating> userRatings;
-        public Dictionary<Metric, int> metricsContribution;
-        public PreviewDetailViewModel(Item item, User user, List<Rating> userRatings, Dictionary<Metric, int> metricsContribution = null)
+        public Dictionary<Metric, double> metricsContribution;
+        public PreviewDetailViewModel(Item item, User user, List<Rating> userRatings, Dictionary<Metric, double> metricsContribution = null)
         {
             this.item = item;
             this.user = user;
@@ -17,7 +17,7 @@ namespace WebAppForMORecSys.Models.ViewModels
             this.metricsContribution = metricsContribution;
         }
 
-        public string MetricsContributionToBorderImage(User user, int[] metricsContribution, string direction = "bottom right")
+        public string MetricsContributionToBorderImage(User user, double[] metricsContribution, string direction = "bottom right")
         {
             StringBuilder borderImage = new StringBuilder();
             borderImage.Append($"linear-gradient(to {direction}");
@@ -25,7 +25,7 @@ namespace WebAppForMORecSys.Models.ViewModels
             int sum = 0;
             for (int i = 0; i < metricsContribution.Length; i++)
             {
-                sum += metricsContribution[i];
+                sum += (int)metricsContribution[i];
                 borderImage.Append(',');
                 borderImage.Append(user.GetColors()[i]);
                 borderImage.Append(' ');

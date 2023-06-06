@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NuGet.Packaging;
 using System.Globalization;
 using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Helpers;
@@ -13,7 +14,7 @@ namespace WebAppForMORecSys.Models.ViewModels
         public Dictionary<Metric, int> Metrics { get; set; }
         public IQueryable<Item> Items { get; set; }
 
-        public int[][] ItemsToMetricImportance { get;set;}
+        public double[][] ItemsToMetricImportance { get;set;}
 
         public string SearchValue ="";
 
@@ -37,7 +38,7 @@ namespace WebAppForMORecSys.Models.ViewModels
                 numberOfParts += i + 1;
             }
             metricsimportance = metricsimportance.IsNullOrEmpty() ? user.GetMetricsImportance() : metricsimportance;
-            if (metricsimportance.IsNullOrEmpty())
+            if (metricsimportance.IsNullOrEmpty() || (metricsimportance.Length != metrics.Count()))
             {
                 metricsimportance = new string[metrics.Count];
                 for (int i = 0; i < metrics.Count(); i++)
@@ -53,7 +54,8 @@ namespace WebAppForMORecSys.Models.ViewModels
                 user.SetMetricsImportance(metricsimportance);
                 context.Update(user);
                 context.SaveChanges();
-            }
+            }            
+                
             for (int i = 0; i < metrics.Count(); i++)
             {
                 Metrics.Add(metrics[i], (int)double.Parse(metricsimportance[i], CultureInfo.InvariantCulture));

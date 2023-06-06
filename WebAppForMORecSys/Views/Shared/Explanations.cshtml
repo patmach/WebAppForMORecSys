@@ -13,7 +13,7 @@
     string doughnutChartId = "doughnutchart" + Model.item.Id;
     string borderImage = Model.MetricsContributionToBorderImage(Model.user, Model.metricsContribution.Values.ToArray(),"right");
     ExplanationView view = Model.user.GetExplanationView();
-    int lastvalue = values!=null ? (values.Length>0 ? values[0] : 0) : 0;
+    double lastvalue = values!=null ? (values.Length>0 ? values[0] : 0) : 0;
 }
 @if ((view == ExplanationView.BestMetricPopover) || (view == ExplanationView.AllMetricsPopover))
 {
@@ -23,7 +23,7 @@
             {
                 if (@values[i] == 0) break;
                 if ((view == ExplanationView.BestMetricPopover) && (@values[i] != lastvalue)) break;
-                <p style="color: @Model.user.GetMetricIDsToColors()[keys[i]]"><b>@orderedMetrics[i].Name - @values[i] % </b></p>
+                <p style="color: @Model.user.GetMetricIDsToColors()[keys[i]]"><b>@orderedMetrics[i].Name - @((int)values[i]) % </b></p>
                 <p>@orderedMetrics[i].DefaultExplanation</p>
                 <br/>
                 lastvalue = values[i];
