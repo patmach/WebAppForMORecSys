@@ -11,7 +11,9 @@ using WebAppForMORecSys.Models;
 
 namespace WebAppForMORecSys.Areas.Identity.Data;
 
-// Add profile data for application users by adding properties to the User class
+/// <summary>
+/// Extension of default identity class with a link to my custom user class.
+/// </summary>
 public class Account : IdentityUser
 {
     [ForeignKey("User")]

@@ -32,9 +32,16 @@ namespace WebAppForMORecSys.Controllers
     [Authorize]
     public class MoviesController : Controller
     {
+        /// <summary>
+        /// Database context
+        /// </summary>
         private readonly ApplicationDbContext _context;
+
+        /// <summary>
+        /// User manager for accesing acount the app communicates with
+        /// </summary>
         private readonly UserManager<Account> _userManager;
-        
+
 
         /// <summary>
         /// Gets connection to db and UserManager, saves possible values of movie properties
@@ -95,7 +102,7 @@ namespace WebAppForMORecSys.Controllers
             if (recommendations.Count > 0)
             {
                 viewModel.Items = _context.Items.Where(item => recommendations.Keys.Contains(item.Id));
-                viewModel.ItemsToMetricImportance = recommendations.Values.ToArray();
+                viewModel.ItemsToMetricContributionScore = recommendations.Values.ToArray();
                 if (whitelist.IsNullOrEmpty() && (!search.IsNullOrEmpty() || !actor.IsNullOrEmpty() || !director.IsNullOrEmpty() || !genres.IsNullOrEmpty()
                         || !releasedatefrom.IsNullOrEmpty() || !releasedateto.IsNullOrEmpty()))
                 {

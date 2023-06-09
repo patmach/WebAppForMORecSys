@@ -10,25 +10,61 @@ using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Models
 {
+    /// <summary>
+    /// Class that represents the user that is interacting with the item
+    /// </summary>
     public class User
     {
+        /// <summary>
+        /// Unique ID of the user
+        /// </summary>
         public int Id { get; set; }
 
+        /// <summary>
+        /// Unique username of the user
+        /// </summary>
         public string UserName { get; set; }
 
+        /// <summary>
+        /// Rules specified by user on what items should be blocked
+        /// </summary>
         public string? JSONBlockRules { get; set; }
 
+        /// <summary>
+        /// User used filters are saved there (the metric importances)
+        /// </summary>
         public string? JSONFilter { get; set; }
 
+        /// <summary>
+        /// Contains user custom settings of the system
+        /// </summary>
         public string? UserChoices { get; set; }
 
         public List<UserMetric> UserMetricList { get; set; }
 
+        /// <summary>
+        /// All user's ratings
+        /// </summary>
         public List<Rating> Ratings { get; set; }
 
+        /// <summary>
+        /// All user's interactions
+        /// </summary>
         public List<Interaction> Interactions { get; set; }
 
+        /// <summary>
+        /// Account of this user if he has one
+        /// </summary>
         public Account account;
+
+        /// <summary>
+        /// Recompute all blocked items by query to the database
+        /// </summary>
+        /// <param name="allItems">Link to all items stored in the database</param>
+        /// <returns>All blocked items by the user</returns>
+        /// <exception cref="NotImplementedException">
+        /// If the app is configured for domain whose blocked items computation is not implemente yet.
+        /// </exception>
         public IQueryable<Item> GetAllBlockedItems(DbSet<Item> allItems)
         {
             if (SystemParameters.Controller == "Movies")

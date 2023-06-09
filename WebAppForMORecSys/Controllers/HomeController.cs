@@ -10,48 +10,79 @@ using WebAppForMORecSys.Helpers;
 using WebAppForMORecSys.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using WebAppForMORecSys.Cache;
 
 namespace WebAppForMORecSys.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
+        /// <summary>
+        /// Database context
+        /// </summary>
         private readonly ApplicationDbContext _context;
+
+        /// <summary>
+        /// User manager for accesing acount the app communicates with
+        /// </summary>
         private readonly UserManager<Account> _userManager;
+
+        /// <summary>
+        /// Gets connection to db and UserManager, saves possible values of movie properties
+        /// </summary>
+        /// <param name="context">Database context</param>
+        /// <param name="userManager">User manager for accesing acount the app communicates with</param>
         public HomeController(ApplicationDbContext context, UserManager<Account> userManager)
         {
         
             _context = context;
             _userManager = userManager;
             //MovielensLoader.LoadMovielensData(context);
-
         }
 
        
+        /// <summary>
+        /// Redirects to used controller
+        /// </summary>
+        /// <returns>The main page of used controller</returns>
         public async Task<IActionResult> Index()
         {
             return RedirectToAction("Index", SystemParameters.Controller);
         }
 
+        /// <summary>
+        /// Redirects to used controller
+        /// </summary>
+        /// <returns>The main page of management of user blocks</returns>
         public async Task<IActionResult> UserBlockSettings()
         {
             return RedirectToAction("UserBlockSettings", SystemParameters.Controller);
         }
 
+        /// <summary>
+        /// Prepares data for the custom setting page and then return the page.
+        /// </summary>
+        /// <returns>Page where user can make custom changes to the system.</returns>
         public async Task<IActionResult> AppSettings()
         {
             MainViewModel viewModel = new MainViewModel();
             var rs = SystemParameters.RecommenderSystem;
             var metrics = await (_context.Metrics.Where(m => m.RecommenderSystemID == rs.Id).ToListAsync());
             viewModel.CurrentUser = GetCurrentUser();
+            var blockedItems = BlockedItemsCache.GetBlockedItemIdsForUser(viewModel.CurrentUser.Id.ToString(), _context);
             viewModel.CurrentUserRatings = await (from rating in _context.Ratings
                                                   where rating.UserID == viewModel.CurrentUser.Id
                                                   select rating).ToListAsync();
-            viewModel.Items = _context.Items.Take(5);
+            viewModel.Items = _context.Items.Where(item=> !blockedItems.Contains(item.Id)).Take(5);
             viewModel.SetMetricImportance(viewModel.CurrentUser, metrics, new string[0], _context);
             return View(viewModel);
         }
 
+        /// <summary>
+        /// Sets user choice of displaying metrics filter.
+        /// </summary>
+        /// <param name="metricsview">Chosen display of metrics filter</param>
+        /// <returns>App settings page</returns>
         public IActionResult SetMetricsView(int metricsview)
         {
             if ((metricsview < 0) || (metricsview >= Enum.GetValues(typeof(MetricsView)).Length))
@@ -68,6 +99,11 @@ namespace WebAppForMORecSys.Controllers
 
         }
 
+        /// <summary>
+        /// Sets user choice on how he want to add new block rules.
+        /// </summary>
+        /// <param name="addblockruleview">Chosen way to add new block rukes.</param>
+        /// <returns>App settings page</returns>
         public IActionResult SetAddBlockRuleView(int addblockruleview)
         {
             if ((addblockruleview < 0) || (addblockruleview >= Enum.GetValues(typeof(AddBlockRuleView)).Length))
@@ -84,6 +120,11 @@ namespace WebAppForMORecSys.Controllers
 
         }
 
+        /// <summary>
+        /// Sets user choice on what information he wants in explanations.
+        /// </summary>
+        /// <param name="explanationview">Chosen type of explanation.</param>
+        /// <returns>App settings page</returns>
         public IActionResult SetExplanationView(int explanationview)
         {
             if ((explanationview < 0) || (explanationview >= Enum.GetValues(typeof(ExplanationView)).Length))
@@ -100,6 +141,32 @@ namespace WebAppForMORecSys.Controllers
 
         }
 
+        /// <summary>
+        /// Sets user choice on what type of score for metrics he wants to see.
+        /// </summary>
+        /// <param name="metricContributionScoreView">Chosen type of score for metrics</param>
+        /// <returns>App settings page</returns>
+        public IActionResult SetMetricContributionScoreView(int metricContributionScoreView)
+        {
+            if ((metricContributionScoreView < 0) || (metricContributionScoreView >= Enum.GetValues(typeof(MetricContributionScoreView)).Length))
+                return RedirectToAction("AppSettings");
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+            user.SetMetricContributionScoreView(metricContributionScoreView);
+            _context.Update(user);
+            _context.SaveChanges();
+            return RedirectToAction("AppSettings");
+
+        }
+
+        /// <summary>
+        /// Sets user choice on colors that corresponds to metrics.
+        /// </summary>
+        /// <param name="color">Chosen colors</param>
+        /// <returns>App settings page</returns>
         public IActionResult SetMetricsColors(string[] metriccolor)
         {
             var rs = SystemParameters.RecommenderSystem;
@@ -117,6 +184,9 @@ namespace WebAppForMORecSys.Controllers
             return RedirectToAction("AppSettings");
         }
 
+        /// <summary>
+        /// </summary>
+        /// <returns>Currently logged user that sent this request.</returns>
         private User GetCurrentUser()
         {
             var account = _userManager.GetUserAsync(User).Result;
@@ -128,6 +198,12 @@ namespace WebAppForMORecSys.Controllers
             return user;
         }
 
+        /// <summary>
+        /// Saves new user interaction with an item
+        /// </summary>
+        /// <param name="id">Item ID</param>
+        /// <param name="type">Type of interaction</param>
+        /// <returns>HTTP response without content</returns>
         public IResult SetInteraction(int id, TypeOfInteraction type)
         {
             User user = GetCurrentUser();
@@ -139,6 +215,11 @@ namespace WebAppForMORecSys.Controllers
             return Results.NoContent();
         }
 
+        /// <summary>
+        /// Saves new user block for an item
+        /// </summary>
+        /// <param name="id">Item ID</param>
+        /// <returns>HTTP response without content</returns>
         public IResult Hide(int id)
         {
             if (_context.Items.Where(m => m.Id == id).Count() == 0)
@@ -154,6 +235,11 @@ namespace WebAppForMORecSys.Controllers
             return Results.NoContent();
         }
 
+        /// <summary>
+        /// Cancel user block on an item
+        /// </summary>
+        /// <param name="id">Item ID</param>
+        /// <returns>HTTP response without content</returns>
         public IResult Show(int id)
         {
             User user = GetCurrentUser();
@@ -166,6 +252,7 @@ namespace WebAppForMORecSys.Controllers
             _context.SaveChanges();
             return Results.NoContent();
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -14,81 +14,164 @@ using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Helpers
 {
+    /// <summary>
+    /// Extension class for class Item. Enables to work with item as movie.
+    /// </summary>
     public static class MovieHelper
     {
 
+        /// <summary>
+        /// </summary>
+        /// <param name="movie">Selected movie</param>
+        /// <returns>Director of the movie</returns>
         public static string GetDirector(Item movie) => ItemHelper.getPropertyStringValueFromJSON(movie, "Director") ?? "";
+
+        /// <summary>
+        /// </summary>
+        /// <param name="movie">Selected movie</param>
+        /// <returns>Actors that played in the movie</returns>
         public static string[] GetActors(Item movie) => ItemHelper.getPropertyListValueFromJSON(movie, "Actors");
+
+        /// <summary>
+        /// </summary>
+        /// <param name="movie">Selected movie</param>
+        /// <returns>Release date of the movie</returns>
         public static DateTime? GetReleaseDate(Item movie)
         {
             var stringDate = ItemHelper.getPropertyStringValueFromJSON(movie, "ReleaseDate");
             if (stringDate.IsNullOrEmpty()) return null;
             return DateTime.Parse(stringDate);
         }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="movie">Selected movie</param>
+        /// <returns>Genres of the movie</returns>
         public static string[] GetGenres(Item movie) => ItemHelper.getPropertyListValueFromJSON(movie, "Genres");
 
-
+        /// <summary>
+        /// Adds actor to block rules
+        /// </summary>
+        /// <param name="user">User who adds the actor name to the blocked values</param>
+        /// <param name="actor">Name of the actor</param>
         public static void AddDirectorToBlackList(this User user, string director)
         {
             UserHelper.AddStringValueToBlackList(user, "Director", director);
         }
 
+        /// <summary>
+        /// Adds director to block rules
+        /// </summary>
+        /// <param name="user">User who adds the director name to the blocked values</param>
+        /// <param name="director">Name of the director</param>
         public static void AddActorToBlackList(this User user, string actor)
         {
             UserHelper.AddStringValueToBlackList(user, "Actor", actor);
         }
 
+        /// <summary>
+        /// Adds genre to block rules
+        /// </summary>
+        /// <param name="user">User who adds the genre name to the blocked values</param>
+        /// <param name="genre">Name of the genre</param>
         public static void AddGenreToBlackList(this User user, string genre)
         {
             UserHelper.AddStringValueToBlackList(user, "Genre", genre);
         }
 
+        /// <summary>
+        /// Remove director from the block rules
+        /// </summary>
+        /// <param name="user">User who removes the director name from the blocked values</param>
+        /// <param name="director">Name of the director</param>
         public static void RemoveDirectorFromBlackList(this User user, string director)
         {
             UserHelper.RemoveStringValueFromBlackList(user, "Director", director);
         }
 
+        /// <summary>
+        /// Remove actor from the block rules
+        /// </summary>
+        /// <param name="user">User who removes the actor name from the blocked values</param>
+        /// <param name="actor">Name of the actor</param>
         public static void RemoveActorFromBlackList(this User user, string actor)
         {
             UserHelper.RemoveStringValueFromBlackList(user, "Actor", actor);
         }
 
+        /// <summary>
+        /// Remove genre from the block rules
+        /// </summary>
+        /// <param name="user">User who removes the genre name from the blocked values</param>
+        /// <param name="genre">Name of the genre</param>
         public static void RemoveGenreFromBlackList(this User user, string genre)
         {
             UserHelper.RemoveStringValueFromBlackList(user, "Genre", genre);
         }
 
-        public static bool IsDirectorInBlackList(this User user, string actor)
+        /// <summary>
+        /// Checks if director is in user's blocked values.
+        /// </summary>
+        /// <param name="user">Checked user</param>
+        /// <param name="director">Name of the director</param>
+        public static bool IsDirectorInBlackList(this User user, string director)
         {
-            return UserHelper.IsStringValueInBlackList(user, "Director", actor);
+            return UserHelper.IsStringValueInBlackList(user, "Director", director);
         }
 
+        /// <summary>
+        /// Checks if actor is in user's blocked values.
+        /// </summary>
+        /// <param name="user">Checked user</param>
+        /// <param name="actor">Name of the actor</param>
         public static bool IsActorInBlackList(this User user, string actor)
         {
             return UserHelper.IsStringValueInBlackList(user, "Actor", actor);
         }
 
+        /// <summary>
+        /// Checks if genre is in user's blocked values.
+        /// </summary>
+        /// <param name="user">Checked user</param>
+        /// <param name="genre">Name of the genre</param>
         public static bool IsGenreInBlackList(this User user, string genre)
         {
             return UserHelper.IsStringValueInBlackList(user, "Genre", genre);
         }
 
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">Checked user</param>
+        /// <returns>Names of all blocked directors by user</returns>
         public static List<string> GetDirectorsInBlackList(this User user)
         {
             return UserHelper.GetStringValuesInBlackList(user, "Director");
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">Checked user</param>
+        /// <returns>Names of all blocked actors by user</returns>
         public static List<string> GetActorsInBlackList(this User user)
         {
             return UserHelper.GetStringValuesInBlackList(user, "Actor");
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">Checked user</param>
+        /// <returns>All blocked genres by user</returns>
         public static List<string> GetGenresInBlackList(this User user)
         {
             return UserHelper.GetStringValuesInBlackList(user, "Genre");
         }
         
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose blocked list should be computed</param>
+        /// <param name="allItems">Database context for items</param>
+        /// <returns>Queryable of all user's blocked movies</returns>
         public static IQueryable<Item> ComputeAllBlockedMovies(this User user, DbSet<Item> allItems)
         {
             StringBuilder filterSQL = new StringBuilder($"SELECT * FROM dbo.{nameof(Item)}s WHERE ");
@@ -97,6 +180,10 @@ namespace WebAppForMORecSys.Helpers
             
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose blocked list should be computed</param>
+        /// <returns>Part of sql query for the where clause to compute all blocked movies</returns>
         public static string getAllBlockedItemsSQLWhere(User user)
         {
             StringBuilder filterSQL = new StringBuilder();
@@ -142,7 +229,11 @@ namespace WebAppForMORecSys.Helpers
             return filterSQL.ToString();
         }
 
-
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User that adds new block rule</param>
+        /// <param name="block">Block rule in format "property: value"</param>
+        /// <returns>Message if the addition of the new block rule wasnt successful</returns>
         public static string AddSingleBlockRule(this User user, string block)
         {
             var blockedValue = block.Split(':');
@@ -179,6 +270,13 @@ namespace WebAppForMORecSys.Helpers
 
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User that adds new block rule</param>
+        /// <param name="director">Director to be blocked</param>
+        /// <param name="actor">Actor to be blocked</param>
+        /// <param name="genres">Genres to be blocked</param>
+        /// <returns>Message if the addition of the new block rule wasnt successful</returns>
         public static string AddMultipleBlockRules(this User user, string director = null, string actor = null, string[] genres = null)
         {
             var message = new StringBuilder();

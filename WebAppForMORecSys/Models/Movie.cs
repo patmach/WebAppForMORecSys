@@ -13,11 +13,27 @@ using WebAppForMORecSys.Helpers;
 
 namespace WebAppForMORecSys.Models
 {
+    /// <summary>
+    /// Class that works like Item extension so it can be used as movie
+    /// </summary>
     public static class Movie
     {
+        /// <summary>
+        /// </summary>
+        /// <param name="movie">Movie the director should be returned for</param>
+        /// <returns>Movie director</returns>
         public static string GetDirector(this Item movie) => ItemHelper.getPropertyStringValueFromJSON(movie, "Director") ?? "";
+
+        /// <summary>
+        /// </summary>
+        /// <param name="movie">Movie the actors should be returned searched for</param>
+        /// <returns>Movie actors</returns>
         public static string[] GetActors(this Item movie) => ItemHelper.getPropertyListValueFromJSON(movie, "Actors");
 
+        /// <summary>
+        /// </summary>
+        /// <param name="movie">Movie the release date should be returned for</param>
+        /// <returns>Release date of the movie</returns>
         public static DateTime? GetReleaseDate(this Item movie)
         {
                 DateTime dt = DateTime.MinValue;
@@ -25,16 +41,42 @@ namespace WebAppForMORecSys.Models
                     return dt;
                 return null;
         }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="movie">Movie the genres should be returned searched for</param>
+        /// <returns>Movie genres</returns>
         public static string[] GetGenres(this Item movie) => ItemHelper.getPropertyListValueFromJSON(movie, "Genres");
 
         
-
+        /// <summary>
+        /// Contains all genres that are used for movies
+        /// </summary>
         public static List<string> AllGenres;
 
+        /// <summary>
+        /// Contains directors of all of the movies in database
+        /// </summary>
         public static List<string> AllDirectors;
 
+        /// <summary>
+        /// Contains actors of all of the movies in database
+        /// </summary>
         public static List<string> AllActors;
 
+        /// <summary>
+        /// Filter items according to parameters and returns the result.
+        /// </summary>
+        /// <param name="allItems">Link to all items stored in the database</param>
+        /// <param name="user">User that searched for the specified movies</param>
+        /// <param name="search">Text search on name of the movie</param>
+        /// <param name="director">Searched director</param>
+        /// <param name="actor">Searched actor</param>
+        /// <param name="genres">Searched genres</param>
+        /// <param name="type">Type of search - text search on name / detailed filter</param>
+        /// <param name="releasedateto">Latest searched release date</param>
+        /// <param name="releasedatefrom">Earliest searched release date</param>
+        /// <returns>Items filtered by the parameters</returns>
         public static IQueryable<Item> GetPossibleItems(DbSet<Item> allItems, User user, string search, string director,
           string actor, string[] genres, string type, string releasedateto, string releasedatefrom)
         {
@@ -56,7 +98,18 @@ namespace WebAppForMORecSys.Models
 
         }
 
-        public static IQueryable<Item> FilterByMovieFilter(User user, DbSet<Item> possibleitems, string director, string actor, string[] genres,
+        /// <summary>
+        /// Filter items according to parameters in detailed filter and returns the result.
+        /// </summary>
+        /// <param name="allItems">Link to all items stored in the database</param>
+        /// <param name="user">User that searched for the specified movies</param>
+        /// <param name="director">Searched director</param>
+        /// <param name="actor">Searched actor</param>
+        /// <param name="genres">Searched genres</param>
+        /// <param name="releasedateto">Latest searched release date</param>
+        /// <param name="releasedatefrom">Earliest searched release date</param>
+        /// <returns>Items filtered by the parameters of detailed filter</returns>
+        public static IQueryable<Item> FilterByMovieFilter(User user, DbSet<Item> allItems, string director, string actor, string[] genres,
             string releasedatefrom, string releasedateto)
         {
 
@@ -96,10 +149,13 @@ namespace WebAppForMORecSys.Models
             }
             /*filterSQL.Append(" and ");
             filterSQL.Append(MovieHelper.getAllNotBlockedItemsSQLWhere(user));*/
-            return possibleitems.FromSqlRaw(filterSQL.ToString(), sqlp.ToArray()); 
+            return allItems.FromSqlRaw(filterSQL.ToString(), sqlp.ToArray()); 
         }
 
-
+        /// <summary>
+        /// Loads all possible genres
+        /// </summary>
+        /// <param name="context">Database context</param>
         public static void SetAllGenres(ApplicationDbContext context)
         {
             if (Movie.AllGenres == null)
@@ -111,6 +167,10 @@ namespace WebAppForMORecSys.Models
             }
         }
 
+        /// <summary>
+        /// Loads all possible directors
+        /// </summary>
+        /// <param name="context">Database context</param>
         public static void SetAllDirectors(ApplicationDbContext context)
         {
             if (AllDirectors == null)
@@ -121,6 +181,10 @@ namespace WebAppForMORecSys.Models
             }
         }
 
+        /// <summary>
+        /// Loads all possible actors
+        /// </summary>
+        /// <param name="context">Database context</param>
         public static void SetAllActors(ApplicationDbContext context)
         {
             if (AllActors == null)

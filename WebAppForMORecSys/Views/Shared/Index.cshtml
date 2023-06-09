@@ -28,9 +28,9 @@
     {
         Dictionary<Metric,double> metricsContribution =  null;
             
-        if(Model.ItemsToMetricImportance!=null){
+        if(Model.ItemsToMetricContributionScore!=null){
                 metricsContribution = Enumerable.Range(0, Model.Metrics.Count)
-                    .ToDictionary(i => metricsArr[i], i => Model.ItemsToMetricImportance[index][i]);
+                    .ToDictionary(i => metricsArr[i], i => Model.ItemsToMetricContributionScore[index][i]);
         }       
         
         @await Html.PartialAsync("../"+controller+"/Preview", new PreviewDetailViewModel(item, Model.CurrentUser, Model.CurrentUserRatings, metricsContribution))

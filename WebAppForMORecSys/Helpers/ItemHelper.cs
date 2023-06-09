@@ -9,8 +9,16 @@ using WebAppForMORecSys.Models;
 
 namespace WebAppForMORecSys.Helpers
 {
+    /// <summary>
+    /// Adds new method to be called on item. Mostly setting the json properties
+    /// </summary>
     public class ItemHelper
     {
+        /// <summary>
+        /// </summary>
+        /// <param name="item">Item whose property value should be returned</param>
+        /// <param name="property">Property that should be returned</param>
+        /// <returns>String value of specified property from given item</returns>
         public static string getPropertyStringValueFromJSON(Item item, string property)
         {
             try
@@ -30,6 +38,11 @@ namespace WebAppForMORecSys.Helpers
             return "";
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="item">Item whose property value should be returned</param>
+        /// <param name="property">Property that should be returned</param>
+        /// <returns>List value of specified property from given item</returns>
         public static string[] getPropertyListValueFromJSON(Item item, string property)
         {
             string stringResult = getPropertyStringValueFromJSON(item, property);

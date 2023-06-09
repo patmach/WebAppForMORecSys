@@ -9,27 +9,63 @@ using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Models.ViewModels
 {
+    /// <summary>
+    /// View model for the main page
+    /// </summary>
     public class MainViewModel
     {
+        /// <summary>
+        /// Keys - used metrics, int - default importance for each metrics
+        /// </summary>
         public Dictionary<Metric, int> Metrics { get; set; }
+
+        /// <summary>
+        /// Items to be shown
+        /// </summary>
         public IQueryable<Item> Items { get; set; }
 
-        public double[][] ItemsToMetricImportance { get;set;}
+        /// <summary>
+        /// Metric contribution scores for each item
+        /// </summary>
+        public double[][] ItemsToMetricContributionScore { get;set;}
 
+        /// <summary>
+        /// Searched value from user request. Will be set in the textbox
+        /// </summary>
         public string SearchValue ="";
 
+        /// <summary>
+        /// User for whom the page is loaded
+        /// </summary>
         public User CurrentUser { get; set; }
 
+        /// <summary>
+        /// Ratings of the user
+        /// </summary>
         public List<Rating> CurrentUserRatings { get; set; }
 
-
+        /// <summary>
+        /// Searched values from query. Will be set in filter
+        /// </summary>
         public Dictionary<string, string> FilterValues = new Dictionary<string, string>();
+
+
         public MainViewModel()
         {
             this.Metrics = new Dictionary<Metric, int>();
         }
 
-
+        /// <summary>
+        /// Sets metric importance for the view model
+        /// Priority
+        ///     1. Currently given importance from user - also saved for the user as last
+        ///     2. Last saved given importance from user
+        ///     3. Every metric same importance - 100/(number of metrics)
+        /// </summary>
+        /// <param name="user">User for whom the metrics impotances will be set</param>
+        /// <param name="metrics">Used metrics</param>
+        /// <param name="metricsimportance">Currently given importance from user</param>
+        /// <param name="context">Database context - for loading the last saved given importance from user</param>
         public void SetMetricImportance(User user, List<Metric> metrics, string[] metricsimportance, ApplicationDbContext context)
         {
             int numberOfParts = 0;

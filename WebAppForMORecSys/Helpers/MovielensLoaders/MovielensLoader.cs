@@ -6,18 +6,28 @@ using WebAppForMORecSys.Models;
 
 namespace WebAppForMORecSys.Helpers.MovielensLoaders
 {
+    /// <summary>
+    /// Class that contains method that saves movielens data from files to app database
+    /// </summary>
     public class MovielensLoader
     {
         public MovielensLoader() { }
 
-        static readonly HttpClient httpClient = new HttpClient();
-        static void PrintError(Exception e)
+        /// <summary>
+        /// Print error to log file
+        /// </summary>
+        /// <param name="e">Exception that occured</param>
+        static void LogError(Exception e)
         {
-            File.WriteAllText("log.txt", DateTime.Now.ToString() + e.Message + "\nInner exception:"
+            File.WriteAllText("movielensloader_log.txt", DateTime.Now.ToString() + e.Message + "\nInner exception:"
                 + (e.InnerException?.Message ?? "") + "\n\nST:"
                 + e.StackTrace + "\n\n Inner ST:" + (e.InnerException?.StackTrace ?? ""));
         }
 
+        /// <summary>
+        /// Loads movielens data from files, gets additional info from TMBD API and saves movies to App database 
+        /// </summary>
+        /// <param name="context">Database context</param>
         public static void LoadMovielensData(ApplicationDbContext context)
         {
             List<Item> movies = CSVParsingMethods.ParseMovies();
@@ -29,8 +39,8 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
                 var movie = movies.Where(m => m.Id == int.Parse(link.Id)).FirstOrDefault();
                 if (movie != null)
                 {
-                    JSONParse.AddDetailsToMovie(TMBDApiHelper.getMovieDetail(link).Result, movie);
-                    JSONParse.AddCastToMovie(TMBDApiHelper.getMovieCredits(link).Result, movie);
+                    JSONParse.AddDetailsToMovie(TMBDApiHelper.getMovieDetail(link.TMBDID).Result, movie);
+                    JSONParse.AddCastToMovie(TMBDApiHelper.getMovieCredits(link.TMBDID).Result, movie);
                 }
             }
             try
@@ -44,7 +54,7 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
             }
             catch (Exception ex)
             {
-                PrintError(ex);
+                LogError(ex);
             }
 
             context.Database.OpenConnection();
@@ -76,7 +86,7 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
             }
             catch (Exception ex)
             {
-                PrintError(ex);
+                LogError(ex);
             }
             finally { context.Database.CloseConnection(); }
         }

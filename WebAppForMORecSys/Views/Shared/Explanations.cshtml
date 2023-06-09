@@ -3,16 +3,22 @@
 @using static WebAppForMORecSys.Helpers.UserHelper
 @model WebAppForMORecSys.Models.ViewModels.PreviewDetailViewModel
 @{
-
-    var ordered = Model.metricsContribution.OrderByDescending(mc => mc.Value).ToDictionary(mc => mc.Key, mc => mc.Value);
+    //Order the metrics from the one with the biggest score to the one with lowest
+    var ordered = Model.metricsContribution.OrderBy(mc => mc.Value).Reverse().ToDictionary(mc => mc.Key, mc => mc.Value);
     var orderedMetrics = ordered.Keys.ToArray();
     var keys = orderedMetrics.Select(metric => metric.Id).ToArray();
     var values = ordered.Values.ToArray();
-    string itempreviewid = "preview_" + Model.item.Id;//MUSÍ odpovídat názvu hlavního elementu v Preview
+
+
+    string itempreviewid = "preview_" + Model.item.Id;//MUSÍ odpovídat id hlavního elementu v Preview
     string className = "popover-content" + itempreviewid;
-    string doughnutChartId = "doughnutchart" + Model.item.Id;
+
     string borderImage = Model.MetricsContributionToBorderImage(Model.user, Model.metricsContribution.Values.ToArray(),"right");
+
+    //Which type of explanation should be displayed
     ExplanationView view = Model.user.GetExplanationView();
+    MetricContributionScoreView metricContributionScoreView = Model.user.GetMetricContributionScoreView();
+
     double lastvalue = values!=null ? (values.Length>0 ? values[0] : 0) : 0;
 }
 @if ((view == ExplanationView.BestMetricPopover) || (view == ExplanationView.AllMetricsPopover))
@@ -23,7 +29,21 @@
             {
                 if (@values[i] == 0) break;
                 if ((view == ExplanationView.BestMetricPopover) && (@values[i] != lastvalue)) break;
-                <p style="color: @Model.user.GetMetricIDsToColors()[keys[i]]"><b>@orderedMetrics[i].Name - @((int)values[i]) % </b></p>
+                <p style="color: @Model.user.GetMetricIDsToColors()[keys[i]]">
+                    @if (metricContributionScoreView == MetricContributionScoreView.Percentage)
+                    {
+                        <b>@orderedMetrics[i].Name share - @((int)(100*values[i] / values.Sum())) % </b>
+                    }
+                    else if (metricContributionScoreView == MetricContributionScoreView.Raw)
+                    {
+                        <b>@orderedMetrics[i].Name score - @Math.Round(values[i], 2)</b>
+                    }
+                    else if (metricContributionScoreView == MetricContributionScoreView.HundredTimes)
+                    {
+                        <b>@orderedMetrics[i].Name score - @Math.Round(values[i]*100, 2)</b>
+                    }
+                </p>
+
                 <p>@orderedMetrics[i].DefaultExplanation</p>
                 <br/>
                 lastvalue = values[i];
@@ -34,7 +54,7 @@
 <script>
     $('#@itempreviewid').on('inserted.bs.popover', function () {
         let popoverbodies = document.getElementsByClassName("popover-body");
-        /*for is there because sometimes popover is inserted faster than other is hidden.*/ 
+        /*for is there because sometimes new popover is inserted faster than the previous is hidden.*/ 
         for (let i=0; i<popoverbodies.length; i++){
             let popoverbody=popoverbodies[i];
             popoverbody.style.borderTop = "5px solid";

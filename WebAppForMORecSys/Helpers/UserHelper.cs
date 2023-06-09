@@ -8,8 +8,15 @@ using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Helpers
 {
+    /// <summary>
+    /// Adds new method to be called on user. Mostly setting the json properties
+    /// </summary>
     public static class UserHelper
     {
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose JSONBlockRules value should be returned</param>
+        /// <returns>Value of property JSONBlockRules</returns>
         private static dynamic GetBlockRuleDynamic(User user)
         {
             dynamic jsonObj = JsonConvert.DeserializeObject(user.JSONBlockRules??"");
@@ -17,6 +24,10 @@ namespace WebAppForMORecSys.Helpers
 
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose UserChoice value should be returned</param>
+        /// <returns>>Value of property UserChoice</returns>
         private static dynamic GetUserChoicesDynamic(User user)
         {
             dynamic jsonObj = JsonConvert.DeserializeObject(user.UserChoices ?? "");
@@ -24,6 +35,10 @@ namespace WebAppForMORecSys.Helpers
 
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose JSONFilter value should be returned</param>
+        /// <returns>>Value of property JSONFilter</returns>
         private static dynamic GetJSONFilterDynamic(User user)
         {
             dynamic jsonObj = JsonConvert.DeserializeObject(user.JSONFilter ?? "");
@@ -31,6 +46,11 @@ namespace WebAppForMORecSys.Helpers
 
         }
 
+        /// <summary>
+        /// Adds item to block rules if it isnt present
+        /// </summary>
+        /// <param name="user">User who adds the item to the blocked items</param>
+        /// <param name="itemId">ID of item that should be added to the blocked items</param>
         public static void AddItemToBlackList(this User user, int itemId)
         {
             var jsonObj = GetBlockRuleDynamic(user);
@@ -46,6 +66,12 @@ namespace WebAppForMORecSys.Helpers
             BlockedItemsCache.RemoveBlockedItemIdsForUser(user.Id.ToString());
         }
 
+        /// <summary>
+        /// Adds new block rule for user
+        /// </summary>
+        /// <param name="user">User that adds the new block rule</param>
+        /// <param name="name">Name of key in the block rule</param>
+        /// <param name="value">The blocked value</param>
         public static void AddStringValueToBlackList(this User user, string name, string value)
         {
             var jsonObj = AddStringValue(GetBlockRuleDynamic(user), user, name, value);
@@ -54,6 +80,15 @@ namespace WebAppForMORecSys.Helpers
             BlockedItemsCache.RemoveBlockedItemIdsForUser(user.Id.ToString());
         }
 
+        /// <summary>
+        /// Adds to the json object new value to the given key
+        /// </summary>
+        /// <param name="jsonObj">Current value of JSON property</param>
+        /// <param name="user">User that addsnew value to one of its JSON properties</param>
+        /// <param name="name">Name of key</param>
+        /// <param name="value">The added value</param>
+        /// <param name="uniqueValues">True - Checks if value is already present and then dont add the value. False - Add anyway</param>
+        /// <returns></returns>
         public static dynamic AddStringValue(dynamic jsonObj,User user ,string name, string value, bool uniqueValues = true)
         {
             if (jsonObj == null)
@@ -70,6 +105,14 @@ namespace WebAppForMORecSys.Helpers
             return jsonObj;
         }
 
+        /// <summary>
+        /// Sets new value to the given key in the given JSON object
+        /// </summary>
+        /// <param name="jsonObj">Current value of JSON property</param>
+        /// <param name="user">User that sets new value to one of its JSON properties</param>
+        /// <param name="name">Name of key</param>
+        /// <param name="value">Value to be set</param>
+        /// <returns></returns>
         private static dynamic SetStringValue(dynamic jsonObj, User user, string name, string value)
         {
             if (jsonObj == null)
@@ -87,8 +130,11 @@ namespace WebAppForMORecSys.Helpers
             return jsonObj;
         }
 
-
-
+        /// <summary>
+        /// Removes item to block rules if it is present
+        /// </summary>
+        /// <param name="user">User who removes the item to the blocked items</param>
+        /// <param name="itemId">ID of item that should be removed from the blocked items</param>
         public static void RemoveItemFromBlackList(this User user, int itemId)
         {
             var jsonObj = GetBlockRuleDynamic(user);
@@ -105,7 +151,12 @@ namespace WebAppForMORecSys.Helpers
             BlockedItemsCache.RemoveBlockedItemIdsForUser(user.Id.ToString());
         }
 
-
+        /// <summary>
+        /// Removes block rule for user
+        /// </summary>
+        /// <param name="user">User that removes the block rule</param>
+        /// <param name="name">Name of key in the block rule</param>
+        /// <param name="value">The unblocked value</param>
         public static void RemoveStringValueFromBlackList(this User user, string name, string value)
         {
             var jsonObj = RemoveStringValue(GetBlockRuleDynamic(user), user, name, value);
@@ -113,18 +164,38 @@ namespace WebAppForMORecSys.Helpers
             BlockedItemsCache.RemoveBlockedItemIdsForUser(user.Id.ToString());
         }
 
+        /// <summary>
+        /// Removes set user choice
+        /// </summary>
+        /// <param name="user">User from whom his set choice should be removed</param>
+        /// <param name="name">Name of key in UserChoice</param>
+        /// <param name="value">The value to be removed</param>
         public static void RemoveStringValueFromUserChoices(this User user, string name, string value)
         {
             var jsonObj = RemoveStringValue(GetUserChoicesDynamic(user), user, name, value);
             user.UserChoices = JsonConvert.SerializeObject(jsonObj);
         }
 
+        /// <summary>
+        /// Removes saved filter
+        /// </summary>
+        /// <param name="user">User from whom his saved filter should be removed</param>
+        /// <param name="name">Name of key in JSONFIlter</param>
+        /// <param name="value">should be removedalue to be removed</param>
         public static void RemoveStringValueFromJSONFilter(this User user, string name, string value)
         {
             var jsonObj = RemoveStringValue(GetJSONFilterDynamic(user), user, name, value);
             user.JSONFilter = JsonConvert.SerializeObject(jsonObj);
         }
 
+        /// <summary>
+        /// Removes value of the given key from the json object
+        /// </summary>
+        /// <param name="jsonObj">Current value of JSON property</param>
+        /// <param name="user">User from whom his saved value in one of its JSON properties should be removed</param>
+        /// <param name="name">Name of key</param>
+        /// <param name="value">Value to be removed</param>
+        /// <returns></returns>
         private static dynamic RemoveStringValue(dynamic jsonObj, User user, string name, string value)
         {
             if ((jsonObj == null) || (!jsonObj.ContainsKey(name)))
@@ -138,6 +209,11 @@ namespace WebAppForMORecSys.Helpers
             return jsonObj;
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">Checked user</param>
+        /// <param name="itemId">ID of checked item</param>
+        /// <returns>Is item blocked by user?</returns>
         public static bool IsItemInBlackList(this User user, int itemId)
         {
             var jsonObj = GetBlockRuleDynamic(user);
@@ -151,6 +227,12 @@ namespace WebAppForMORecSys.Helpers
             return false;
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">Checked user</param>
+        /// <param name="name">Checked key</param>
+        /// <param name="value":Checked value</param>
+        /// <returns>Is value of the given key blocked by user?</returns>
         public static bool IsStringValueInBlackList(this User user, string name, string value)
         {
             var jsonObj = GetBlockRuleDynamic(user);
@@ -164,6 +246,10 @@ namespace WebAppForMORecSys.Helpers
             return false;
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose blocked items should be returned</param>
+        /// <returns>IDs of items blocked by user</returns>
         public static List<int> GetItemsInBlackList(this User user)
         {
             var jsonObj = GetBlockRuleDynamic(user);
@@ -175,24 +261,46 @@ namespace WebAppForMORecSys.Helpers
             return listOfIDs;
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose blocked values should be returned</param>
+        /// <param name="name">Name of checked key</param>
+        /// <returns>Values of given key blocked by user</returns>
         public static List<string> GetStringValuesInBlackList(this User user, string name)
         {
             var jsonObj = GetBlockRuleDynamic(user);
             return GetStringValues(user, name, jsonObj);
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose choices should be returned</param>
+        /// <param name="name">Name of checked key</param>
+        /// <returns>Chosen values by user</returns>
         private static List<string> GetStringValuesInUserChoices(this User user, string name)
         {
             var jsonObj = GetUserChoicesDynamic(user);
             return GetStringValues(user, name, jsonObj);
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose filter settings should be returned</param>
+        /// <param name="name">Name of checked key</param>
+        /// <returns>Users filter settings for given key</returns>
         private static List<string> GetStringValuesInJSONFilter(this User user, string name)
         {
             var jsonObj = GetJSONFilterDynamic(user);
             return GetStringValues(user, name, jsonObj);
         }
 
+        /// <summary>
+        /// Gets all values of the given key in the given JSON object
+        /// </summary>
+        /// <param name="jsonObj">Current value of JSON property</param>
+        /// <param name="user">User whose set values should be returned</param>
+        /// <param name="name">Name of key</param>
+        /// <returns>Values of given key from the given JSON property</returns>
         private static List<string> GetStringValues(User user, string name, dynamic jsonObj) {
             if ((jsonObj == null) || (jsonObj[name] == null))
             {
@@ -203,6 +311,11 @@ namespace WebAppForMORecSys.Helpers
         
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose choice should be returned</param>
+        /// <param name="name">Name of checked key</param>
+        /// <returns>Chosen value by user</returns>
         private static string GetStringValueInUserChoices(this User user, string name)
         {
             var jsonObj = GetUserChoicesDynamic(user);
@@ -213,6 +326,11 @@ namespace WebAppForMORecSys.Helpers
             return ((JToken)jsonObj[name]).ToString();
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User who sets new choice value</param>
+        /// <param name="name">Name of checked key to which the new value belongs</param>
+        /// <param name="value">Value to be saves</param>
 
         private static void SetStringValueToUserChoices(this User user, string name, string value)
         {
@@ -220,23 +338,44 @@ namespace WebAppForMORecSys.Helpers
             user.UserChoices = JsonConvert.SerializeObject(jsonObj);
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User who adds new choice value</param>
+        /// <param name="name">Name of checked key to which the new values belongs</param>
+        /// <param name="value">Value to be saved</param>
+        /// <param name="uniqueValues">True - Checks if value is already present and then dont add the value. False - Add anyway</param>
         private static void AddStringValueToUserChoices(this User user, string name, string value, bool uniqueValues = true)
         {
             var jsonObj = AddStringValue(GetUserChoicesDynamic(user), user, name, value, uniqueValues);
             user.UserChoices = JsonConvert.SerializeObject(jsonObj);
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User who adds new filter settings</param>
+        /// <param name="name">Name of checked key to which the new filter settings value belongs</param>
+        /// <param name="value">Value to be saved</param>
+        /// <param name="uniqueValues">True - Checks if value is already present and then dont add the value. False - Add anyway</param>
         private static void AddStringValueToJSONFilter(this User user, string name, string value, bool uniqueValues = true)
         {
             var jsonObj = AddStringValue(GetJSONFilterDynamic(user), user, name, value, uniqueValues);
             user.JSONFilter = JsonConvert.SerializeObject(jsonObj);
         }
 
+        /// <summary>
+        /// Sets chosen metrics view value
+        /// </summary>
+        /// <param name="user">User that sets the value</param>
+        /// <param name="value">Value to be saved</param>
         public static void SetMetricsView(this User user, int value)
         {
             SetStringValueToUserChoices(user, "MetricsView", value.ToString());
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose saved value should be returned</param>
+        /// <returns>Saved type of metrics view</returns>
         public static MetricsView GetMetricsView(this User user)
         {
             var metricsview = GetStringValueInUserChoices(user, "MetricsView");
@@ -251,11 +390,20 @@ namespace WebAppForMORecSys.Helpers
             }
         }
 
+        /// <summary>
+        /// Sets chosen explanation view value
+        /// </summary>
+        /// <param name="user">User that sets the value</param>
+        /// <param name="value">Value to be saved</param>
         public static void SetExplanationView(this User user, int value)
         {
             SetStringValueToUserChoices(user, "ExplanationView", value.ToString());
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose saved value should be returned</param>
+        /// <returns>Saved type of explanation view </returns>
         public static ExplanationView GetExplanationView(this User user)
         {
             var Explanationview = GetStringValueInUserChoices(user, "ExplanationView");
@@ -270,11 +418,48 @@ namespace WebAppForMORecSys.Helpers
             }
         }
 
+        /// <summary>
+        /// Sets chosen metric contribution score view view value
+        /// </summary>
+        /// <param name="user">User that sets the value</param>
+        /// <param name="value">Value to be saved</param>
+        public static void SetMetricContributionScoreView(this User user, int value)
+        {
+            SetStringValueToUserChoices(user, "MetricContributionScoreView", value.ToString());
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose saved value should be returned</param>
+        /// <returns>Saved type of metric contribution score view</returns>
+        public static MetricContributionScoreView GetMetricContributionScoreView(this User user)
+        {
+            var MetricContributionScoreView = GetStringValueInUserChoices(user, "MetricContributionScoreView");
+            int value;
+            if ((MetricContributionScoreView == null) || !int.TryParse(MetricContributionScoreView, out value))
+            {
+                return SystemParameters.MetricContributionScoreView;
+            }
+            else
+            {
+                return (MetricContributionScoreView)value;
+            }
+        }
+
+        /// <summary>
+        /// Sets chosen type of block rule addition
+        /// </summary>
+        /// <param name="user">User that sets the value</param>
+        /// <param name="value">Value to be saved</param>
         public static void SetAddBlockRuleView(this User user, int value)
         {
             SetStringValueToUserChoices(user, "AddBlockRuleView", value.ToString());
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose saved value should be returned</param>
+        /// <returns>Saved type of block rule addition</returns>
         public static AddBlockRuleView GetAddBlockRuleView(this User user)
         {
             var addBlockRuleView = GetStringValueInUserChoices(user, "AddBlockRuleView");
@@ -289,6 +474,11 @@ namespace WebAppForMORecSys.Helpers
             }
         }
 
+        /// <summary>
+        /// Sets chosen colors for metrics
+        /// </summary>
+        /// <param name="user">User that sets the values</param>
+        /// <param name="value">Values to be saved</param>
         public static void SetColors(this User user, string[] value)
         {
             foreach (var color in GetStringValuesInUserChoices(user, "Colors")) {
@@ -300,6 +490,10 @@ namespace WebAppForMORecSys.Helpers
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose saved values should be returned</param>
+        /// <returns>Chosen colors for metrics</returns>
         public static string[] GetColors(this User user)
         {
             var colors = GetStringValuesInUserChoices(user, "Colors");
@@ -312,6 +506,10 @@ namespace WebAppForMORecSys.Helpers
             return colors.ToArray(); 
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose saved color values should be mapped to metrics</param>
+        /// <returns>Metrics mapped on chosen colors</returns>
         public static Dictionary<int,string> GetMetricIDsToColors(this User user)
         {
             var colors = GetColors(user);
@@ -319,6 +517,10 @@ namespace WebAppForMORecSys.Helpers
             return Enumerable.Range(0, metrics.Count).ToDictionary(i => metrics[i], i => colors[i]);
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose saved value to JSONFilter propert should be returned</param>
+        /// <returns>Saved value of metrics importance in JSONFilter property</returns>
         public static string[] GetMetricsImportance(this User user)
         {
             var metricsImportance = GetStringValuesInJSONFilter(user, "metricsImportance");
@@ -327,6 +529,11 @@ namespace WebAppForMORecSys.Helpers
             return metricsImportance.ToArray();
         }
 
+        /// <summary>
+        /// Saves metrics importance value to JSONFilter property
+        /// </summary>
+        /// <param name="user">User for which the values should be saved</param>
+        /// <param name="value">Values to be saved</param>
         public static void SetMetricsImportance(this User user, string[] value)
         {
             foreach (var metricImportance in GetStringValuesInJSONFilter(user, "metricsImportance"))

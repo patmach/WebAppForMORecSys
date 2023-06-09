@@ -5,6 +5,8 @@
 @{
 
     string moviepreviewclass = "preview_" + Model.item.Id; //Do not change!
+
+    //Sets the visibility of show x hide button
     string hideDisplay = "";
     string showDisplay = "none";
     string opacity = "1";
@@ -14,6 +16,8 @@
         showDisplay = "";
         opacity = "0.5";
     }
+
+    //Sets border. Part of explanation when its preview of a recommended movie
     string borderImage = "";
     string borderSize = "0px";
     if (Model.metricsContribution != null)

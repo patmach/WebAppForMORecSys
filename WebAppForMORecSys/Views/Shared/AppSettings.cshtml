@@ -15,13 +15,13 @@
     }
     <h4>Which metrics filter do you want to use?</h4>
     <div style="display:flex; margin-bottom:3px; width:100%">
-    @foreach (var value in Enum.GetValues(typeof(MetricsView))){
+    @foreach (MetricsView value in Enum.GetValues(typeof(MetricsView))){
 
             string typeOfBtn = "btn-secondary";
             if (Model.CurrentUser.GetMetricsView() == (MetricsView)value)
                 typeOfBtn = "btn-primary";
             <a style="margin:auto" class="btn @typeOfBtn" href='@Url.Action("SetMetricsView","Home", new { metricsview=index })'>
-                @value
+                @value.ToFriendlyString()
             </a>
             index++;
     }
@@ -89,13 +89,26 @@
     }
     <h4>Which type of explanations do you want to see?</h4>
     <div style="display:flex; margin-bottom:3px; width:100%">
-        @foreach (var value in Enum.GetValues(typeof(ExplanationView)))
+        @foreach (MetricContributionScoreView value in Enum.GetValues(typeof(MetricContributionScoreView)))
+        {
+            string typeOfBtn = "btn-secondary";
+            if (Model.CurrentUser.GetMetricContributionScoreView() == (MetricContributionScoreView)value)
+                typeOfBtn = "btn-primary";
+            <a style="margin:auto" class="btn @typeOfBtn" href='@Url.Action("SetMetricContributionScoreView","Home", new { metricContributionScoreView=index })'>
+                @value.ToFriendlyString()
+            </a>
+            index++;
+        }
+        @{
+            index = 0;
+        }
+        @foreach (ExplanationView value in Enum.GetValues(typeof(ExplanationView)))
         {
             string typeOfBtn = "btn-secondary";
             if (Model.CurrentUser.GetExplanationView() == (ExplanationView)value)
                 typeOfBtn = "btn-primary";
             <a style="margin:auto" class="btn @typeOfBtn" href='@Url.Action("SetExplanationView","Home", new { explanationView=index })'>
-                @value
+                @value.ToFriendlyString()
             </a>
             index++;
         }
@@ -108,7 +121,7 @@
         for (int j = 0; j < Model.Metrics.Count; j++)
         {
             int valueToAdd = (j == 0) ? index * 5 : (j == (Model.Metrics.Count - 1) ? index * -5 : 0);
-            metricsContribution.Add(Model.Metrics.Keys.ToList()[j], 100 / Model.Metrics.Count() + valueToAdd);
+            metricsContribution.Add(Model.Metrics.Keys.ToList()[j], 80 + valueToAdd);
         }
 
         @await Html.PartialAsync("../"+WebAppForMORecSys.Settings.SystemParameters.Controller+"/Preview", new PreviewDetailViewModel(item, Model.CurrentUser, Model.CurrentUserRatings, metricsContribution))
@@ -123,6 +136,7 @@
 </div>
 
 <script>
+    /*Sets chosen colors to default ones*/
     function resetcolors(){
         let num_of_metrics = @Model.Metrics.Keys.Count;
         let colors=[];
@@ -137,6 +151,8 @@
         }
 
     }
+
+    /*Sets popover window to display properly*/
     $(document).ready(function () {
         popoverExplanationOptions = {
         content: function () {
@@ -151,13 +167,19 @@
         };
         $('.ItemPreview').popover(popoverExplanationOptions)
     });
+
+    /*Saves scroll position before reloading (after setting some of the paramters)*/
+    window.onbeforeunload = function (e) {
+        localStorage.setItem('scrollpos', window.scrollY);
+    };
+    
+    /*After reloading scroll position is the same as before.*/
     document.addEventListener("DOMContentLoaded", function (event) {
         var scrollpos = localStorage.getItem('scrollpos');
         if (scrollpos) window.scrollTo(0, scrollpos);
     });
 
-    window.onbeforeunload = function (e) {
-        localStorage.setItem('scrollpos', window.scrollY);
-    };
+
+    
 </script>
 
