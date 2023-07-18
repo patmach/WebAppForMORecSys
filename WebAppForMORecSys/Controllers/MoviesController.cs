@@ -52,6 +52,7 @@ namespace WebAppForMORecSys.Controllers
         {
             _context = context;
             _userManager = userManager;
+            //new MovielensLoader(filter: true).LoadMovielensData(context/*, moviesFromLoadedFile: true*/);
             Movie.SetAllGenres(context);
             Movie.SetAllDirectors(context);
             Movie.SetAllActors(context);
@@ -97,6 +98,7 @@ namespace WebAppForMORecSys.Controllers
             IQueryable<Item> whitelist = Movie.GetPossibleItems(_context.Items, user, search, director, actor, genres, typeOfSearch, releasedateto, releasedatefrom);
             int[] whitelistIDs = (whitelist == null) ? new int[0] : await whitelist.Select(item => item.Id).ToArrayAsync();
             List<int> blacklist = BlockedItemsCache.GetBlockedItemIdsForUser(user.Id.ToString(),_context);
+            blacklist=blacklist.Union(user.GetRatedAndSeenItems(_context)).ToList();
             var recommendations = await RecommenderCaller.GetRecommendations(whitelistIDs, blacklist.ToArray(), 
                         viewModel.Metrics.Values.ToArray(), user.Id, rs.HTTPUri);
             if (recommendations.Count > 0)

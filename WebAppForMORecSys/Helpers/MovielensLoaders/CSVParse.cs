@@ -17,15 +17,17 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
         /// Read the csv/dat file and creates list of movies corresponding to the file.
         /// </summary>
         /// <returns>List of all movies</returns>
-        public static List<Item> ParseMovies()
+        public static List<Item> ParseMovies(string movielensDataset)
         {
             var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                HasHeaderRecord = false,
-                Delimiter = "::"
+                HasHeaderRecord = movielensDataset == "25m" ? true : movielensDataset == "1m" ? false : false,
+                Delimiter = movielensDataset == "25m" ? "," : movielensDataset == "1m" ? "::" : ""
             };
             List<Item> movies = new List<Item>();
-            using (var reader = new StreamReader("Resources/ml-1m/movies.dat"))//("Resources/Movielens25m/movies.csv"))
+            string moviesfile = movielensDataset == "25m" ? "Resources/Movielens25m/movies.csv" :
+                movielensDataset == "1m" ? "Resources/ml-1m/movies.dat" : "";
+            using (var reader = new StreamReader(moviesfile))
             using (var csv = new CsvReader(reader, configuration))
             {
                 csv.Context.RegisterClassMap<MovieMap>();
@@ -37,17 +39,43 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
         }
 
         /// <summary>
+        /// Read the csv file with parsed movies. It should be called
+        /// when movies where loaded but not everzthing was successfully added to db.
+        /// </summary>
+        /// <returns>List of all movies with all the info</returns>
+        public static List<Item> ParseLoadedMovies()
+        {
+            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = true,
+                Delimiter= ":::",
+            };
+            List<Item> movies = new List<Item>();
+            string moviesfile = "moviesloaded.csv";
+            using (var reader = new StreamReader(moviesfile))
+            using (var csv = new CsvReader(reader, configuration))
+            {
+                csv.Context.RegisterClassMap<LoadedMovieMap>();
+                movies = csv.GetRecords<Item>().ToList();
+            }
+
+            return movies;
+        }
+
+        /// <summary>
         /// Read the csv/dat file and creates list of movie links (IMBD ID and TMBD ID) corresponding to the file.
         /// </summary>
         /// <returns>List of movie links</returns>
-        public static List<Link> ParseLinks()
+        public static List<Link> ParseLinks(string movielensDataset)
         {
             var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = true,
             };
             List<Link> links = new List<Link>();
-            using (var reader = new StreamReader("Resources/ml-1m/links.csv"))//("Resources/Movielens25m/links.csv"))
+            var linksfile = movielensDataset == "25m" ? "Resources/Movielens25m/links.csv" :
+                movielensDataset == "1m" ? "Resources/ml-1m/links.csv" : "";
+            using (var reader = new StreamReader(linksfile))
             using (var csv = new CsvReader(reader, configuration))
             {
                 csv.Context.RegisterClassMap<LinkMap>();
@@ -60,15 +88,17 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
         /// Read the csv/dat file and creates list of ratings corresponding to the file.
         /// </summary>
         /// <returns>List of ratings</returns>
-        public static List<Rating> ParseRatings()
+        public static List<Rating> ParseRatings(string movielensDataset)
         {
             var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                HasHeaderRecord = false,
-                Delimiter = "::"
+                HasHeaderRecord = movielensDataset == "25m" ? true : movielensDataset == "1m" ? false : false,
+                Delimiter = movielensDataset == "25m" ? "," : movielensDataset == "1m" ? "::" : ""
             };
             List<Rating> ratings = new List<Rating>();
-            using (var reader = new StreamReader("Resources/ml-1m/ratings.dat"))//("Resources/Movielens25m/ratings.csv"))
+            var ratingsfile= movielensDataset == "25m" ? "Resources/Movielens25m/ratings.csv" :
+                movielensDataset == "1m" ? "Resources/ml-1m/ratings.dat" : "";
+            using (var reader = new StreamReader(ratingsfile))
             using (var csv = new CsvReader(reader, configuration))
             {
                 csv.Context.RegisterClassMap<RatingMap>();
@@ -88,6 +118,18 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
             Map(p => p.Id).Convert(args => int.Parse(args.Row.GetField(0)));
             Map(p => p.Name).Index(1);
             Map(p => p.JSONParams).Index(2);
+        }
+    }
+
+    public class LoadedMovieMap : ClassMap<Item>
+    {
+        public LoadedMovieMap()
+        {
+            Map(p => p.Id).Index(0);
+            Map(p => p.Name).Index(1);
+            Map(p => p.ImageURL).Index(2);
+            Map(p => p.ShortDescription).Index(3);
+            Map(p => p.JSONParams).Index(4);
         }
     }
 

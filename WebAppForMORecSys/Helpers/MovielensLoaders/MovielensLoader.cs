@@ -1,4 +1,5 @@
 ﻿using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using WebAppForMORecSys.Data;
@@ -11,7 +12,14 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
     /// </summary>
     public class MovielensLoader
     {
-        public MovielensLoader() { }
+
+        public string movielensDataset;
+        public bool filter;
+        public MovielensLoader(string movielensDataset="25m", bool filter=false) 
+        {
+            this.movielensDataset = movielensDataset;
+            this.filter = filter;
+        }
 
         /// <summary>
         /// Print error to log file
@@ -28,27 +36,42 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
         /// Loads movielens data from files, gets additional info from TMBD API and saves movies to App database 
         /// </summary>
         /// <param name="context">Database context</param>
-        public static void LoadMovielensData(ApplicationDbContext context)
+        public void LoadMovielensData(ApplicationDbContext context, bool moviesFromLoadedFile=false)
         {
-            List<Item> movies = CSVParsingMethods.ParseMovies();
-            var links = CSVParsingMethods.ParseLinks();
-            string apiKey = File.ReadAllText("apikeyTMBD.txt");
-
-            foreach (var link in links)
+            List<Item> movies;
+            List<Link> links;
+            if (moviesFromLoadedFile)
             {
-                var movie = movies.Where(m => m.Id == int.Parse(link.Id)).FirstOrDefault();
-                if (movie != null)
+                movies = CSVParsingMethods.ParseLoadedMovies();
+            }
+            else
+            {
+                movies = CSVParsingMethods.ParseMovies(movielensDataset);
+                links = CSVParsingMethods.ParseLinks(movielensDataset);
+                string apiKey = File.ReadAllText("apikeyTMBD.txt");
+
+                foreach (var link in links)
                 {
-                    JSONParse.AddDetailsToMovie(TMBDApiHelper.getMovieDetail(link.TMBDID).Result, movie);
-                    JSONParse.AddCastToMovie(TMBDApiHelper.getMovieCredits(link.TMBDID).Result, movie);
+                    var movie = movies.Where(m => m.Id == int.Parse(link.Id)).FirstOrDefault();
+                    if (movie != null)
+                    {
+                        JSONParse.AddDetailsToMovie(TMBDApiHelper.getMovieDetail(link.TMBDID).Result, movie);
+                        JSONParse.AddCastToMovie(TMBDApiHelper.getMovieCredits(link.TMBDID).Result, movie);
+                    }
                 }
+                movies.ForEach(m => { m.JSONParams = '{' + m.JSONParams.Replace("\n", "").Replace("...", "").Replace("\t", "") + '}'; });
             }
             try
             {
-                movies.ForEach(m => { m.JSONParams = '{' + m.JSONParams.Replace("\n", "").Replace("...","").Replace("\t","") + '}'; });
-                using (var writer = new StreamWriter("moviesloaded.csv"))
-                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
+                    HasHeaderRecord = true,
+                    Delimiter= ":::",
+                };
+                using (var writer = new StreamWriter("moviesloaded.csv"))
+                using (var csv = new CsvWriter(writer,configuration))
+                {
+                    csv.Context.RegisterClassMap<LoadedMovieMap>();
                     csv.WriteRecords(movies);
                 }
             }
@@ -56,7 +79,22 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
             {
                 LogError(ex);
             }
+            var ratings = CSVParsingMethods.ParseRatings(movielensDataset);
 
+            var users = ratings.DistinctBy(r => r.UserID).Select(r => new User { Id = r.UserID, UserName = "movielensUser" + r.UserID }).ToList();
+
+            if (filter)
+            {
+                ratings = Filtering.RatingLowFilter(ratings);
+                movies = Filtering.MovieFilterByYear(movies);
+                ratings = Filtering.RatingFilterOld(ratings);
+                movies = Filtering.RatingsPerYearFilter(movies, ratings);
+                ratings = Filtering.RatingFilter(movies, users, ratings);
+                users = Filtering.RatingUserFilter(users, ratings, 100);
+                ratings = Filtering.RatingFilter(movies, users, ratings);
+                movies = Filtering.RatedMovieFilter(movies, ratings);
+                users = Filtering.UsersWithRaitingFilter(users, ratings);
+            }
             context.Database.OpenConnection();
             try
             {
@@ -66,10 +104,7 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
                 context.Database.ExecuteSql($"SET IDENTITY_INSERT dbo.Items OFF;");
 
 
-                var ratings = CSVParsingMethods.ParseRatings();
-
-                var users = ratings.DistinctBy(r => r.UserID).Select(r => new User { Id = r.UserID, UserName = "movielensUser" + r.UserID });
-
+                
                 context.Database.ExecuteSql($"SET IDENTITY_INSERT dbo.Users ON;");
                 context.AddRange(users);
                 context.SaveChanges();

@@ -131,8 +131,14 @@ namespace WebAppForMORecSys.Models
             {
                 filterSQL.Append(" and (EXISTS(");
                 filterSQL.Append("SELECT value FROM OPENJSON(JSON_QUERY(JSONParams, '$.Genres'))  WHERE value IN ");
-                filterSQL.Append($"(@genres))) ");
-                sqlp.Add(new SqlParameter("@genres", $"%{String.Join(",", genres.Select(g => $"'{g}'"))}%"));
+                filterSQL.Append($"(@genre0");
+                sqlp.Add(new SqlParameter("@genre0", $"{genres[0]}"));
+                for (int i = 1; i < genres.Length; i++)
+                {
+                    filterSQL.Append($",@genre{i}");
+                    sqlp.Add(new SqlParameter($"@genre{i}", $"{genres[i]}"));
+                }
+                filterSQL.Append(")))");
             }
             DateTime dt;
             if (!releasedatefrom.IsNullOrEmpty() && DateTime.TryParse(releasedatefrom, out dt))
