@@ -48,7 +48,9 @@ namespace WebAppForMORecSys.Models
         /// <returns>Movie genres</returns>
         public static string[] GetGenres(this Item movie) => ItemHelper.getPropertyListValueFromJSON(movie, "Genres");
 
-        
+        public static string GetYoutubeKey(this Item movie) => ItemHelper.getPropertyStringValueFromJSON(movie, "YoutubeKey") ?? null;
+
+
         /// <summary>
         /// Contains all genres that are used for movies
         /// </summary>

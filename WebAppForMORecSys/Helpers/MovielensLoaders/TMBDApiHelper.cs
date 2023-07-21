@@ -62,5 +62,27 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
             var jsonResponse = await httpResponse.Content.ReadAsStringAsync();
             return jsonResponse;
         }
+
+        /// <summary>
+        /// Calls API for movie credits 
+        /// </summary>
+        /// <param name="TMBDID">ID of movie in TMBD </param>
+        /// <returns>API response with movie credits</returns>
+        public static async Task<string> getMovieYoutubeKey(string TMBDID)
+        {
+            string urlVideo = "https://api.themoviedb.org/3/movie/" + TMBDID + "/videos?api_key=" + apiKey;
+            using HttpResponseMessage httpResponse = await httpClient.GetAsync(urlVideo);
+            try
+            {
+                httpResponse.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.Write(TMBDID + ex.ToString());
+            }
+
+            var jsonResponse = await httpResponse.Content.ReadAsStringAsync();
+            return jsonResponse;
+        }
     }
 }

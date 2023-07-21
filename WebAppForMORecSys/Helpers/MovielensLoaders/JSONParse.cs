@@ -100,6 +100,42 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
 
         }
 
+        /// <summary>
+        /// Parses movie credits TMBD API response and saves the info to given movie
+        /// </summary>
+        /// <param name="response">Response from TMBD API</param>
+        /// <param name="movie">Movie to which the information should be added</param>
+        public static void AddYoutubeKeyToMovie(string response, Item movie)
+        {
+            JsonObject jsonResponse = (JsonObject)JsonNode.Parse(response);
+            JsonNode results;
+            jsonResponse.TryGetPropertyValue("results", out results);
+            JsonArray jArr = results.AsArray();
+            foreach(JsonNode node in jArr){
+                var nodeobj = node.AsObject();
+                JsonNode site;
+                nodeobj.TryGetPropertyValue("site", out site);
+                JsonNode type;
+                nodeobj.TryGetPropertyValue("type", out type);
+                if ((site.ToString().ToLower() == "youtube")&&(type.ToString().ToLower()=="trailer"))
+                {
+                    JsonNode key;
+                    nodeobj.TryGetPropertyValue("key", out key);
+                    if (key != null)
+                    {
+                        JsonObject jparams = (JsonObject)JsonNode.Parse(movie.JSONParams);
+                        jparams.Remove("YoutubeKey");
+                        jparams["YoutubeKey"]= key.ToString();
+                        movie.JSONParams = jparams.ToJsonString();
+                        break;
+                    }
+
+                }
+            }
+            
+
+        }
+
 
     }
 }

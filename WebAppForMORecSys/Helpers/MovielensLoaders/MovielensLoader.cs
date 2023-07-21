@@ -57,9 +57,11 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
                     {
                         JSONParse.AddDetailsToMovie(TMBDApiHelper.getMovieDetail(link.TMBDID).Result, movie);
                         JSONParse.AddCastToMovie(TMBDApiHelper.getMovieCredits(link.TMBDID).Result, movie);
+                        JSONParse.AddYoutubeKeyToMovie(TMBDApiHelper.getMovieYoutubeKey(link.TMBDID).Result, movie);
+
                     }
                 }
-                movies.ForEach(m => { m.JSONParams = '{' + m.JSONParams.Replace("\n", "").Replace("...", "").Replace("\t", "") + '}'; });
+
             }
             try
             {
