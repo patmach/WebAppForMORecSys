@@ -61,7 +61,7 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
 
                     }
                 }
-
+                movies.ForEach(m => { m.JSONParams = '{' + m.JSONParams.Replace("\n", "").Replace("...", "").Replace("\t", "") + '}'; });
             }
             try
             {
