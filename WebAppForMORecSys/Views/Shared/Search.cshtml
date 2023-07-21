@@ -1,6 +1,28 @@
 ﻿<div id="input-textsearch-group" class="input-group">
-    <input id="titlesearch" class="form-control rounded m-3" aria-required="true" name="search" placeholder="Search" value="@Model.SearchValue" />
-    <input type="hidden" name="typeOfSearch" placeholder="TypeOfSearch" value="Search" />
-    <input type="image" src="@Url.Content("~/Resources/Images/search.png")" border="0" alt="Submit" />
+    <input id="titlesearch" class="form-control rounded m-3" aria-required="true" name="search" placeholder="Search"
+           value="@Model.SearchValue" oninput="chooseButton();" />
+    <input type="hidden" name="typeOfSearch"  placeholder="TypeOfSearch" value="Search" />
+    <input type="button" id="recommendtitlesearch" class="btn btn-primary btn-sm" value="Recommend" border="0" alt="Submit" style="border-radius:0.25em"/>
+    <input type="image" id="imgtitlesearch" src="@Url.Content("~/Resources/Images/search.png")" border="0" alt="Submit" style="display:none" />
 </div>
+
+<script>
+    function chooseButton(){
+        var titlesearch = $('#titlesearch')[0]
+        var recommendbutton = $('#recommendtitlesearch')[0]
+        var imgsearch = $('#imgtitlesearch')[0]
+        if (titlesearch.value != '') {
+            imgsearch.style.display = '';
+            recommendbutton.style.display = 'none';
+        }
+        else{
+            imgsearch.style.display = 'none';
+            recommendbutton.style.display = '';
+        }
+    }
+
+    $(document).ready(function () {
+        chooseButton()
+    });
+</script>
 

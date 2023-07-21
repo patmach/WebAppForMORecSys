@@ -49,6 +49,10 @@ namespace WebAppForMORecSys.Models.ViewModels
         /// </summary>
         public Dictionary<string, string> FilterValues = new Dictionary<string, string>();
 
+        /// <summary>
+        /// Message to be shown in alert window
+        /// </summary>
+        public string Message;
 
         public MainViewModel()
         {

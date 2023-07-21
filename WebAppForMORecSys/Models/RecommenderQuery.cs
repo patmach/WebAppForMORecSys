@@ -24,5 +24,10 @@
         /// Metrics importance specified by user
         /// </summary>
         public int[] Metrics { get; set; }
+
+        /// <summary>
+        /// Metric variants used by user
+        /// </summary>
+        public string[] MetricVariantsCodes { get; set; }
     }
 }

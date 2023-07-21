@@ -23,6 +23,7 @@ using WebAppForMORecSys.Helpers.MovielensLoaders;
 using WebAppForMORecSys.Models;
 using WebAppForMORecSys.Models.ViewModels;
 using WebAppForMORecSys.Models.ViewModels;
+using WebAppForMORecSys.RequestHandlers;
 using WebAppForMORecSys.Settings;
 using static WebAppForMORecSys.Helpers.MovieHelper;
 using Interaction = WebAppForMORecSys.Models.Interaction;
@@ -42,7 +43,7 @@ namespace WebAppForMORecSys.Controllers
         /// </summary>
         private readonly UserManager<Account> _userManager;
 
-
+        private readonly MovieRequestsHandler _requestsHandler;
         /// <summary>
         /// Gets connection to db and UserManager, saves possible values of movie properties
         /// </summary>
@@ -52,6 +53,7 @@ namespace WebAppForMORecSys.Controllers
         {
             _context = context;
             _userManager = userManager;
+            _requestsHandler = new MovieRequestsHandler(context);
             //new MovielensLoader(filter: true).LoadMovielensData(context/*, moviesFromLoadedFile: true*/);
             Movie.SetAllGenres(context);
             Movie.SetAllDirectors(context);
@@ -72,54 +74,14 @@ namespace WebAppForMORecSys.Controllers
         /// <param name="metricsimportance">Metrics importance in % according to user input</param>
         /// <returns>View with recommended movies</returns>
         public async Task<IActionResult> Index(string search, string director,
-          string actor, string[] genres, string typeOfSearch, string releasedateto, string releasedatefrom, string[] metricsimportance)
+          string actor, string[] genres, string typeOfSearch, string releasedateto, string releasedatefrom, 
+          string[] metricsimportance)
         {
             User user = GetCurrentUser();
-            var viewModel = new MainViewModel();
-            if (user != null)
-            {
-                viewModel.CurrentUser = user;
-                viewModel.CurrentUserRatings = await (from rating in _context.Ratings
-                                                      where rating.UserID == viewModel.CurrentUser.Id
-                                                      select rating).ToListAsync();
-            }
-            RecommenderSystem rs = SystemParameters.RecommenderSystem;
-            List<Metric> metrics = await (_context.Metrics.Where(m => m.RecommenderSystemID == rs.Id).ToListAsync());
-            viewModel.SetMetricImportance(user, metrics, metricsimportance, _context);
-
-            viewModel.SearchValue = search ?? "";
-
-            viewModel.FilterValues.Add("Director", director);
-            viewModel.FilterValues.Add("Actor", actor);
-            viewModel.FilterValues.Add("ReleaseDateFrom", releasedatefrom);
-            viewModel.FilterValues.Add("ReleaseDateTo", releasedateto);
-            viewModel.FilterValues.Add("Genres", string.Join(',', genres));
-
-            IQueryable<Item> whitelist = Movie.GetPossibleItems(_context.Items, user, search, director, actor, genres, typeOfSearch, releasedateto, releasedatefrom);
-            int[] whitelistIDs = (whitelist == null) ? new int[0] : await whitelist.Select(item => item.Id).ToArrayAsync();
-            List<int> blacklist = BlockedItemsCache.GetBlockedItemIdsForUser(user.Id.ToString(),_context);
-            blacklist=blacklist.Union(user.GetRatedAndSeenItems(_context)).ToList();
-            var recommendations = await RecommenderCaller.GetRecommendations(whitelistIDs, blacklist.ToArray(), 
-                        viewModel.Metrics.Values.ToArray(), user.Id, rs.HTTPUri);
-            if (recommendations.Count > 0)
-            {
-                viewModel.Items = _context.Items.Where(item => recommendations.Keys.Contains(item.Id));
-                viewModel.ItemsToMetricContributionScore = recommendations.Values.ToArray();
-                if (whitelist.IsNullOrEmpty() && (!search.IsNullOrEmpty() || !actor.IsNullOrEmpty() || !director.IsNullOrEmpty() || !genres.IsNullOrEmpty()
-                        || !releasedatefrom.IsNullOrEmpty() || !releasedateto.IsNullOrEmpty()))
-                {
-                    TempData["msg"] = "<script>alert('There are no results for your search.\\n\\nTry to make simpler search.');</script>";
-                }
-            }
-            else
-            {
-                if (!search.IsNullOrEmpty() || !actor.IsNullOrEmpty() || !director.IsNullOrEmpty() || !genres.IsNullOrEmpty()
-                        || !releasedatefrom.IsNullOrEmpty() || !releasedateto.IsNullOrEmpty())
-                {
-                    TempData["msg"] = "<script>alert('There are no results for your search.\\n\\nTry to make simpler search or check your block rules.');</script>";
-                }
-                viewModel.Items = _context.Items.Where(item => !blacklist.Contains(item.Id)).Take(50);
-            }
+            var viewModel = _requestsHandler.ProcessMainQuery(user,search, director, actor, genres, typeOfSearch,
+                releasedateto, releasedatefrom, metricsimportance).Result;
+            if (!viewModel.Message.IsNullOrEmpty())
+                TempData["msg"] = viewModel.Message;
             return View(viewModel);
         }
 
@@ -137,61 +99,12 @@ namespace WebAppForMORecSys.Controllers
         {
             User user = GetCurrentUser();
             string method = HttpContext.Request.Method;
-            if (method == "POST")
-            {
-                AddBlockRule(user, block, director, actor, genres);
-            }
-            var BlackListItemIDs = user.GetItemsInBlackList();
-            var items = _context.Items.Where(item => BlackListItemIDs.Contains(item.Id));
-            if (!search.IsNullOrEmpty())
-            {
-                items = items.Where(x => x.Name.ToLower().Contains(search.ToLower()));
-            }
-            var viewModel = new UserBlockRuleViewModel
-            {
-                Items = items.ToList(),
-                SearchValue = search ?? "",
-                CurrentUser = user,
-                CurrentUserRatings = await (from rating in _context.Ratings
-                                            where rating.UserID == user.Id
-                                            select rating).ToListAsync()
-
-            };       
-            viewModel.StringPropertiesBlocks.Add("Genres", user.GetGenresInBlackList());
-            viewModel.StringPropertiesBlocks.Add("Directors", user.GetDirectorsInBlackList());
-            viewModel.StringPropertiesBlocks.Add("Actors", user.GetActorsInBlackList());
-            try
-            {
-                return View(viewModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            var viewModel = _requestsHandler.ProcessBlockSettings(user, search, block, director, actor, genres, method).Result;
+            if (!viewModel.Message.IsNullOrEmpty())
+                TempData["msg"] = "<script>alert('" + viewModel.Message + "');</script>";
+            return View(viewModel);
         }
 
-        /// <summary>
-        /// Adding new block rule. Choose method of addition that should be used.
-        /// </summary>
-        /// <param name="user">Currently logged user</param>
-        /// <param name="block">New blocked value in format 'name_of_property: value'. Used with single block rule creation.</param>
-        /// <param name="director">New blocked value for property director. Used with multiple block rule creation.</param>
-        /// <param name="actor">New blocked value for property actor. Used with multiple block rule creation.</param>
-        /// <param name="genres">New blocked value for property genres. Used with multiple block rule creation.</param>
-        private void AddBlockRule(User user, string block, string director, string actor, string[] genres)
-        {
-            string message = "";
-            if (block.IsNullOrEmpty())
-                message = user.AddMultipleBlockRules(director, actor, genres);
-            else
-                message = user.AddSingleBlockRule(block);
-            if (!message.IsNullOrEmpty())
-            {
-                TempData["msg"] = "<script>alert('" + message + "');</script>";
-            }
-            _context.Update(user);
-            _context.SaveChanges();
-        }
 
         /// <summary>
         /// </summary>

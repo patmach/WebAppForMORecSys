@@ -64,10 +64,10 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
         }
 
         /// <summary>
-        /// Calls API for movie credits 
+        /// Calls API for movie videos 
         /// </summary>
         /// <param name="TMBDID">ID of movie in TMBD </param>
-        /// <returns>API response with movie credits</returns>
+        /// <returns>API response with movie videos</returns>
         public static async Task<string> getMovieYoutubeKey(string TMBDID)
         {
             string urlVideo = "https://api.themoviedb.org/3/movie/" + TMBDID + "/videos?api_key=" + apiKey;

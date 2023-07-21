@@ -45,13 +45,26 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>List value of specified property from given item</returns>
         public static string[] getPropertyListValueFromJSON(Item item, string property)
         {
-            string stringResult = getPropertyStringValueFromJSON(item, property);
-            if (!stringResult.IsNullOrEmpty())
+            try
             {
-                stringResult = stringResult.Replace("[", "").Replace("]", "").Replace("\"", "").Replace(", ", ",")
-                    .Replace(" ,", ",").Replace(Environment.NewLine, "");
-                var list = stringResult.Split(',').ToList();
-                return list.Select(g => g.Trim()).ToArray();
+                List<string> values = new List<string>();
+                if (item.JSONParams == null) return new string[0];
+                JsonObject? Params = (JsonObject?)JsonObject.Parse(item.JSONParams);
+                JsonNode jsonNode;
+                if (Params != null && Params.TryGetPropertyValue(property, out jsonNode))
+                {
+                    JsonArray jArr = jsonNode.AsArray();
+                    foreach (JsonNode node in jArr)
+                    {
+                        values.Add(System.Text.RegularExpressions.Regex.Unescape(node.ToString()));
+
+                    }
+                }
+                return values.ToArray();
+            }
+            catch (Exception e)
+            {
+                var x = e.Message;
             }
             return new string[0];
         }

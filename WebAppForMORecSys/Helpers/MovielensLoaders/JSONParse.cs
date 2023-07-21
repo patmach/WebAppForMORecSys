@@ -101,7 +101,7 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
         }
 
         /// <summary>
-        /// Parses movie credits TMBD API response and saves the info to given movie
+        /// Parses movie videos TMBD API response and saves the youtube key to trailer for given movie
         /// </summary>
         /// <param name="response">Response from TMBD API</param>
         /// <param name="movie">Movie to which the information should be added</param>

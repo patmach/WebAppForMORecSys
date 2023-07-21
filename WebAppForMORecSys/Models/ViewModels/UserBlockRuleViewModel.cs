@@ -35,5 +35,10 @@
         /// </summary>
         public List<Rating> CurrentUserRatings { get; set; }
 
+        /// <summary>
+        /// Message to be shown in alert window
+        /// </summary>
+        public string Message;
+
     }
 }

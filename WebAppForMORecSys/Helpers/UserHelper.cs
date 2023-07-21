@@ -7,6 +7,9 @@ using WebAppForMORecSys.Cache;
 using WebAppForMORecSys.Settings;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using WebAppForMORecSys.Data;
+using Humanizer;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebAppForMORecSys.Helpers
 {
@@ -555,6 +558,19 @@ namespace WebAppForMORecSys.Helpers
             || (i.type == TypeOfInteraction.Seen && (i.Last < DateTime.Now.AddMinutes(-10) || i.NumberOfInteractions >= 3)))
                 .Select(r => r.ItemID).ToList();
             return rated.Union(seen).ToList();
+        }
+
+        public static string[] GetMetricVariantCodes(this User user, ApplicationDbContext context, List<int> metricIDs)
+        {
+            var codes = new List<string>();
+            var defaultMVs = context.MetricVariants.Where(mv => metricIDs.Contains(mv.MetricID) && mv.DefaultVariant).ToList();
+            var userMVs = context.UsersMetrics.Include(umv=> umv.MetricVariant).
+                Where(umv => metricIDs.Contains(umv.MetricVariant.MetricID)).Select(umv=> umv.MetricVariant).ToList();
+            foreach (int metricID in metricIDs){
+                var userChoice = userMVs.Where(umv => umv.MetricID == metricID).FirstOrDefault();
+                codes.Add(userChoice?.Code ?? defaultMVs.Where(mv => mv.MetricID == metricID).FirstOrDefault()?.Code ?? "");
+            }
+            return codes.ToArray();
         }
 
     }

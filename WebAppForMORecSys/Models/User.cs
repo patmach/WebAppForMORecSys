@@ -40,7 +40,7 @@ namespace WebAppForMORecSys.Models
         /// </summary>
         public string? UserChoices { get; set; }
 
-        public List<UserMetric> UserMetricList { get; set; }
+        public List<UserMetricVariants> UserMetricList { get; set; }
 
         /// <summary>
         /// All user's ratings

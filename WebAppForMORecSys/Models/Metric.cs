@@ -34,7 +34,7 @@ namespace WebAppForMORecSys.Models
         public RecommenderSystem RecommenderSystem { get; set; }
 
 
-        public List<UserMetric> UserMetricList { get; set; }
+        public List<UserMetricVariants> UserMetricList { get; set; }
         public Metric()
         {
 

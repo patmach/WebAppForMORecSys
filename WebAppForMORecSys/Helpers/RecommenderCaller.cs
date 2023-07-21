@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using WebAppForMORecSys.Models;
+using WebAppForMORecSys.Models.ViewModels;
 
 namespace WebAppForMORecSys.Helpers
 {
@@ -19,14 +20,15 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="userId">For which user the recommendations should be</param>
         /// <param name="rsURI">URI of Recommender API</param>
         /// <returns>List of recommendations with their metrics contribution score</returns>
-        public async static Task<Dictionary<int, double[]>> GetRecommendations(int[] whitelist, int[]blacklist, int[] metricsimportance, int userId, string rsURI)
+        public async static Task<Dictionary<int, double[]>> GetRecommendations(int[] whitelist, int[]blacklist, int[] metricsimportance, int userId, string rsURI, string[] metricVariantsCodes)
         {
             RecommenderQuery rq = new RecommenderQuery
             {
                 WhiteListItemIDs = whitelist,
                 BlackListItemIDs = blacklist.ToArray(),
                 Metrics = metricsimportance,
-                Count = 20
+                Count = 15,
+                MetricVariantsCodes = metricVariantsCodes
             };
 
             JsonContent content = JsonContent.Create(rq);
@@ -39,5 +41,6 @@ namespace WebAppForMORecSys.Helpers
             else
                 return new Dictionary<int, double[]>();
         }
+
     }
 }
