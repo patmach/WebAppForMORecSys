@@ -29,7 +29,7 @@ namespace WebAppForMORecSys.Models
         public string Code { get; set; }
 
         /// <summary>
-        /// Sazys if variant is default for given metric
+        /// Says if variant is default for given metric
         /// </summary>
         [Required]
         public bool DefaultVariant { get; set; }
@@ -49,7 +49,7 @@ namespace WebAppForMORecSys.Models
         /// </summary>
         public Metric Metric { get; set; }
 
-        public List<UserMetricVariants> UserMetricList { get; set; }
+        public List<UserMetricVariants> UserMetricVariantsList { get; set; }
 
         public MetricVariant()
         {

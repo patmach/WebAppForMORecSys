@@ -67,7 +67,8 @@ namespace WebAppForMORecSys.Controllers
         {
             MainViewModel viewModel = new MainViewModel();
             var rs = SystemParameters.RecommenderSystem;
-            var metrics = await (_context.Metrics.Where(m => m.RecommenderSystemID == rs.Id).ToListAsync());
+            var metrics = await (_context.Metrics.Include(m=> m.metricVariants).Where(m => m.RecommenderSystemID == rs.Id)
+                .ToListAsync());
             viewModel.CurrentUser = GetCurrentUser();
             var blockedItems = BlockedItemsCache.GetBlockedItemIdsForUser(viewModel.CurrentUser.Id.ToString(), _context);
             viewModel.CurrentUserRatings = await (from rating in _context.Ratings
@@ -76,6 +77,41 @@ namespace WebAppForMORecSys.Controllers
             viewModel.Items = _context.Items.Where(item=> !blockedItems.Contains(item.Id)).Take(5);
             viewModel.SetMetricImportance(viewModel.CurrentUser, metrics, new string[0], _context);
             return View(viewModel);
+        }
+
+
+        public async Task<IActionResult> UserMetricSetting(int metricID)
+        {
+            var user = GetCurrentUser();
+            var variants = _context.MetricVariants.Where(mv => mv.MetricID == metricID).ToList();
+            var choosed = _context.UserMetricVariants.Include(um => um.MetricVariant).
+                Where(um => um.UserID == user.Id && variants.Contains(um.MetricVariant)).FirstOrDefault();
+            if(choosed != null)
+            {
+                variants.ForEach(v => {
+                    if (v == choosed.MetricVariant)
+                        v.DefaultVariant = true;
+                    else v.DefaultVariant = false;
+                });                
+            }
+            return PartialView(variants);
+        }
+
+        public IResult SaveUserMetricVariant(string variant)
+        {
+            User user = GetCurrentUser();
+            var metricVariant = _context.MetricVariants.Include(mv=>mv.Metric).Where(mv=> mv.Code== variant)
+                .FirstOrDefault();
+            if (metricVariant ==  null)
+            {
+                return Results.BadRequest();
+            }
+            if (user == null)
+            {
+                return Results.Unauthorized();
+            }
+            UserMetricVariants.Save(user.Id, metricVariant, _context);
+            return Results.NoContent();
         }
 
         /// <summary>

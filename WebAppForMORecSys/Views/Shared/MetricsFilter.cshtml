@@ -7,7 +7,7 @@
         int index = 0;
 
     }
-    @foreach (var metric in Model.Metrics.Keys)
+    @foreach (Metric metric in Model.Metrics.Keys)
         {
             string id = "range" + index;        
             string valueAsNumber = id + ".valueAsNumber";
@@ -19,9 +19,16 @@
         @if (Model.User.GetMetricsView() == MetricsView.DragAndDrop)
             {
 
-                <div draggable="true" id="@("drag_" +@index)" class="drag box dragbox" 
-                    style="background-color: @Model.User.GetColors()[index] ; @margin">
+                <div draggable="true" id="@("drag_" +@index)" class="drag box dragbox"
+                 style="background-color: @Model.User.GetMetricIDsToColors()[metric.Id] ; width: @(100/Model.Metrics.Count - 5)%; @margin">
+                @if (metric.HasVariants()){
+                    <a title="Set how to compute @metric.Name" data-bs-toggle="modal" data-bs-target="#userMetricModal" 
+                    data-bs-metricid="@metric.Id">@metric.Name</a>
+                }
+                else
+                {
                     @metric.Name
+                }
                     <input class="custom-range range" type="hidden" min="0" max="100" name="MetricsImportance" id="@id"
                            value="@Model.Metrics[metric]" placeholder="MetricsImportance" />
                 </div>
@@ -34,10 +41,18 @@
                                 onclick="decrease(@index)"><b>-</b></span>
                 <span id="@("box_" +@index)" class="box progressbox"
                      style="">
-                            @metric.Name
-                            <input class="" type="hidden" min="0" max="100" name="MetricsImportance" id="@id"
-                           value="@Model.Metrics[metric]" placeholder="MetricsImportance" />
-                            </span>
+                    @if (metric.HasVariants())
+                    {
+                        <a title="Set how to compute @metric.Name" data-bs-toggle="modal" data-bs-target="#userMetricModal"
+                           data-bs-metricid="@metric.Id">@metric.Name</a>
+                    }
+                    else
+                    {
+                        @metric.Name
+                    }
+                    <input class="" type="hidden" min="0" max="100" name="MetricsImportance" id="@id"
+                    value="@Model.Metrics[metric]" placeholder="MetricsImportance" />
+                </span>
                 <span class="btn btn-dark progressbutton" style="background-color: @Model.User.GetColors()[index]"
                                 onclick="increase(@index)"><b>+</b></span>
                 </div>
@@ -47,7 +62,17 @@
             <div class="range-wrap" style="color: @Model.User.GetColors()[index]">
                     @if (Model.User.GetMetricsView() == MetricsView.Sliders)
                     {
-                    <label for="@id">@metric.Name</label>
+                    <label for="@id">
+                        @if (metric.HasVariants())
+                        {
+                            <a title="Set how to compute @metric.Name" data-bs-toggle="modal" data-bs-target="#userMetricModal"
+                               data-bs-metricid="@metric.Id">@metric.Name</a>
+                        }
+                        else
+                        {
+                            @metric.Name
+                        }
+                    </label>
                     <input class="custom-range range" type="range" min="0" max="100" name="MetricsImportance" id="@id"
                            value="@Model.Metrics[metric]" placeholder="MetricsImportance" oninput="changeValues(this.value, @index)"
                            
@@ -56,7 +81,17 @@
                     }
                 @if (Model.User.GetMetricsView() == MetricsView.TextBoxNumbers)
                     {
-                        <label for="@id">@metric.Name</label>
+                    <label for="@id">
+                        @if (metric.HasVariants())
+                        {
+                            <a title="Set how to compute @metric.Name" data-bs-toggle="modal" data-bs-target="#userMetricModal"
+                               data-bs-metricid="@metric.Id">@metric.Name</a>
+                        }
+                        else
+                        {
+                            @metric.Name
+                        }
+                    </label>
                     <input class="custom-range range form-control rounded m-3" type="number" min="0" max="100" name="MetricsImportance" id="@id"
                            value="@Model.Metrics[metric]" placeholder="MetricsImportance" oninput="changeValues(this.value, @index)"
                            onchange="changeValues(this.value, @index)"
@@ -66,8 +101,23 @@
                 </div>
             }
             index++;
-        }
-    
+    }
+    <!-- Modal -->
+    <div class="modal fade" id="userMetricModal" tabindex="-1" aria-labelledby="userMetricLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userMetricLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="userMetricModalBody">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -257,8 +307,10 @@
             let temp = [];
             let values=[];
             let sorted = [];
+            let backgrounds = [];
             for (let i = 0; i < drag_ranges.length; i++) {
                 temp[i] = drag_ranges[i].innerHTML;
+                backgrounds[i] = drag_ranges[i].style.backgroundColor
                 values[i] = input_ranges[i].value;
                 sorted[i] = input_ranges[i].value;
 
@@ -268,19 +320,13 @@
             for (let i = 0; i < drag_ranges.length; i++) {
                 let index = sorted.indexOf(values[i]);
                 drag_ranges[index].innerHTML = temp[i];
+                drag_ranges[index].style.backgroundColor = backgrounds[i]
                 sorted[index] = -1; //next call of indexOf on the same value would return same index
             }
             set_input_hidden_values()
-            /*
-            input_ranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
-            //input ranges should still correspond to metrics ranking in db
-            for (let i = 0; i < drag_ranges.length; i++) {
-                input_ranges[i].value = values[i];
-            }*/
 
 
         }
-
 
         let items = document.querySelectorAll('.container .box');
         items.forEach(function (item) {
@@ -294,5 +340,30 @@
         order_drag_boxes_at_start();
     });
 
+    var userMetricModal = document.getElementById('userMetricModal')
 
+    /* Set modal content */
+    userMetricModal.addEventListener('shown.bs.modal', function (event) {
+        event.preventDefault();
+        var button = event.relatedTarget
+        var metricId = button.getAttribute('data-bs-metricid')
+        $.ajax({
+            url: '@Url.Action("UserMetricSetting","Home")' + '?metricID=' + metricId,
+            cache: false,
+            success: function (data) {
+                $('#userMetricModalBody').html(data);
+                $('#userMetricLabel').html($('#chooseVariantTitle')[0].innerHTML);
+                $('#chooseVariantTitle').html('');
+
+            }
+        });
+    })
+
+    /* Removes modal content */
+    userMetricModal.addEventListener('hide.bs.modal', function () {
+        $('#userMetricModalBody').html('');
+        $('#userMetricLabel').html('');
+    });
+
+    
 </script>

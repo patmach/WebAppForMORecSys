@@ -138,3 +138,4 @@ function show_new_rating_value(newValue, itemId) {
         removeLink.style.display = 'none';
     }
 }
+

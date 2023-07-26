@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebAppForMORecSys.Data;
 
@@ -11,9 +12,11 @@ using WebAppForMORecSys.Data;
 namespace WebAppForMORecSys.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230724115125_edit_UserMetricVariant")]
+    partial class edit_UserMetricVariant
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -438,6 +441,9 @@ namespace WebAppForMORecSys.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("MetricId")
+                        .HasColumnType("int");
+
                     b.Property<int>("MetricVariantID")
                         .HasColumnType("int");
 
@@ -446,11 +452,13 @@ namespace WebAppForMORecSys.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("MetricId");
+
                     b.HasIndex("MetricVariantID");
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("UserMetricVariants");
+                    b.ToTable("UsersMetrics");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -566,8 +574,12 @@ namespace WebAppForMORecSys.Migrations
 
             modelBuilder.Entity("WebAppForMORecSys.Models.UserMetricVariants", b =>
                 {
+                    b.HasOne("WebAppForMORecSys.Models.Metric", null)
+                        .WithMany("UserMetricList")
+                        .HasForeignKey("MetricId");
+
                     b.HasOne("WebAppForMORecSys.Models.MetricVariant", "MetricVariant")
-                        .WithMany("UserMetricVariantsList")
+                        .WithMany("UserMetricList")
                         .HasForeignKey("MetricVariantID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -590,9 +602,14 @@ namespace WebAppForMORecSys.Migrations
                     b.Navigation("Ratings");
                 });
 
+            modelBuilder.Entity("WebAppForMORecSys.Models.Metric", b =>
+                {
+                    b.Navigation("UserMetricList");
+                });
+
             modelBuilder.Entity("WebAppForMORecSys.Models.MetricVariant", b =>
                 {
-                    b.Navigation("UserMetricVariantsList");
+                    b.Navigation("UserMetricList");
                 });
 
             modelBuilder.Entity("WebAppForMORecSys.Models.RecommenderSystem", b =>

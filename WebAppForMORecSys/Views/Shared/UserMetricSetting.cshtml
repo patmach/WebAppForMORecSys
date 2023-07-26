@@ -1,0 +1,30 @@
+﻿@using static WebAppForMORecSys.Helpers.MovieHelper
+@using static WebAppForMORecSys.Helpers.UserHelper
+@model List<WebAppForMORecSys.Models.MetricVariant>
+@{
+    
+}
+<div>
+    <h3 id="chooseVariantTitle">How do you percieve @Model[0].Metric.Name?</h3>
+        @foreach (var variant in Model)
+        {
+        <div onclick="saveUserMetricVariant('@variant.Code')" style="color: #0d6efd">
+            <input type="radio" name="variant" id="@variant.Code" value="@variant.Id" checked="@variant.DefaultVariant">                                
+            <label for="@variant.Code">@variant.Description</label>
+        </div>
+        <br />
+        <br/>
+        }
+
+</div>
+<script>
+    function saveUserMetricVariant(code) {
+        const body = {
+            variant: code,
+        };
+        const url = '@Url.Action("SaveUserMetricVariant","Home")';
+        $.post(url, body, (data, status) => {
+            
+        });
+    }
+</script>

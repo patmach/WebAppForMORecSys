@@ -32,7 +32,8 @@ namespace WebAppForMORecSys.RequestHandlers
                                                       select rating).ToListAsync();
             }
             RecommenderSystem rs = SystemParameters.RecommenderSystem;
-            List<Metric> metrics = await _context.Metrics.Where(m => m.RecommenderSystemID == rs.Id).ToListAsync();
+            List<Metric> metrics = await _context.Metrics.Include(m => m.metricVariants)
+                .Where(m => m.RecommenderSystemID == rs.Id).ToListAsync();
             viewModel.SetMetricImportance(user, metrics, metricsimportance, _context);
 
             viewModel.SearchValue = search ?? "";

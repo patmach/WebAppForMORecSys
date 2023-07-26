@@ -33,11 +33,14 @@ namespace WebAppForMORecSys.Models
         /// </summary>
         public RecommenderSystem RecommenderSystem { get; set; }
 
-
-        public List<UserMetricVariants> UserMetricList { get; set; }
+        public List<MetricVariant> metricVariants { get; set; }
+        
         public Metric()
         {
 
         }
+
+        public bool HasVariants() => (metricVariants != null) && (metricVariants.Count > 0);
+        
     }
 }

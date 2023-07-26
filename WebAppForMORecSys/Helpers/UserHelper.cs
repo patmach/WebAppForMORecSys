@@ -564,7 +564,7 @@ namespace WebAppForMORecSys.Helpers
         {
             var codes = new List<string>();
             var defaultMVs = context.MetricVariants.Where(mv => metricIDs.Contains(mv.MetricID) && mv.DefaultVariant).ToList();
-            var userMVs = context.UsersMetrics.Include(umv=> umv.MetricVariant).
+            var userMVs = context.UserMetricVariants.Include(umv=> umv.MetricVariant).
                 Where(umv => metricIDs.Contains(umv.MetricVariant.MetricID)).Select(umv=> umv.MetricVariant).ToList();
             foreach (int metricID in metricIDs){
                 var userChoice = userMVs.Where(umv => umv.MetricID == metricID).FirstOrDefault();

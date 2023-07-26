@@ -32,6 +32,55 @@
     <br/>
     <br />
     <br />
+
+    <h4>Which type of explanations do you want to see?</h4>
+    <div style="display:flex; margin-bottom:3px; width:100%">
+        @foreach (MetricContributionScoreView value in Enum.GetValues(typeof(MetricContributionScoreView)))
+        {
+            string typeOfBtn = "btn-secondary";
+            if (Model.CurrentUser.GetMetricContributionScoreView() == (MetricContributionScoreView)value)
+                typeOfBtn = "btn-primary";
+            <a style="margin:auto" class="btn btn-sm @typeOfBtn" href='@Url.Action("SetMetricContributionScoreView","Home", new { metricContributionScoreView=index })'>
+                @value.ToFriendlyString()
+            </a>
+            index++;
+        }
+        @{
+            index = 0;
+        }
+        @foreach (ExplanationView value in Enum.GetValues(typeof(ExplanationView)))
+        {
+            string typeOfBtn = "btn-secondary";
+            if (Model.CurrentUser.GetExplanationView() == (ExplanationView)value)
+                typeOfBtn = "btn-primary";
+            <a style="margin:auto" class="btn @typeOfBtn" href='@Url.Action("SetExplanationView","Home", new { explanationView=index })'>
+                @value.ToFriendlyString()
+            </a>
+            index++;
+        }
+    </div>
+    @{
+        index = 0;
+    }
+    <div id="Previews" style="width:100%;">
+        @foreach (var item in Model.Items)
+        {
+            var metricsContribution = new Dictionary<Metric, double>();
+            for (int j = 0; j < Model.Metrics.Count; j++)
+            {
+                int valueToAdd = (j == 0) ? index * 5 : (j == (Model.Metrics.Count - 1) ? index * -5 : 0);
+                metricsContribution.Add(Model.Metrics.Keys.ToList()[j], 80 + valueToAdd);
+            }
+
+            @await Html.PartialAsync("../"+WebAppForMORecSys.Settings.SystemParameters.Controller+"/Preview", new PreviewDetailViewModel(item, Model.CurrentUser, Model.CurrentUserRatings, metricsContribution))
+            @await Html.PartialAsync("../Shared/Explanations", new PreviewDetailViewModel(item, Model.CurrentUser, Model.CurrentUserRatings, metricsContribution))
+
+            index++;
+        }
+    </div>
+    <br />
+    <br />
+
     @{
         index = 0;
     }
@@ -87,49 +136,6 @@
     @{
         index = 0;
     }
-    <h4>Which type of explanations do you want to see?</h4>
-    <div style="display:flex; margin-bottom:3px; width:100%">
-        @foreach (MetricContributionScoreView value in Enum.GetValues(typeof(MetricContributionScoreView)))
-        {
-            string typeOfBtn = "btn-secondary";
-            if (Model.CurrentUser.GetMetricContributionScoreView() == (MetricContributionScoreView)value)
-                typeOfBtn = "btn-primary";
-            <a style="margin:auto" class="btn @typeOfBtn" href='@Url.Action("SetMetricContributionScoreView","Home", new { metricContributionScoreView=index })'>
-                @value.ToFriendlyString()
-            </a>
-            index++;
-        }
-        @{
-            index = 0;
-        }
-        @foreach (ExplanationView value in Enum.GetValues(typeof(ExplanationView)))
-        {
-            string typeOfBtn = "btn-secondary";
-            if (Model.CurrentUser.GetExplanationView() == (ExplanationView)value)
-                typeOfBtn = "btn-primary";
-            <a style="margin:auto" class="btn @typeOfBtn" href='@Url.Action("SetExplanationView","Home", new { explanationView=index })'>
-                @value.ToFriendlyString()
-            </a>
-            index++;
-        }
-    </div>
-    @{index=0;}
-    <div id="Previews" style="width:100%;">
-    @foreach (var item in Model.Items)
-    {
-        var metricsContribution = new Dictionary<Metric, double>();
-        for (int j = 0; j < Model.Metrics.Count; j++)
-        {
-            int valueToAdd = (j == 0) ? index * 5 : (j == (Model.Metrics.Count - 1) ? index * -5 : 0);
-            metricsContribution.Add(Model.Metrics.Keys.ToList()[j], 80 + valueToAdd);
-        }
-
-        @await Html.PartialAsync("../"+WebAppForMORecSys.Settings.SystemParameters.Controller+"/Preview", new PreviewDetailViewModel(item, Model.CurrentUser, Model.CurrentUserRatings, metricsContribution))
-        @await Html.PartialAsync("../Shared/Explanations", new PreviewDetailViewModel(item, Model.CurrentUser, Model.CurrentUserRatings, metricsContribution))
-       
-        index++;
-    }
-    </div>
    
 
 
