@@ -4,13 +4,13 @@
 @model WebAppForMORecSys.Models.ViewModels.PreviewDetailViewModel
 @{
 
-    string moviepreviewclass = "preview_" + Model.item.Id; //Do not change!
+    string moviepreviewclass = "preview_" + Model.Item.Id; //Do not change!
 
     //Sets the visibility of show x hide button
     string hideDisplay = "";
     string showDisplay = "none";
     string opacity = "1";
-    if (Model.user.IsItemInBlackList(Model.item.Id))
+    if (Model.User.IsItemInBlackList(Model.Item.Id))
     {
         hideDisplay = "none";
         showDisplay = "";
@@ -20,38 +20,38 @@
     //Sets border. Part of explanation when its preview of a recommended movie
     string borderImage = "";
     string borderSize = "0px";
-    if (Model.metricsContribution != null)
+    if (Model.MetricsContribution != null)
     {
-        borderImage = Model.MetricsContributionToBorderImage(Model.user,Model.metricsContribution.Values.ToArray());
+        borderImage = Model.MetricsContributionToBorderImage(Model.User,Model.MetricsContribution.Values.ToArray());
         borderSize = "5px";
     }
 }
 <div style="opacity:@opacity" class="ItemPreview horizontal @moviepreviewclass" id="@moviepreviewclass">
-    <a href="javascript:void(0);" resource=""  id='@Url.Action("Details","Movies", new { id=Model.item.Id })' class="ajaxdetail"><h4>@Model.item.Name</h4></a>
+    <a href="javascript:void(0);" resource=""  id='@Url.Action("Details","Movies", new { id=Model.Item.Id })' class="ajaxdetail"><h4>@Model.Item.Name</h4></a>
     
     <div id="logo-holder">
         @{
-            string ImageURL = Model.item.ImageURL;
+            string ImageURL = Model.Item.ImageURL;
             if (String.IsNullOrEmpty(ImageURL))
             {
                 ImageURL = @Url.Content("~/Resources/Images/grey_no_image.png");
             }
         }
         <img class="image previewimage" style="width:95%; border: @borderSize solid; border-image:@borderImage;" src="@ImageURL" />
-        <div class="text" style="width:95%; height:100%; padding:6px;">@Model.item.ShortDescription</div>
+        <div class="text" style="width:95%; height:100%; padding:6px;">@Model.Item.ShortDescription</div>
     </div>
     <div>
-        <a style="position: absolute; right: 1px; display:@hideDisplay" id="hideimg" class="hideimg" onclick="hide(@Model.item.Id)" href='@Url.Action("Hide","Home", new { id=Model.item.Id })'>
+        <a style="position: absolute; right: 1px; display:@hideDisplay" id="hideimg" class="hideimg" onclick="hide(@Model.Item.Id)" href='@Url.Action("Hide","Home", new { id=Model.Item.Id })'>
             <img src="@Url.Content("~/Resources/Images/hide.png")" title="Don't recommend this movie" />
         </a>
-        <a style="position: absolute; right: 1px; display:@showDisplay" id="showimg" class="showimg" onclick="show(@Model.item.Id)" href='@Url.Action("Show","Home", new { id=Model.item.Id })'>
+        <a style="position: absolute; right: 1px; display:@showDisplay" id="showimg" class="showimg" onclick="show(@Model.Item.Id)" href='@Url.Action("Show","Home", new { id=Model.Item.Id })'>
             <img src="@Url.Content("~/Resources/Images/show.png")" title="Show movie again." />
         </a>
     </div>
     <div style="margin-top:1px">
         <b>Director:</b>
         <br/>
-        @(String.IsNullOrEmpty(Model.item.GetDirector()) ? "-" : Model.item.GetDirector())
+        @(String.IsNullOrEmpty(Model.Item.GetDirector()) ? "-" : Model.Item.GetDirector())
         
     </div>
     @await Html.PartialAsync("../Movies/Rating", Model)

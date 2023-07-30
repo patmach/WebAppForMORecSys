@@ -26,16 +26,18 @@ namespace WebAppForMORecSys.RequestHandlers
             var viewModel = new MainViewModel();
             if (user != null)
             {
-                viewModel.CurrentUser = user;
-                viewModel.CurrentUserRatings = await (from rating in _context.Ratings
-                                                      where rating.UserID == viewModel.CurrentUser.Id
+                viewModel.User = user;
+                viewModel.UserRatings = await (from rating in _context.Ratings
+                                                      where rating.UserID == viewModel.User.Id
                                                       select rating).ToListAsync();
+               
             }
             RecommenderSystem rs = SystemParameters.RecommenderSystem;
             List<Metric> metrics = await _context.Metrics.Include(m => m.metricVariants)
                 .Where(m => m.RecommenderSystemID == rs.Id).ToListAsync();
             viewModel.SetMetricImportance(user, metrics, metricsimportance, _context);
 
+            viewModel.UsedVariants = user.GetMetricVariants(_context, metrics.Select(m => m.Id).ToList());
             viewModel.SearchValue = search ?? "";
             viewModel.FilterValues.Add("Director", director);
             viewModel.FilterValues.Add("Actor", actor);
@@ -53,8 +55,8 @@ namespace WebAppForMORecSys.RequestHandlers
             List<int> blacklist = BlockedItemsCache.GetBlockedItemIdsForUser(user.Id.ToString(), _context);
             blacklist = blacklist.Union(user.GetRatedAndSeenItems(_context)).ToList();
             var recommendations = await RecommenderCaller.GetRecommendations(whitelistIDs, blacklist.ToArray(),
-            viewModel.Metrics.Values.ToArray(), user.Id, rs.HTTPUri,
-                        user.GetMetricVariantCodes(_context, metrics.Select(m => m.Id).ToList()));
+                viewModel.Metrics.Values.ToArray(), user.Id, rs.HTTPUri,
+                user.GetMetricVariantCodes(_context, metrics.Select(m => m.Id).ToList()));
             if (recommendations.Count > 0)
             {
                 viewModel.Items = _context.Items.Where(item => recommendations.Keys.Contains(item.Id));

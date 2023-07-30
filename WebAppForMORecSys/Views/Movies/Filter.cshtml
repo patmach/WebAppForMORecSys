@@ -25,7 +25,7 @@
 
     <select class="selectpicker" multiple data-live-search="true" name="genres" placeholder="Genres">
        
-        @foreach (var genre in Movie.AllGenres.Except(Model.CurrentUser.GetGenresInBlackList()))
+        @foreach (var genre in Movie.AllGenres.Except(Model.User.GetGenresInBlackList()))
         {
             @if (genres.Contains(genre))
             {

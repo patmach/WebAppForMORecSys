@@ -37,12 +37,18 @@ namespace WebAppForMORecSys.Models.ViewModels
         /// <summary>
         /// User for whom the page is loaded
         /// </summary>
-        public User CurrentUser { get; set; }
+        public User User { get; set; }
 
         /// <summary>
         /// Ratings of the user
         /// </summary>
-        public List<Rating> CurrentUserRatings { get; set; }
+        public List<Rating> UserRatings { get; set; }
+
+
+        /// <summary>
+        /// Variants of metrics computation user uses or default variants
+        /// </summary>
+        public List<MetricVariant> UsedVariants;
 
         /// <summary>
         /// Searched values from query. Will be set in filter

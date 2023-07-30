@@ -69,13 +69,13 @@ namespace WebAppForMORecSys.Controllers
             var rs = SystemParameters.RecommenderSystem;
             var metrics = await (_context.Metrics.Include(m=> m.metricVariants).Where(m => m.RecommenderSystemID == rs.Id)
                 .ToListAsync());
-            viewModel.CurrentUser = GetCurrentUser();
-            var blockedItems = BlockedItemsCache.GetBlockedItemIdsForUser(viewModel.CurrentUser.Id.ToString(), _context);
-            viewModel.CurrentUserRatings = await (from rating in _context.Ratings
-                                                  where rating.UserID == viewModel.CurrentUser.Id
+            viewModel.User = GetCurrentUser();
+            var blockedItems = BlockedItemsCache.GetBlockedItemIdsForUser(viewModel.User.Id.ToString(), _context);
+            viewModel.UserRatings = await (from rating in _context.Ratings
+                                                  where rating.UserID == viewModel.User.Id
                                                   select rating).ToListAsync();
             viewModel.Items = _context.Items.Where(item=> !blockedItems.Contains(item.Id)).Take(5);
-            viewModel.SetMetricImportance(viewModel.CurrentUser, metrics, new string[0], _context);
+            viewModel.SetMetricImportance(viewModel.User, metrics, new string[0], _context);
             return View(viewModel);
         }
 

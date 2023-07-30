@@ -4,20 +4,20 @@
 @model WebAppForMORecSys.Models.ViewModels.PreviewDetailViewModel
 @{
     //Order the metrics from the one with the biggest score to the one with lowest
-    var ordered = Model.metricsContribution.OrderBy(mc => mc.Value).Reverse().ToDictionary(mc => mc.Key, mc => mc.Value);
+    var ordered = Model.MetricsContribution.OrderBy(mc => mc.Value).Reverse().ToDictionary(mc => mc.Key, mc => mc.Value);
     var orderedMetrics = ordered.Keys.ToArray();
     var keys = orderedMetrics.Select(metric => metric.Id).ToArray();
     var values = ordered.Values.ToArray();
 
 
-    string itempreviewid = "preview_" + Model.item.Id;//MUSÍ odpovídat id hlavního elementu v Preview
+    string itempreviewid = "preview_" + Model.Item.Id;//MUSÍ odpovídat id hlavního elementu v Preview
     string className = "popover-content" + itempreviewid;
 
-    string borderImage = Model.MetricsContributionToBorderImage(Model.user, Model.metricsContribution.Values.ToArray(),"right");
+    string borderImage = Model.MetricsContributionToBorderImage(Model.User, Model.MetricsContribution.Values.ToArray(),"right");
 
     //Which type of explanation should be displayed
-    ExplanationView view = Model.user.GetExplanationView();
-    MetricContributionScoreView metricContributionScoreView = Model.user.GetMetricContributionScoreView();
+    ExplanationView view = Model.User.GetExplanationView();
+    MetricContributionScoreView metricContributionScoreView = Model.User.GetMetricContributionScoreView();
 
     double lastvalue = values!=null ? (values.Length>0 ? values[0] : 0) : 0;
 }
@@ -29,7 +29,7 @@
             {
                 if (@values[i] == 0) break;
                 if ((view == ExplanationView.BestMetricPopover) && (@values[i] != lastvalue)) break;
-                <p style="color: @Model.user.GetMetricIDsToColors()[keys[i]]">
+                <p style="color: @Model.User.GetMetricIDsToColors()[keys[i]]">
                     @if (metricContributionScoreView == MetricContributionScoreView.Percentage)
                     {
                         <b>@orderedMetrics[i].Name share - @((int)(100*values[i] / values.Sum())) % </b>
@@ -43,8 +43,9 @@
                         <b>@orderedMetrics[i].Name score - @Math.Round(values[i]*100, 2)</b>
                     }
                 </p>
-
-                <p>@orderedMetrics[i].DefaultExplanation</p>
+                <p>
+                    @(Model.UsedVariants?.Where(mv => (mv !=null) && (mv?.MetricID == @orderedMetrics[i].Id)).FirstOrDefault()?.Explanation
+                        ?? orderedMetrics[i].DefaultExplanation)</p>
                 <br/>
                 lastvalue = values[i];
             }

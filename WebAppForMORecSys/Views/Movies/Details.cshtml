@@ -2,12 +2,12 @@
 @using static WebAppForMORecSys.Helpers.UserHelper
 @model WebAppForMORecSys.Models.ViewModels.PreviewDetailViewModel
 @{
-    string divId = "Detail_" + Model.item.Id;
-    string aclass = Model.user != null ? "" : "disabled";
+    string divId = "Detail_" + Model.Item.Id;
+    string aclass = Model.User != null ? "" : "disabled";
     string hideDisplay = "";
     string showDisplay = "none";
     string opacity = "1";
-    if (Model.user?.IsItemInBlackList(Model.item.Id) ?? false)
+    if (Model.User?.IsItemInBlackList(Model.Item.Id) ?? false)
     {
         hideDisplay = "none";
         showDisplay = "";
@@ -17,22 +17,22 @@
 <div style="opacity:@opacity" class="@divId">
     <div>
         <button class=" btn btn-primary" onclick="BackToList();" style="float:right">Back to List</button>
-        <h1>@Html.DisplayFor(model => model.item.Name)</h1>
+        <h1>@Html.DisplayFor(model => model.Item.Name)</h1>
     </div>
     <div>
-        <a style="display:@hideDisplay;" class="hideimg" onclick="hide(@Model.item.Id)"
-            href='@Url.Action("Hide","Home", new { id=Model.item.Id })'>
+        <a style="display:@hideDisplay;" class="hideimg" onclick="hide(@Model.Item.Id)"
+            href='@Url.Action("Hide","Home", new { id=Model.Item.Id })'>
             <img src="@Url.Content("~/Resources/Images/hide.png")" title="Don't recommend this movie" />
         </a>
-        <a style="display:@showDisplay;" class="showimg" onclick="show(@Model.item.Id)"
-            href='@Url.Action("Show","Home", new { id=Model.item.Id })'>
+        <a style="display:@showDisplay;" class="showimg" onclick="show(@Model.Item.Id)"
+            href='@Url.Action("Show","Home", new { id=Model.Item.Id })'>
             <img src="@Url.Content("~/Resources/Images/show.png")" title="Show movie again." />
         </a>
         <hr />
-        <img class="ImageInDetail image"  src="@Model.item.ImageURL" />
+        <img class="ImageInDetail image"  src="@Model.Item.ImageURL" />
 
         <dl class="InfoInDetail row">
-             @if (Model.user!=null)
+             @if (Model.User!=null)
             {
                 <dt class="col-sm-2">
                     My rating
@@ -42,19 +42,19 @@
                 </dd>
                 <br/>
             }
-            @if (!string.IsNullOrEmpty(Model.item.Description))
+            @if (!string.IsNullOrEmpty(Model.Item.Description))
             {
                 <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.item.Description)
+                    @Html.DisplayNameFor(model => model.Item.Description)
                 </dt>
                 <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.item.Description)
+                    @Html.DisplayFor(model => model.Item.Description)
                 </dd>
                 <br />
             }
-            @if (Model.item.GetGenres().Length > 0)
+            @if (Model.Item.GetGenres().Length > 0)
             {
-                var genres = Model.item.GetGenres();
+                var genres = Model.Item.GetGenres();
                 <dt class="col-sm-2">
                     Genres
                 </dt>
@@ -66,7 +66,7 @@
                         string showDisplayGenre = "none";
                         string hideClassGenre = "hidegenre_" + i;
                         string showClassGenre = "showgenre_" + i;
-                        if (Model.user?.IsGenreInBlackList(genres[i]) ?? false)
+                        if (Model.User?.IsGenreInBlackList(genres[i]) ?? false)
                         {
                             hideDisplayGenre = "none";
                             showDisplayGenre = "";                       
@@ -85,40 +85,40 @@
                     }
                 </dd>
             }
-            @if (!string.IsNullOrEmpty(Model.item.ShortDescription))
+            @if (!string.IsNullOrEmpty(Model.Item.ShortDescription))
             {
                 <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.item.ShortDescription)
+                    @Html.DisplayNameFor(model => model.Item.ShortDescription)
                 </dt>
                 <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.item.ShortDescription)
+                    @Html.DisplayFor(model => model.Item.ShortDescription)
                 </dd>
                 <br />
             }
-            @if (!string.IsNullOrEmpty(Model.item.GetYoutubeKey()))
+            @if (!string.IsNullOrEmpty(Model.Item.GetYoutubeKey()))
             {
                 <dt class="col-sm-2">
                     Video
                 </dt>
                 <dd class="col-sm-10">
-                    @{var src = "https://www.youtube.com/embed/" + Model.item.GetYoutubeKey();}
+                    @{var src = "https://www.youtube.com/embed/" + Model.Item.GetYoutubeKey();}
                     <iframe width="100%" src="@src" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                 </dd>
                 <br />
             }
-            @if (Model.item.GetReleaseDate() != null)
+            @if (Model.Item.GetReleaseDate() != null)
             {
                 <dt class="col-sm-2">
                     Release date
                 </dt>
                 <dd class="col-sm-10">
-                    @Model.item.GetReleaseDate().Value.ToShortDateString()
+                    @Model.Item.GetReleaseDate().Value.ToShortDateString()
                 </dd>      
                 <br />
             }
-            @if (!string.IsNullOrEmpty(Model.item.GetDirector()))
+            @if (!string.IsNullOrEmpty(Model.Item.GetDirector()))
             {
-                string director = Model.item.GetDirector();
+                string director = Model.Item.GetDirector();
                 <dt class="col-sm-2">
                     Director
                 </dt>
@@ -129,7 +129,7 @@
                         string showDisplayDirector = "none";
                         string hideClassDirector = "hidedirector_";
                         string showClassDirector = "showdirector_";
-                        if (Model.user?.IsDirectorInBlackList(director) ?? false)
+                        if (Model.User?.IsDirectorInBlackList(director) ?? false)
                         {
                         hideDisplayDirector = "none";
                         showDisplayDirector = "";
@@ -148,9 +148,9 @@
                 </dd>
                 <br />
             }
-            @if (Model.item.GetActors().Length>0)
+            @if (Model.Item.GetActors().Length>0)
             {
-                var actors = Model.item.GetActors();
+                var actors = Model.Item.GetActors();
                 <dt class="col-sm-2">
                     Actors
                 </dt>
@@ -162,7 +162,7 @@
                         string showDisplayActor = "none";
                         string hideClassActor = "hideactor_" + i;
                         string showClassActor = "showactor_" + i;
-                        if (Model.user?.IsActorInBlackList(actors[i]) ?? false)
+                        if (Model.User?.IsActorInBlackList(actors[i]) ?? false)
                         {
                             hideDisplayActor = "none";
                             showDisplayActor = "";

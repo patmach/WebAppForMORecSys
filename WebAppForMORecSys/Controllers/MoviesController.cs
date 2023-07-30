@@ -124,7 +124,7 @@ namespace WebAppForMORecSys.Controllers
             return PartialView(new PreviewDetailViewModel(
                 _context.Items.First(x => x.Id == id),
                 user,
-                ratings
+                ratings 
                 ));
         }
 

@@ -12,28 +12,36 @@ namespace WebAppForMORecSys.Models.ViewModels
         /// <summary>
         /// Item that the preview or detail is about
         /// </summary>
-        public Item item;
+        public Item Item;
 
         /// <summary>
         /// User to whom is the view displayed
         /// </summary>
-        public User user;
+        public User User;
 
         /// <summary>
         /// Ratings of that user
         /// </summary>
-        public List<Rating> userRatings;
+        public List<Rating> UserRatings;
+
+        /// <summary>
+        /// Variants of metrics computation user uses or default variants
+        /// </summary>
+        public List<MetricVariant> UsedVariants;
 
         /// <summary>
         /// Metrics score of this item. Only used when its displayed as recommendation 
         /// </summary>
-        public Dictionary<Metric, double> metricsContribution;
-        public PreviewDetailViewModel(Item item, User user, List<Rating> userRatings, Dictionary<Metric, double> metricsContribution = null)
+        public Dictionary<Metric, double> MetricsContribution;
+
+        public PreviewDetailViewModel(Item item, User user, List<Rating> userRatings,
+            Dictionary<Metric, double> metricsContribution = null, List<MetricVariant> variants=null)
         {
-            this.item = item;
-            this.user = user;
-            this.userRatings = userRatings;
-            this.metricsContribution = metricsContribution;
+            this.Item = item;
+            this.User = user;
+            this.UserRatings = userRatings;
+            this.MetricsContribution = metricsContribution;
+            this.UsedVariants = variants;
         }
 
         /// <summary>

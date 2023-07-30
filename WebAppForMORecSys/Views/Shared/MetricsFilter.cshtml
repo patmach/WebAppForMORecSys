@@ -92,8 +92,8 @@
                             @metric.Name
                         }
                     </label>
-                    <input class="custom-range range form-control rounded m-3" type="number" min="0" max="100" name="MetricsImportance" id="@id"
-                           value="@Model.Metrics[metric]" placeholder="MetricsImportance" oninput="changeValues(this.value, @index)"
+                    <input class="custom-range range form-control rounded m-3" required type="number" min="0" max="100" name="MetricsImportance" id="@id"
+                           value="@Model.Metrics[metric]"  oninput="changeValues(this.value, @index)"
                            onchange="changeValues(this.value, @index)"
                            style="border: 3px solid @Model.User.GetColors()[index];" />
                     }
@@ -194,11 +194,12 @@
         allRanges.forEach(wrap => {
             const range = wrap.querySelector(".range");
             const bubble = wrap.querySelector(".bubble");
-
-            range.addEventListener("input", () => {
+            if (bubble != null){
+                range.addEventListener("input", () => {
+                    setBubble(range, bubble);
+                });
                 setBubble(range, bubble);
-            });
-            setBubble(range, bubble);
+            }
         });
     }
     var colors = []

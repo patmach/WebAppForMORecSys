@@ -554,23 +554,30 @@ namespace WebAppForMORecSys.Helpers
         public static List<int> GetRatedAndSeenItems(this User user, ApplicationDbContext context)
         {
             var rated = context.Ratings.Where(r => r.UserID == user.Id).Select(r => r.ItemID).ToList();
-            var seen = context.Interactions.Where(i => (i.type == TypeOfInteraction.Click && i.Last < DateTime.Now.AddHours(-1))
-            || (i.type == TypeOfInteraction.Seen && (i.Last < DateTime.Now.AddMinutes(-10) || i.NumberOfInteractions >= 3)))
+            var seen = context.Interactions.Where(i => (i.type == TypeOfInteraction.Click && i.Last > DateTime.Now.AddHours(-1))
+            || (i.type == TypeOfInteraction.Seen && (i.Last > DateTime.Now.AddMinutes(-10) || i.NumberOfInteractions >= 3)))
                 .Select(r => r.ItemID).ToList();
             return rated.Union(seen).ToList();
         }
 
         public static string[] GetMetricVariantCodes(this User user, ApplicationDbContext context, List<int> metricIDs)
         {
-            var codes = new List<string>();
+            return GetMetricVariants(user, context, metricIDs).Select(mv=> mv?.Code ?? "").ToArray();
+        }
+
+        public static List<MetricVariant> GetMetricVariants(this User user, ApplicationDbContext context, List<int> metricIDs)
+        {
+            var variants = new List<MetricVariant>();
             var defaultMVs = context.MetricVariants.Where(mv => metricIDs.Contains(mv.MetricID) && mv.DefaultVariant).ToList();
-            var userMVs = context.UserMetricVariants.Include(umv=> umv.MetricVariant).
-                Where(umv => metricIDs.Contains(umv.MetricVariant.MetricID)).Select(umv=> umv.MetricVariant).ToList();
-            foreach (int metricID in metricIDs){
+            var userMVs = context.UserMetricVariants.Include(umv => umv.MetricVariant).
+                Where(umv => (umv.UserID == user.Id) && metricIDs.Contains(umv.MetricVariant.MetricID))
+                .Select(umv => umv.MetricVariant).ToList();
+            foreach (int metricID in metricIDs)
+            {
                 var userChoice = userMVs.Where(umv => umv.MetricID == metricID).FirstOrDefault();
-                codes.Add(userChoice?.Code ?? defaultMVs.Where(mv => mv.MetricID == metricID).FirstOrDefault()?.Code ?? "");
+                variants.Add(userChoice ?? defaultMVs.Where(mv => mv.MetricID == metricID).FirstOrDefault() ?? null);
             }
-            return codes.ToArray();
+            return variants;
         }
 
     }

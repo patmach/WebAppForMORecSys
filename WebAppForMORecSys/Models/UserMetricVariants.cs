@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Security.Policy;
 using WebAppForMORecSys.Areas.Identity.Data;
 using WebAppForMORecSys.Data;
 
@@ -25,8 +26,15 @@ namespace WebAppForMORecSys.Models
 
         public static void Save(int userID, MetricVariant mv, ApplicationDbContext context)
         {
-            var umv = context.UserMetricVariants.Include(umv => umv.MetricVariant)
-                .Where(umv => (umv.UserID == userID) && (umv.MetricVariant.MetricID == mv.MetricID)).FirstOrDefault();
+            List<UserMetricVariants> umvs = context.UserMetricVariants.Include(umv => umv.MetricVariant)
+                .Where(umv => (umv.UserID == userID) && (umv.MetricVariant.MetricID == mv.MetricID)).ToList();
+            UserMetricVariants umv = umvs.FirstOrDefault();
+            if (umvs.Count > 1)
+            {
+                context.RemoveRange(umvs);
+                context.SaveChanges();
+                umv = null;
+            }
             if (umv == null)
             {
                 var newUmv = new UserMetricVariants
