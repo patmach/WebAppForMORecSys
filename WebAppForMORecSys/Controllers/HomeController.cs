@@ -178,6 +178,27 @@ namespace WebAppForMORecSys.Controllers
         }
 
         /// <summary>
+        /// Sets user choice on what type of explanation of metrics share (s)he wants to see in item preview
+        /// </summary>
+        /// <param name="previewExplanationView">Chosen type of score for metrics</param>
+        /// <returns>App settings page</returns>
+        public IActionResult SetPreviewExplanationView(int previewExplanationView)
+        {
+            if ((previewExplanationView < 0) || (previewExplanationView >= Enum.GetValues(typeof(PreviewExplanationView)).Length))
+                return RedirectToAction("AppSettings");
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+            user.SetPreviewExplanationView(previewExplanationView);
+            _context.Update(user);
+            _context.SaveChanges();
+            return RedirectToAction("AppSettings");
+
+        }
+
+        /// <summary>
         /// Sets user choice on what type of score for metrics he wants to see.
         /// </summary>
         /// <param name="metricContributionScoreView">Chosen type of score for metrics</param>

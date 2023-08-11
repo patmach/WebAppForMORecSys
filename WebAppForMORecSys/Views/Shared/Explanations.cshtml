@@ -13,7 +13,9 @@
     string itempreviewid = "preview_" + Model.Item.Id;//MUSÍ odpovídat id hlavního elementu v Preview
     string className = "popover-content" + itempreviewid;
 
-    string borderImage = Model.MetricsContributionToBorderImage(Model.User, Model.MetricsContribution.Values.ToArray(),"right");
+    string borderImage = Model.MetricsContributionToBorderImage(
+        Model.User.GetColors().ToList().GetRange(0, Model.MetricsContribution.Count).ToArray(),
+        Model.MetricsContribution.Values.ToArray(), "right");
 
     //Which type of explanation should be displayed
     ExplanationView view = Model.User.GetExplanationView();
@@ -21,7 +23,8 @@
 
     double lastvalue = values!=null ? (values.Length>0 ? values[0] : 0) : 0;
 }
-@if ((view == ExplanationView.BestMetricPopover) || (view == ExplanationView.AllMetricsPopover))
+@if ((view == ExplanationView.BestMetricPopover) || (view == ExplanationView.AllMetricsPopover) 
+        || (view == ExplanationView.AboveAverageMetricPopover))
 {
     <div class="@className popover-content" id="explanationPopover" style="display:none;">
         <div id="@className">
@@ -29,24 +32,35 @@
             {
                 if (@values[i] == 0) break;
                 if ((view == ExplanationView.BestMetricPopover) && (@values[i] != lastvalue)) break;
-                <p style="color: @Model.User.GetMetricIDsToColors()[keys[i]]">
-                    @if (metricContributionScoreView == MetricContributionScoreView.Percentage)
-                    {
-                        <b>@orderedMetrics[i].Name share - @((int)(100*values[i] / values.Sum())) % </b>
-                    }
-                    else if (metricContributionScoreView == MetricContributionScoreView.Raw)
-                    {
-                        <b>@orderedMetrics[i].Name score - @Math.Round(values[i], 2)</b>
-                    }
-                    else if (metricContributionScoreView == MetricContributionScoreView.HundredTimes)
-                    {
-                        <b>@orderedMetrics[i].Name score - @Math.Round(values[i]*100, 2)</b>
-                    }
-                </p>
-                <p>
+                if ((view == ExplanationView.AboveAverageMetricPopover) && (@values[i] <= 50)) break;
+                if (metricContributionScoreView == MetricContributionScoreView.Bar)
+                {
+                    <div style="border-bottom:10px solid; border-image: @(Model.MetricsContributionToBorderImage(
+                        new string[] {Model.User.GetMetricIDsToColors()[orderedMetrics[i].Id], "transparent"},
+                        new double[] {values[i], 100-values[i]}, "right", sort: false))">
+                        <p style="color: @Model.User.GetMetricIDsToColors()[keys[i]];"><b>@orderedMetrics[i].Name</b></p>
+                    </div>
+                }
+                else{
+                    <p style="color: @Model.User.GetMetricIDsToColors()[keys[i]];">
+                        @if (metricContributionScoreView == MetricContributionScoreView.Percentage)
+                        {
+                            <b>@orderedMetrics[i].Name share - @((int)(100*values[i] / values.Sum())) % </b>
+                        }
+                        else if (metricContributionScoreView == MetricContributionScoreView.Raw)
+                        {
+                            <b>@orderedMetrics[i].Name score - @Math.Round(values[i], 2)</b>
+                        }
+                        else if (metricContributionScoreView == MetricContributionScoreView.HundredTimes)
+                        {
+                            <b>@orderedMetrics[i].Name score - @Math.Round(values[i]*100, 2)</b>
+                        }
+                    </p>
+                }
+                <p style="color: @Model.User.GetMetricIDsToColors()[keys[i]];">
                     @(Model.UsedVariants?.Where(mv => (mv !=null) && (mv?.MetricID == @orderedMetrics[i].Id)).FirstOrDefault()?.Explanation
-                        ?? orderedMetrics[i].DefaultExplanation)</p>
-                <br/>
+                        ?? orderedMetrics[i].DefaultExplanation)
+                </p>                
                 lastvalue = values[i];
             }
         </div>

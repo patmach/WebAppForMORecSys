@@ -53,6 +53,11 @@ namespace WebAppForMORecSys.Settings
         /// </summary>
         public static MetricContributionScoreView MetricContributionScoreView { get; set; } = MetricContributionScoreView.Raw;
 
+        /// <summary>
+        /// Default displaying of metrics share in preview
+        /// </summary>
+        public static PreviewExplanationView PreviewExplanationView { get; set; } = PreviewExplanationView.FullBorderImage;
+
     }
 
 

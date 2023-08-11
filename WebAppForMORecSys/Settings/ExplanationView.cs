@@ -6,7 +6,8 @@
     public enum ExplanationView
     {
         AllMetricsPopover,
-        BestMetricPopover
+        BestMetricPopover,
+        AboveAverageMetricPopover
     }
 
     public static class ExplanationViewExtensions
@@ -23,6 +24,8 @@
                     return "Contribution of all metrics";
                 case ExplanationView.BestMetricPopover:
                     return "Contribution of best metric(s)";
+                case ExplanationView.AboveAverageMetricPopover:
+                    return "Contribution of metrics with above average score";
             }
             return "";
         }

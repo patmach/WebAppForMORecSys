@@ -22,8 +22,8 @@
                 <div draggable="true" id="@("drag_" +@index)" class="drag box dragbox"
                  style="background-color: @Model.User.GetMetricIDsToColors()[metric.Id] ; width: @(100/Model.Metrics.Count - 5)%; @margin">
                 @if (metric.HasVariants()){
-                    <a title="Set how to compute @metric.Name" data-bs-toggle="modal" data-bs-target="#userMetricModal" 
-                    data-bs-metricid="@metric.Id">@metric.Name</a>
+                    <a title="Set how to compute @metric.Name" data-bs-toggle="modal" data-bs-target="#userMetricModal" href="javascript:void(0;)"
+                    style="color:white;" data-bs-metricid="@metric.Id">@metric.Name</a>
                 }
                 else
                 {
@@ -43,8 +43,8 @@
                      style="">
                     @if (metric.HasVariants())
                     {
-                        <a title="Set how to compute @metric.Name" data-bs-toggle="modal" data-bs-target="#userMetricModal"
-                           data-bs-metricid="@metric.Id">@metric.Name</a>
+                        <a title="Set how to compute @metric.Name" data-bs-toggle="modal" data-bs-target="#userMetricModal" href="javascript:void(0;)"
+                           style="color:unset" data-bs-metricid="@metric.Id">@metric.Name</a>
                     }
                     else
                     {
@@ -65,8 +65,8 @@
                     <label for="@id">
                         @if (metric.HasVariants())
                         {
-                            <a title="Set how to compute @metric.Name" data-bs-toggle="modal" data-bs-target="#userMetricModal"
-                               data-bs-metricid="@metric.Id">@metric.Name</a>
+                            <a title="Set how to compute @metric.Name" data-bs-toggle="modal" data-bs-target="#userMetricModal" href="javascript:void(0;)"
+                               style="color:@Model.User.GetColors()[index];" data-bs-metricid="@metric.Id">@metric.Name</a>
                         }
                         else
                         {
@@ -84,8 +84,8 @@
                     <label for="@id">
                         @if (metric.HasVariants())
                         {
-                            <a title="Set how to compute @metric.Name" data-bs-toggle="modal" data-bs-target="#userMetricModal"
-                               data-bs-metricid="@metric.Id">@metric.Name</a>
+                            <a title="Set how to compute @metric.Name" data-bs-toggle="modal" data-bs-target="#userMetricModal" href="javascript:void(0;)"
+                               style="color:@Model.User.GetColors()[index]" data-bs-metricid="@metric.Id">@metric.Name</a>
                         }
                         else
                         {
@@ -312,11 +312,11 @@
             for (let i = 0; i < drag_ranges.length; i++) {
                 temp[i] = drag_ranges[i].innerHTML;
                 backgrounds[i] = drag_ranges[i].style.backgroundColor
-                values[i] = input_ranges[i].value;
-                sorted[i] = input_ranges[i].value;
+                values[i] = Number(input_ranges[i].value);
+                sorted[i] = Number(input_ranges[i].value);
 
             }
-            sorted.sort();
+            sorted.sort(function (a, b) { return a - b; });
             sorted=sorted.reverse();
             for (let i = 0; i < drag_ranges.length; i++) {
                 let index = sorted.indexOf(values[i]);

@@ -1,6 +1,7 @@
 ﻿@using System.Text;
 @using static WebAppForMORecSys.Helpers.UserHelper
 @using static WebAppForMORecSys.Helpers.MovieHelper
+@using WebAppForMORecSys.Settings
 @model WebAppForMORecSys.Models.ViewModels.PreviewDetailViewModel
 @{
 
@@ -19,15 +20,27 @@
 
     //Sets border. Part of explanation when its preview of a recommended movie
     string borderImage = "";
-    string borderSize = "0px";
+    string border = "";
+    string titleColor = "";
     if (Model.MetricsContribution != null)
     {
-        borderImage = Model.MetricsContributionToBorderImage(Model.User,Model.MetricsContribution.Values.ToArray());
-        borderSize = "5px";
+        PreviewExplanationView previewExplanationView = Model.User.GetPreviewExplanationView();
+        if (previewExplanationView == PreviewExplanationView.TitleColor)
+        {
+            var keyOfMaxValue = Model.MetricsContribution.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+            titleColor = Model.User.GetMetricIDsToColors()[keyOfMaxValue.Id];
+        }
+        string direction = previewExplanationView == PreviewExplanationView.LeftBorderImage ? "bottom" : "bottom right";
+        borderImage = Model.MetricsContributionToBorderImage(
+            Model.User.GetColors().ToList().GetRange(0, Model.MetricsContribution.Count).ToArray()
+            , Model.MetricsContribution.Values.ToArray(), direction: direction);
+        string typeOfBorder = previewExplanationView == PreviewExplanationView.LeftBorderImage ? "border-left" : "border";
+        border = $"{typeOfBorder}: 5px solid";
     }
 }
 <div style="opacity:@opacity" class="ItemPreview horizontal @moviepreviewclass" id="@moviepreviewclass">
-    <a href="javascript:void(0);" resource=""  id='@Url.Action("Details","Movies", new { id=Model.Item.Id })' class="ajaxdetail"><h4>@Model.Item.Name</h4></a>
+    <a href="javascript:void(0);" resource=""  id='@Url.Action("Details","Movies", new { id=Model.Item.Id })' class="ajaxdetail">
+        <h4 style="color: @titleColor">@Model.Item.Name</h4>
     
     <div id="logo-holder">
         @{
@@ -37,9 +50,10 @@
                 ImageURL = @Url.Content("~/Resources/Images/grey_no_image.png");
             }
         }
-        <img class="image previewimage" style="width:95%; border: @borderSize solid; border-image:@borderImage;" src="@ImageURL" />
+            <img class="image previewimage" style="width:95%; @border; border-image:@borderImage;" src="@ImageURL" />
         <div class="text" style="width:95%; height:100%; padding:6px;">@Model.Item.ShortDescription</div>
     </div>
+    </a>
     <div>
         <a style="position: absolute; right: 1px; display:@hideDisplay" id="hideimg" class="hideimg" onclick="hide(@Model.Item.Id)" href='@Url.Action("Hide","Home", new { id=Model.Item.Id })'>
             <img src="@Url.Content("~/Resources/Images/hide.png")" title="Don't recommend this movie" />

@@ -451,6 +451,35 @@ namespace WebAppForMORecSys.Helpers
             }
         }
 
+
+        /// <summary>
+        /// Sets chosen preview explanation view
+        /// </summary>
+        /// <param name="user">User that sets the value</param>
+        /// <param name="value">Value to be saved</param>
+        public static void SetPreviewExplanationView(this User user, int value)
+        {
+            SetStringValueToUserChoices(user, "PreviewExplanationView", value.ToString());
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose saved value should be returned</param>
+        /// <returns>Saved type of preview explanation view</returns>
+        public static PreviewExplanationView GetPreviewExplanationView(this User user)
+        {
+            var PreviewExplanationView = GetStringValueInUserChoices(user, "PreviewExplanationView");
+            int value;
+            if ((PreviewExplanationView == null) || !int.TryParse(PreviewExplanationView, out value))
+            {
+                return SystemParameters.PreviewExplanationView;
+            }
+            else
+            {
+                return (PreviewExplanationView)value;
+            }
+        }
+
         /// <summary>
         /// Sets chosen type of block rule addition
         /// </summary>

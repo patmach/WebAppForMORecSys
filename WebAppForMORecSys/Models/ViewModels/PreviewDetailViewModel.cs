@@ -51,7 +51,8 @@ namespace WebAppForMORecSys.Models.ViewModels
         /// <param name="metricsContribution">Metrics score of this item</param>
         /// <param name="direction">Sets in which direction the colors in image should be changed</param>
         /// <returns></returns>
-        public string MetricsContributionToBorderImage(User user, double[] metricsContribution, string direction = "bottom right")
+        public string MetricsContributionToBorderImage(string[] colors, double[] metricsContribution, 
+            string direction = "bottom right", bool sort=true)
         {
             var percentageMetricsContribution = new double[metricsContribution.Length];
             for (int i = 0; i < metricsContribution.Length; i++)
@@ -60,11 +61,13 @@ namespace WebAppForMORecSys.Models.ViewModels
             }
             StringBuilder borderImage = new StringBuilder();
             borderImage.Append($"linear-gradient(to {direction}");
-            var colors = user.GetColors().ToList().GetRange(0,metricsContribution.Length).ToArray();
-            Array.Sort(percentageMetricsContribution, colors);
-            Array.Reverse(colors);
-            Array.Sort(percentageMetricsContribution);
-            Array.Reverse(percentageMetricsContribution);
+            if (sort)
+            {
+                Array.Sort(percentageMetricsContribution, colors);
+                Array.Reverse(colors);
+                Array.Sort(percentageMetricsContribution);
+                Array.Reverse(percentageMetricsContribution);
+            }
             int lastpoint = 0;
             int sum = 0;
             for (int i = 0; i < percentageMetricsContribution.Length; i++)

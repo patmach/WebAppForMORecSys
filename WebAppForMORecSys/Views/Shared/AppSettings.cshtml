@@ -35,16 +35,38 @@
 
     <h4>Which type of explanations do you want to see?</h4>
     <div style="display:flex; margin-bottom:3px; width:100%">
+        @{
+            index = 0;
+        }
+        @foreach (PreviewExplanationView value in Enum.GetValues(typeof(PreviewExplanationView)))
+        {
+            string typeOfBtn = "btn-secondary";
+            if (Model.User.GetPreviewExplanationView() == (PreviewExplanationView)value)
+                typeOfBtn = "btn-primary";
+            <a style="margin:auto;" class="btn btn-sm @typeOfBtn" href='@Url.Action("SetPreviewExplanationView","Home", new { previewExplanationView=index })'>
+                @value.ToFriendlyString()
+            </a>
+            index++;
+        }
+    </div>
+    <div style="display:flex; margin-bottom:3px; width:100%">
+        @{
+            index = 0;
+        }
         @foreach (MetricContributionScoreView value in Enum.GetValues(typeof(MetricContributionScoreView)))
         {
             string typeOfBtn = "btn-secondary";
             if (Model.User.GetMetricContributionScoreView() == (MetricContributionScoreView)value)
                 typeOfBtn = "btn-primary";
-            <a style="margin:auto" class="btn btn-sm @typeOfBtn" href='@Url.Action("SetMetricContributionScoreView","Home", new { metricContributionScoreView=index })'>
+            <a style="margin:auto; 
+" class="btn btn-sm @typeOfBtn" href='@Url.Action("SetMetricContributionScoreView","Home", new { metricContributionScoreView=index })'>
                 @value.ToFriendlyString()
             </a>
             index++;
-        }
+        }        
+
+    </div>
+    <div style="display:flex; margin-bottom:3px; width:100%">
         @{
             index = 0;
         }
@@ -53,7 +75,7 @@
             string typeOfBtn = "btn-secondary";
             if (Model.User.GetExplanationView() == (ExplanationView)value)
                 typeOfBtn = "btn-primary";
-            <a style="margin:auto" class="btn @typeOfBtn" href='@Url.Action("SetExplanationView","Home", new { explanationView=index })'>
+            <a style="margin:auto;" class="btn @typeOfBtn" href='@Url.Action("SetExplanationView","Home", new { explanationView=index })'>
                 @value.ToFriendlyString()
             </a>
             index++;
@@ -68,8 +90,8 @@
             var metricsContribution = new Dictionary<Metric, double>();
             for (int j = 0; j < Model.Metrics.Count; j++)
             {
-                int valueToAdd = (j == 0) ? index * 5 : (j == (Model.Metrics.Count - 1) ? index * -5 : 0);
-                metricsContribution.Add(Model.Metrics.Keys.ToList()[j], 80 + valueToAdd);
+                int valueToAdd = (j == 0) ? index * 7 : (j == (Model.Metrics.Count - 1) ? index * -7 : 0);
+                metricsContribution.Add(Model.Metrics.Keys.ToList()[j], 55 + valueToAdd);
             }
 
             @await Html.PartialAsync("../"+WebAppForMORecSys.Settings.SystemParameters.Controller+"/Preview", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution))
@@ -160,6 +182,9 @@
 
     /*Sets popover window to display properly*/
     $(document).ready(function () {
+        /*popover style is not deleted*/
+        $.fn.tooltip.Constructor.Default.allowList['*'].push('style')
+
         popoverExplanationOptions = {
         content: function () {
             var classname = '.popover-content' + this.id;

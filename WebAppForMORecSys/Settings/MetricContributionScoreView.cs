@@ -8,7 +8,8 @@
     {
         Percentage,
         Raw,
-        HundredTimes
+        HundredTimes,
+        Bar
     }
 
     public static class MetricContributionScoreViewExtensions
@@ -27,6 +28,8 @@
                     return "Raw score";
                 case MetricContributionScoreView.HundredTimes:
                     return "Raw score multiplied by 100";
+                case MetricContributionScoreView.Bar:
+                    return "Bar chart";
             }
             return "";
         }
