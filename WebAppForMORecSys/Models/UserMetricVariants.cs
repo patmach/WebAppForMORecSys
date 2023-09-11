@@ -31,9 +31,16 @@ namespace WebAppForMORecSys.Models
             UserMetricVariants umv = umvs.FirstOrDefault();
             if (umvs.Count > 1)
             {
-                context.RemoveRange(umvs);
-                context.SaveChanges();
-                umv = null;
+                try
+                {
+                    context.RemoveRange(umvs);
+                    context.SaveChanges();
+                    umv = null;
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    //Nothing to do. Was already deleted
+                }
             }
             if (umv == null)
             {

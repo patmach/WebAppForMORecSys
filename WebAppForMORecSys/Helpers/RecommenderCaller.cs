@@ -32,6 +32,9 @@ namespace WebAppForMORecSys.Helpers
             };
 
             JsonContent content = JsonContent.Create(rq);
+#if DEBUG
+            rsURI = "http://127.0.0.1:5000/";
+#endif
             HttpResponseMessage response = await client.PostAsync($"{rsURI}getRecommendations/{userId}", content);
             Dictionary<int, int[]> recommendations = new Dictionary<int, int[]>();
             if (response.IsSuccessStatusCode)

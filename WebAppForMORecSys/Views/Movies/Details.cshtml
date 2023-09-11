@@ -1,9 +1,10 @@
-﻿@using static WebAppForMORecSys.Helpers.MovieHelper
-@using static WebAppForMORecSys.Helpers.UserHelper
+﻿@using static WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler
+@using static WebAppForMORecSys.Helpers.UserJSONPropertiesHandler
 @model WebAppForMORecSys.Models.ViewModels.PreviewDetailViewModel
 @{
-    string divId = "Detail_" + Model.Item.Id;
-    string aclass = Model.User != null ? "" : "disabled";
+    string divClass = "Detail_" + Model.Item.Id;
+
+    //Sets the visibility of show x hide button
     string hideDisplay = "";
     string showDisplay = "none";
     string opacity = "1";
@@ -14,7 +15,7 @@
         opacity = "0.5";
     }
 }
-<div style="opacity:@opacity" class="@divId">
+<div style="opacity:@opacity" class="@divClass">
     <div>
         <button class=" btn btn-primary" onclick="BackToList();" style="float:right">Back to List</button>
         <h1>@Html.DisplayFor(model => model.Item.Name)</h1>

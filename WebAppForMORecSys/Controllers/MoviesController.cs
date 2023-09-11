@@ -25,7 +25,7 @@ using WebAppForMORecSys.Models.ViewModels;
 using WebAppForMORecSys.Models.ViewModels;
 using WebAppForMORecSys.RequestHandlers;
 using WebAppForMORecSys.Settings;
-using static WebAppForMORecSys.Helpers.MovieHelper;
+using static WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler;
 using Interaction = WebAppForMORecSys.Models.Interaction;
 
 namespace WebAppForMORecSys.Controllers
@@ -54,6 +54,7 @@ namespace WebAppForMORecSys.Controllers
             _context = context;
             _userManager = userManager;
             _requestsHandler = new MovieRequestsHandler(context);
+            //Uncomment next line if you want to load movielens data to the database
             //new MovielensLoader(filter: true).LoadMovielensData(context/*, moviesFromLoadedFile: true*/);
             Movie.SetAllGenres(context);
             Movie.SetAllDirectors(context);

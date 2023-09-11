@@ -1,7 +1,7 @@
 ﻿
 @using WebAppForMORecSys.Settings
 @using WebAppForMORecSys.Models.ViewModels
-@using static WebAppForMORecSys.Helpers.UserHelper
+@using static WebAppForMORecSys.Helpers.UserJSONPropertiesHandler
 
 @model WebAppForMORecSys.Models.ViewModels.MainViewModel
 @{
@@ -94,7 +94,7 @@
                 metricsContribution.Add(Model.Metrics.Keys.ToList()[j], 55 + valueToAdd);
             }
 
-            @await Html.PartialAsync("../"+WebAppForMORecSys.Settings.SystemParameters.Controller+"/Preview", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution))
+            @await Html.PartialAsync("../"+ SystemParameters.Controller + "/Preview", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution))
             @await Html.PartialAsync("../Shared/Explanations", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution))
 
             index++;
@@ -146,7 +146,7 @@
         }
     </div>
     <div style="width:33%;background-color: #0d6efd; margin:auto;" class=" rounded">
-    @await Html.PartialAsync("../"+SystemParameters.Controller+"/CreateBlockRule", 
+    @await Html.PartialAsync("../"+SystemParameters.Controller + "/CreateBlockRule", 
             new UserBlockRuleViewModel{ CurrentUser=Model.User, Disabled=true})
     </div>
 

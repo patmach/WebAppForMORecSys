@@ -32,7 +32,7 @@ namespace WebAppForMORecSys.Data
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<RecommenderSystem> RecommenderSystems { get; set; }
         public DbSet<UserMetricVariants> UserMetricVariants { get; set; }
-        public DbSet<User> Users { get; set; }
+        public new DbSet<User> Users { get; set; }
         public DbSet<MetricVariant> MetricVariants { get; set; }
     }
 }

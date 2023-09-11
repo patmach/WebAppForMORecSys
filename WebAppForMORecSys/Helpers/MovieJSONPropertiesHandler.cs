@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Text.Json.Nodes;
 using WebAppForMORecSys.Models;
-using static WebAppForMORecSys.Helpers.UserHelper;
+using static WebAppForMORecSys.Helpers.UserJSONPropertiesHandler;
 using NuGet.Packaging;
 using System.IO;
 using System.Text;
@@ -17,20 +17,20 @@ namespace WebAppForMORecSys.Helpers
     /// <summary>
     /// Extension class for class Item. Enables to work with item as movie.
     /// </summary>
-    public static class MovieHelper
+    public static class MovieJSONPropertiesHandler
     {
 
         /// <summary>
         /// </summary>
         /// <param name="movie">Selected movie</param>
         /// <returns>Director of the movie</returns>
-        public static string GetDirector(Item movie) => ItemHelper.getPropertyStringValueFromJSON(movie, "Director") ?? "";
+        public static string GetDirector(Item movie) => ItemJSONPropertiesHandler.getPropertyStringValueFromJSON(movie, "Director") ?? "";
 
         /// <summary>
         /// </summary>
         /// <param name="movie">Selected movie</param>
         /// <returns>Actors that played in the movie</returns>
-        public static string[] GetActors(Item movie) => ItemHelper.getPropertyListValueFromJSON(movie, "Actors");
+        public static string[] GetActors(Item movie) => ItemJSONPropertiesHandler.getPropertyListValueFromJSON(movie, "Actors");
 
         /// <summary>
         /// </summary>
@@ -38,7 +38,7 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>Release date of the movie</returns>
         public static DateTime? GetReleaseDate(Item movie)
         {
-            var stringDate = ItemHelper.getPropertyStringValueFromJSON(movie, "ReleaseDate");
+            var stringDate = ItemJSONPropertiesHandler.getPropertyStringValueFromJSON(movie, "ReleaseDate");
             if (stringDate.IsNullOrEmpty()) return null;
             return DateTime.Parse(stringDate);
         }
@@ -47,7 +47,7 @@ namespace WebAppForMORecSys.Helpers
         /// </summary>
         /// <param name="movie">Selected movie</param>
         /// <returns>Genres of the movie</returns>
-        public static string[] GetGenres(Item movie) => ItemHelper.getPropertyListValueFromJSON(movie, "Genres");
+        public static string[] GetGenres(Item movie) => ItemJSONPropertiesHandler.getPropertyListValueFromJSON(movie, "Genres");
 
         /// <summary>
         /// Adds actor to block rules
@@ -56,7 +56,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="actor">Name of the actor</param>
         public static void AddDirectorToBlackList(this User user, string director)
         {
-            UserHelper.AddStringValueToBlackList(user, "Director", director);
+            UserJSONPropertiesHandler.AddStringValueToBlackList(user, "Director", director);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="director">Name of the director</param>
         public static void AddActorToBlackList(this User user, string actor)
         {
-            UserHelper.AddStringValueToBlackList(user, "Actor", actor);
+            UserJSONPropertiesHandler.AddStringValueToBlackList(user, "Actor", actor);
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="genre">Name of the genre</param>
         public static void AddGenreToBlackList(this User user, string genre)
         {
-            UserHelper.AddStringValueToBlackList(user, "Genre", genre);
+            UserJSONPropertiesHandler.AddStringValueToBlackList(user, "Genre", genre);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="director">Name of the director</param>
         public static void RemoveDirectorFromBlackList(this User user, string director)
         {
-            UserHelper.RemoveStringValueFromBlackList(user, "Director", director);
+            UserJSONPropertiesHandler.RemoveStringValueFromBlackList(user, "Director", director);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="actor">Name of the actor</param>
         public static void RemoveActorFromBlackList(this User user, string actor)
         {
-            UserHelper.RemoveStringValueFromBlackList(user, "Actor", actor);
+            UserJSONPropertiesHandler.RemoveStringValueFromBlackList(user, "Actor", actor);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="genre">Name of the genre</param>
         public static void RemoveGenreFromBlackList(this User user, string genre)
         {
-            UserHelper.RemoveStringValueFromBlackList(user, "Genre", genre);
+            UserJSONPropertiesHandler.RemoveStringValueFromBlackList(user, "Genre", genre);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="director">Name of the director</param>
         public static bool IsDirectorInBlackList(this User user, string director)
         {
-            return UserHelper.IsStringValueInBlackList(user, "Director", director);
+            return UserJSONPropertiesHandler.IsStringValueInBlackList(user, "Director", director);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="actor">Name of the actor</param>
         public static bool IsActorInBlackList(this User user, string actor)
         {
-            return UserHelper.IsStringValueInBlackList(user, "Actor", actor);
+            return UserJSONPropertiesHandler.IsStringValueInBlackList(user, "Actor", actor);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="genre">Name of the genre</param>
         public static bool IsGenreInBlackList(this User user, string genre)
         {
-            return UserHelper.IsStringValueInBlackList(user, "Genre", genre);
+            return UserJSONPropertiesHandler.IsStringValueInBlackList(user, "Genre", genre);
         }
 
 
@@ -146,7 +146,7 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>Names of all blocked directors by user</returns>
         public static List<string> GetDirectorsInBlackList(this User user)
         {
-            return UserHelper.GetStringValuesInBlackList(user, "Director");
+            return UserJSONPropertiesHandler.GetStringValuesInBlackList(user, "Director");
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>Names of all blocked actors by user</returns>
         public static List<string> GetActorsInBlackList(this User user)
         {
-            return UserHelper.GetStringValuesInBlackList(user, "Actor");
+            return UserJSONPropertiesHandler.GetStringValuesInBlackList(user, "Actor");
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>All blocked genres by user</returns>
         public static List<string> GetGenresInBlackList(this User user)
         {
-            return UserHelper.GetStringValuesInBlackList(user, "Genre");
+            return UserJSONPropertiesHandler.GetStringValuesInBlackList(user, "Genre");
         }
         
         /// <summary>
@@ -187,7 +187,7 @@ namespace WebAppForMORecSys.Helpers
         public static string getAllBlockedItemsSQLWhere(User user)
         {
             StringBuilder filterSQL = new StringBuilder();
-            var idsBL = UserHelper.GetItemsInBlackList(user);
+            var idsBL = UserJSONPropertiesHandler.GetItemsInBlackList(user);
             var directorsBL = GetDirectorsInBlackList(user);
             var actorsBL = GetActorsInBlackList(user);
             var genresBL = GetGenresInBlackList(user);

@@ -1,6 +1,6 @@
 ﻿@model WebAppForMORecSys.Models.ViewModels.UserBlockRuleViewModel
-@using static WebAppForMORecSys.Helpers.MovieHelper
-@using static WebAppForMORecSys.Helpers.UserHelper
+@using static WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler
+@using static WebAppForMORecSys.Helpers.UserJSONPropertiesHandler
 
 @using WebAppForMORecSys.Settings
 <form asp-controller="Movies" asp-action="UserBlockSettings" method="post" class="moviecreateblockrule">
@@ -41,11 +41,12 @@
 </form>
 
 <script>
+    /*Loads possible values to autocomplete the text boxes*/
     $('select').selectpicker();
         $(document).ready(function () {
             SetAutoComplete("idirector", "../Movies/GetAllDirectors");
-        SetAutoComplete("iactor", "../Movies/GetAllActors");
-        SetAutoComplete("iblock", "../Movies/GetAllPossibleValuesToBlock");
+            SetAutoComplete("iactor", "../Movies/GetAllActors");
+            SetAutoComplete("iblock", "../Movies/GetAllPossibleValuesToBlock");
         });
 </script>
 

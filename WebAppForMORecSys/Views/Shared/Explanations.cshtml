@@ -1,6 +1,6 @@
 ﻿@using WebAppForMORecSys.Settings
-@using static WebAppForMORecSys.Helpers.MovieHelper
-@using static WebAppForMORecSys.Helpers.UserHelper
+@using static WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler
+@using static WebAppForMORecSys.Helpers.UserJSONPropertiesHandler
 @model WebAppForMORecSys.Models.ViewModels.PreviewDetailViewModel
 @{
     //Order the metrics from the one with the biggest score to the one with lowest
@@ -10,7 +10,7 @@
     var values = ordered.Values.ToArray();
 
 
-    string itempreviewid = "preview_" + Model.Item.Id;//MUSÍ odpovídat id hlavního elementu v Preview
+    string itempreviewid = "preview_" + Model.Item.Id;//Must corespond to class of main element in Preview
     string className = "popover-content" + itempreviewid;
 
     string borderImage = Model.MetricsContributionToBorderImage(
@@ -67,9 +67,10 @@
     </div>
 }
 <script>
+
     $('#@itempreviewid').on('inserted.bs.popover', function () {
         let popoverbodies = document.getElementsByClassName("popover-body");
-        /*for is there because sometimes new popover is inserted faster than the previous is hidden.*/ 
+        /*For loop is there because sometimes new popover is inserted faster than the previous is hidden.*/ 
         for (let i=0; i<popoverbodies.length; i++){
             let popoverbody=popoverbodies[i];
             popoverbody.style.borderTop = "5px solid";

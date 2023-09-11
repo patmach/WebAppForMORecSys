@@ -1,5 +1,5 @@
 ﻿@model WebAppForMORecSys.Models.ViewModels.MainViewModel
-@using static WebAppForMORecSys.Helpers.MovieHelper
+@using static WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler
 <form asp-controller="Movies" asp-action="Index" method="get" class="moviefilter">
     
     @{
@@ -9,6 +9,7 @@
         string releasedateto;
         string genresstring;
         string[] genres;
+        //Loads default values (from current search with filter)
         bool b = @Model.FilterValues.TryGetValue("Director", out director);
         b = @Model.FilterValues.TryGetValue("Actor", out actor);
         b = @Model.FilterValues.TryGetValue("ReleaseDateFrom", out releasedatefrom);
@@ -76,5 +77,6 @@
 </form>
 
 <script>
+    //Creates bootstrap select control
     $('select').selectpicker();
 </script>

@@ -364,3 +364,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /WebAppForMORecSys/moviesloaded.csv
+
+appsettings.json
+*/appsettings.json

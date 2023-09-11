@@ -16,7 +16,7 @@ namespace WebAppForMORecSys.Helpers
     /// <summary>
     /// Adds new method to be called on user. Mostly setting the json properties
     /// </summary>
-    public static class UserHelper
+    public static class UserJSONPropertiesHandler
     {
         /// <summary>
         /// </summary>

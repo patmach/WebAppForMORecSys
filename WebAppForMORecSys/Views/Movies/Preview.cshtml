@@ -1,11 +1,11 @@
 ﻿@using System.Text;
-@using static WebAppForMORecSys.Helpers.UserHelper
-@using static WebAppForMORecSys.Helpers.MovieHelper
+@using static WebAppForMORecSys.Helpers.UserJSONPropertiesHandler
+@using static WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler
 @using WebAppForMORecSys.Settings
 @model WebAppForMORecSys.Models.ViewModels.PreviewDetailViewModel
 @{
 
-    string moviepreviewclass = "preview_" + Model.Item.Id; //Do not change!
+    string moviePreviewID = "preview_" + Model.Item.Id; //Do not change!
 
     //Sets the visibility of show x hide button
     string hideDisplay = "";
@@ -18,12 +18,13 @@
         opacity = "0.5";
     }
 
-    //Sets border. Part of explanation when its preview of a recommended movie
+    //Sets explanation on metric contributon when its preview of a recommended movie
     string borderImage = "";
     string border = "";
     string titleColor = "";
     if (Model.MetricsContribution != null)
     {
+        string typeOfBorder = "";
         PreviewExplanationView previewExplanationView = Model.User.GetPreviewExplanationView();
         if (previewExplanationView == PreviewExplanationView.TitleColor)
         {
@@ -34,11 +35,12 @@
         borderImage = Model.MetricsContributionToBorderImage(
             Model.User.GetColors().ToList().GetRange(0, Model.MetricsContribution.Count).ToArray()
             , Model.MetricsContribution.Values.ToArray(), direction: direction);
-        string typeOfBorder = previewExplanationView == PreviewExplanationView.LeftBorderImage ? "border-left" : "border";
+        typeOfBorder = previewExplanationView == PreviewExplanationView.LeftBorderImage ? "border-left" : "border";
         border = $"{typeOfBorder}: 5px solid";
     }
 }
-<div style="opacity:@opacity" class="ItemPreview horizontal @moviepreviewclass" id="@moviepreviewclass">
+
+<div style="opacity:@opacity" class="ItemPreview horizontal @moviePreviewID" id="@moviePreviewID">
     <a href="javascript:void(0);" resource=""  id='@Url.Action("Details","Movies", new { id=Model.Item.Id })' class="ajaxdetail">
         <h4 style="color: @titleColor">@Model.Item.Name</h4>
     

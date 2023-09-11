@@ -22,13 +22,13 @@ namespace WebAppForMORecSys.Models
         /// </summary>
         /// <param name="movie">Movie the director should be returned for</param>
         /// <returns>Movie director</returns>
-        public static string GetDirector(this Item movie) => ItemHelper.getPropertyStringValueFromJSON(movie, "Director") ?? "";
+        public static string GetDirector(this Item movie) => ItemJSONPropertiesHandler.getPropertyStringValueFromJSON(movie, "Director") ?? "";
 
         /// <summary>
         /// </summary>
         /// <param name="movie">Movie the actors should be returned searched for</param>
         /// <returns>Movie actors</returns>
-        public static string[] GetActors(this Item movie) => ItemHelper.getPropertyListValueFromJSON(movie, "Actors");
+        public static string[] GetActors(this Item movie) => ItemJSONPropertiesHandler.getPropertyListValueFromJSON(movie, "Actors");
 
         /// <summary>
         /// </summary>
@@ -37,7 +37,7 @@ namespace WebAppForMORecSys.Models
         public static DateTime? GetReleaseDate(this Item movie)
         {
                 DateTime dt = DateTime.MinValue;
-                if (DateTime.TryParse(ItemHelper.getPropertyStringValueFromJSON(movie, "ReleaseDate"), out dt))
+                if (DateTime.TryParse(ItemJSONPropertiesHandler.getPropertyStringValueFromJSON(movie, "ReleaseDate"), out dt))
                     return dt;
                 return null;
         }
@@ -46,25 +46,25 @@ namespace WebAppForMORecSys.Models
         /// </summary>
         /// <param name="movie">Movie the genres should be returned searched for</param>
         /// <returns>Movie genres</returns>
-        public static string[] GetGenres(this Item movie) => ItemHelper.getPropertyListValueFromJSON(movie, "Genres");
+        public static string[] GetGenres(this Item movie) => ItemJSONPropertiesHandler.getPropertyListValueFromJSON(movie, "Genres");
 
-        public static string GetYoutubeKey(this Item movie) => ItemHelper.getPropertyStringValueFromJSON(movie, "YoutubeKey") ?? null;
+        public static string GetYoutubeKey(this Item movie) => ItemJSONPropertiesHandler.getPropertyStringValueFromJSON(movie, "YoutubeKey") ?? null;
 
 
         /// <summary>
         /// Contains all genres that are used for movies
         /// </summary>
-        public static List<string> AllGenres;
+        public static List<string> AllGenres = new List<string>();
 
         /// <summary>
         /// Contains directors of all of the movies in database
         /// </summary>
-        public static List<string> AllDirectors;
+        public static List<string> AllDirectors = new List<string>();
 
         /// <summary>
         /// Contains actors of all of the movies in database
         /// </summary>
-        public static List<string> AllActors;
+        public static List<string> AllActors = new List<string>();
 
         /// <summary>
         /// Filter items according to parameters and returns the result.
@@ -169,7 +169,7 @@ namespace WebAppForMORecSys.Models
             if (Movie.AllGenres == null)
             {
                 var genres = new List<string>();
-                context.Items.ToList().ForEach(m => genres.AddRange(MovieHelper.GetGenres(m)));
+                context.Items.ToList().ForEach(m => genres.AddRange(MovieJSONPropertiesHandler.GetGenres(m)));
                 Movie.AllGenres = genres.Distinct().ToList();
                 Movie.AllGenres.Remove("(no genres listed)");
             }
@@ -184,7 +184,7 @@ namespace WebAppForMORecSys.Models
             if (AllDirectors == null)
             {
                 var directors = new List<string>();
-                context.Items.ToList().ForEach(m => directors.Add(MovieHelper.GetDirector(m)));
+                context.Items.ToList().ForEach(m => directors.Add(MovieJSONPropertiesHandler.GetDirector(m)));
                 AllDirectors = directors.Distinct().ToList();
             }
         }
@@ -198,10 +198,11 @@ namespace WebAppForMORecSys.Models
             if (AllActors == null)
             {
                 var actors = new List<string>();
-                context.Items.ToList().ForEach(m => actors.AddRange(MovieHelper.GetActors(m)));
+                context.Items.ToList().ForEach(m => actors.AddRange(MovieJSONPropertiesHandler.GetActors(m)));
                 AllActors = actors.Distinct().ToList();
             }
         }
+
 
     }
 }

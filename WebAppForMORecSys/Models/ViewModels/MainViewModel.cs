@@ -60,6 +60,11 @@ namespace WebAppForMORecSys.Models.ViewModels
         /// </summary>
         public string Message;
 
+        /// <summary>
+        /// Message to be shown in top of the page
+        /// </summary>
+        public string Info;
+
         public MainViewModel()
         {
             this.Metrics = new Dictionary<Metric, int>();

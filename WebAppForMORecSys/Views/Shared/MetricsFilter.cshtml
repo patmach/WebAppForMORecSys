@@ -2,7 +2,7 @@
 @using WebAppForMORecSys.Settings;
 @using WebAppForMORecSys.Helpers;
 
-<div class="input-group" id="input-metrics-group" >
+<div class="input-group" id="input-metrics-group" style="font-size: 1.3vw ;">
     @{
         int index = 0;
 
@@ -12,15 +12,20 @@
             string id = "range" + index;        
             string valueAsNumber = id + ".valueAsNumber";
             string margin = "";
-            if(index==0)
+            string radius = "";
+            if (index == 0)
                 margin = "margin-left:auto;";
-            else if (index==Model.Metrics.Keys.Count-1)
+            else if (index == Model.Metrics.Keys.Count - 1) {
                 margin = "margin-right:auto;";
+            radius = "border-top-right-radius: 0.5em; border-bottom-right-radius:0.5em;";
+        }
+
         @if (Model.User.GetMetricsView() == MetricsView.DragAndDrop)
             {
 
                 <div draggable="true" id="@("drag_" +@index)" class="drag box dragbox"
-                 style="background-color: @Model.User.GetMetricIDsToColors()[metric.Id] ; width: @(100/Model.Metrics.Count - 5)%; @margin">
+                 style="background-color: @Model.User.GetMetricIDsToColors()[metric.Id] ; width: @(100/Model.Metrics.Count - 5)%; @margin 
+                    @radius">
                 @if (metric.HasVariants()){
                     <a title="Set how to compute @metric.Name" data-bs-toggle="modal" data-bs-target="#userMetricModal" href="javascript:void(0;)"
                     style="color:white;" data-bs-metricid="@metric.Id">@metric.Name</a>
@@ -59,7 +64,7 @@
             }
             else
             {
-            <div class="range-wrap" style="color: @Model.User.GetColors()[index]">
+            <div class="range-wrap" style="color: @Model.User.GetColors()[index]; max-width: @(100 / Model.Metrics.Count - 3)% ">
                     @if (Model.User.GetMetricsView() == MetricsView.Sliders)
                     {
                     <label for="@id">

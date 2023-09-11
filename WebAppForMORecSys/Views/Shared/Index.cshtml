@@ -14,6 +14,13 @@
     @await Html.PartialAsync("../"+controller+"/Filter")
 </div>
 <div id="main">
+    @if (!string.IsNullOrEmpty(Model.Info)){
+        <div class="card">
+          <div class="card-body" style="background-color:orange">
+            @Model.Info
+          </div>
+        </div>
+    }
     <div id="openfilterbtn"><button id="openfilterbtn " class="openbtn btn" onclick="openNav()">&#9776; Open Filter</button></div>
     <div id="closefilterbtn" style="display:none"> <button class="openbtn btn" onclick="closeNav()">&#9776; Close Filter</button></div>
     <form asp-controller="Movies" asp-action="Index" method="get">
