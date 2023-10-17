@@ -34,5 +34,11 @@ namespace WebAppForMORecSys.Data
         public DbSet<UserMetricVariants> UserMetricVariants { get; set; }
         public new DbSet<User> Users { get; set; }
         public DbSet<MetricVariant> MetricVariants { get; set; }
+        public DbSet<Question> Questions { get; set; }
+        public DbSet<Answer> Answers { get; set; }
+        public DbSet<UserAnswer> UserAnswers { get; set; }
+        public DbSet<Act> Acts { get; set; }
+        public DbSet<QuestionAct> QuestionsActs { get; set; }
+        public DbSet<UserAct> UserActs { get; set; }
     }
 }

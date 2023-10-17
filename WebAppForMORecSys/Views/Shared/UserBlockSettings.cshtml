@@ -14,16 +14,6 @@
     <div id="openfilterbtn"><button id="openfilterbtn " class="openbtn btn" onclick="openNav()">&#9776; Create block rule</button></div>
     <div id="closefilterbtn" style="display:none"> <button class="openbtn btn" onclick="closeNav()">&#9776; Close</button></div>
 
-    
-
-    @if (Model.Items.Count > 40)
-    {
-        <form asp-controller="Home" asp-action="UserBlockSettings" method="get">
-            <div class="form-floating mb-3">
-                @await Html.PartialAsync("../Shared/Search")
-            </div>
-        </form>
-    }
 
     <div id="DetailsDiv" style="margin-bottom:5px;"></div>
     <div id="Previews" style="width:100%">

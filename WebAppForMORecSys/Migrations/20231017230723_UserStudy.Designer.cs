@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebAppForMORecSys.Data;
 
@@ -11,9 +12,11 @@ using WebAppForMORecSys.Data;
 namespace WebAppForMORecSys.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231017230723_UserStudy")]
+    partial class UserStudy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -264,8 +267,6 @@ namespace WebAppForMORecSys.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QuestionID");
-
                     b.ToTable("Answers");
                 });
 
@@ -424,10 +425,6 @@ namespace WebAppForMORecSys.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActID");
-
-                    b.HasIndex("QuestionID");
-
                     b.ToTable("QuestionsActs");
                 });
 
@@ -531,10 +528,6 @@ namespace WebAppForMORecSys.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActID");
-
-                    b.HasIndex("UserID");
-
                     b.ToTable("UserActs");
                 });
 
@@ -562,12 +555,6 @@ namespace WebAppForMORecSys.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AnswerID");
-
-                    b.HasIndex("QuestionID");
-
-                    b.HasIndex("UserID");
 
                     b.ToTable("UserAnswers");
                 });
@@ -646,17 +633,6 @@ namespace WebAppForMORecSys.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WebAppForMORecSys.Models.Answer", b =>
-                {
-                    b.HasOne("WebAppForMORecSys.Models.Question", "Question")
-                        .WithMany("Answers")
-                        .HasForeignKey("QuestionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Question");
-                });
-
             modelBuilder.Entity("WebAppForMORecSys.Models.Interaction", b =>
                 {
                     b.HasOne("WebAppForMORecSys.Models.Item", "Item")
@@ -698,25 +674,6 @@ namespace WebAppForMORecSys.Migrations
                     b.Navigation("Metric");
                 });
 
-            modelBuilder.Entity("WebAppForMORecSys.Models.QuestionAct", b =>
-                {
-                    b.HasOne("WebAppForMORecSys.Models.Act", "Act")
-                        .WithMany("QuestionsActs")
-                        .HasForeignKey("ActID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebAppForMORecSys.Models.Question", "Question")
-                        .WithMany("QuestionsActs")
-                        .HasForeignKey("QuestionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Act");
-
-                    b.Navigation("Question");
-                });
-
             modelBuilder.Entity("WebAppForMORecSys.Models.Rating", b =>
                 {
                     b.HasOne("WebAppForMORecSys.Models.Item", "Item")
@@ -732,50 +689,6 @@ namespace WebAppForMORecSys.Migrations
                         .IsRequired();
 
                     b.Navigation("Item");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("WebAppForMORecSys.Models.UserAct", b =>
-                {
-                    b.HasOne("WebAppForMORecSys.Models.Act", "Act")
-                        .WithMany("UserActs")
-                        .HasForeignKey("ActID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebAppForMORecSys.Models.User", "User")
-                        .WithMany("UserActs")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Act");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("WebAppForMORecSys.Models.UserAnswer", b =>
-                {
-                    b.HasOne("WebAppForMORecSys.Models.Answer", "Answer")
-                        .WithMany("UserAnswers")
-                        .HasForeignKey("AnswerID");
-
-                    b.HasOne("WebAppForMORecSys.Models.Question", "Question")
-                        .WithMany("UserAnswers")
-                        .HasForeignKey("QuestionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebAppForMORecSys.Models.User", "User")
-                        .WithMany("UserAnswers")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Answer");
-
-                    b.Navigation("Question");
 
                     b.Navigation("User");
                 });
@@ -799,18 +712,6 @@ namespace WebAppForMORecSys.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebAppForMORecSys.Models.Act", b =>
-                {
-                    b.Navigation("QuestionsActs");
-
-                    b.Navigation("UserActs");
-                });
-
-            modelBuilder.Entity("WebAppForMORecSys.Models.Answer", b =>
-                {
-                    b.Navigation("UserAnswers");
-                });
-
             modelBuilder.Entity("WebAppForMORecSys.Models.Item", b =>
                 {
                     b.Navigation("Interactions");
@@ -828,15 +729,6 @@ namespace WebAppForMORecSys.Migrations
                     b.Navigation("UserMetricVariantsList");
                 });
 
-            modelBuilder.Entity("WebAppForMORecSys.Models.Question", b =>
-                {
-                    b.Navigation("Answers");
-
-                    b.Navigation("QuestionsActs");
-
-                    b.Navigation("UserAnswers");
-                });
-
             modelBuilder.Entity("WebAppForMORecSys.Models.RecommenderSystem", b =>
                 {
                     b.Navigation("Metrics");
@@ -847,10 +739,6 @@ namespace WebAppForMORecSys.Migrations
                     b.Navigation("Interactions");
 
                     b.Navigation("Ratings");
-
-                    b.Navigation("UserActs");
-
-                    b.Navigation("UserAnswers");
 
                     b.Navigation("UserMetricList");
                 });

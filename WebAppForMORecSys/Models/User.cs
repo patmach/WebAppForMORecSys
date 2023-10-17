@@ -58,6 +58,16 @@ namespace WebAppForMORecSys.Models
         public Account account;
 
         /// <summary>
+        /// User's answers on questions
+        /// </summary>
+        public List<UserAnswer> UserAnswers { get; set; }  
+
+        /// <summary>
+        /// User's actions
+        /// </summary>
+        public List<UserAct> UserActs { get; set; }
+
+        /// <summary>
         /// Recompute all blocked items by query to the database
         /// </summary>
         /// <param name="allItems">Link to all items stored in the database</param>
