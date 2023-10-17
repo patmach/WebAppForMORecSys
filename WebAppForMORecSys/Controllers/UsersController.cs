@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAppForMORecSys.Areas.Identity.Data;
 using WebAppForMORecSys.Data;
+using WebAppForMORecSys.Helpers;
 using WebAppForMORecSys.Models;
 
 namespace WebAppForMORecSys.Controllers
@@ -52,6 +53,7 @@ namespace WebAppForMORecSys.Controllers
             User user = new User { UserName = userName };
             _context.Add(user);
             _context.SaveChanges();
+            user.SetRandomSettingsForNewUser();
             if(returnUrl != null) 
                 return LocalRedirect(returnUrl);
             return Ok();

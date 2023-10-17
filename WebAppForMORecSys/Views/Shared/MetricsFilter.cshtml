@@ -12,12 +12,11 @@
             string id = "range" + index;        
             string valueAsNumber = id + ".valueAsNumber";
             string margin = "";
-            string radius = "";
+            string radius = "border-top-right-radius: 0.5em; border-bottom-right-radius:0.5em;";
             if (index == 0)
                 margin = "margin-left:auto;";
             else if (index == Model.Metrics.Keys.Count - 1) {
                 margin = "margin-right:auto;";
-            radius = "border-top-right-radius: 0.5em; border-bottom-right-radius:0.5em;";
         }
 
         @if (Model.User.GetMetricsView() == MetricsView.DragAndDrop)
@@ -107,7 +106,7 @@
             }
             index++;
     }
-    <!-- Modal -->
+    <!-- Modal for setting type of metric -->
     <div class="modal fade" id="userMetricModal" tabindex="-1" aria-labelledby="userMetricLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -127,6 +126,8 @@
 
 <script>
     /* Make sliders responsive to change of value */
+
+    /* Computes sum of values set to the merics*/
     function getSumOfRangeValues() {
         let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
         let length = inputranges.length;
@@ -136,9 +137,12 @@
         }
         return sum;
     }
+
     function getRandomInt(max) {
         return Math.floor(Math.random() * max);
     }
+
+    /* When + and - buttons are used, the next 2 methods increases/decreases its value by 10*/
     function increase(index){
         let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
         let value = parseInt(inputranges[index].value) + 10;
@@ -157,6 +161,8 @@
         setBackgroundOfBoxes();
     }
 
+    /* When there is a change of value of metrics importance, other values are decreased (if needed to be)
+        for the sum of all importances be less than 100. */
     function changeValues(value, index) {
         let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
         let length = inputranges.length;
@@ -182,7 +188,8 @@
 
     }
 
-    /* load metrics importance values to item filter form */
+    /* Load metrics importance values to item filter form. 
+    So the importance values are part of the request even if user uses the more detailed filter */
     function copyValuesToOtherForm(inputranges){
         let group = document.getElementById("input-copy-metrics-group");
         if (group === null) return;
@@ -193,7 +200,7 @@
         }
 
     }
-    /* #For showing values under sliders */
+    /* For showing values under sliders. */
     function setBubbles() {
         const allRanges = document.querySelectorAll(".range-wrap");
         allRanges.forEach(wrap => {
@@ -226,7 +233,7 @@
         bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
     }
 
-    //Boxes when using plus minus buttons
+    /* Change the colour transition in background and colour of text when using plus minus buttons. */
     function setBackgroundOfBoxes(){
         let boxes = document.getElementsByClassName("progressbox");
         let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
@@ -246,6 +253,8 @@
 
     //Drag and drop
     document.addEventListener('DOMContentLoaded', (event) => {
+        /* Sets the values corresponding to rank of the boxes.
+            Ratio is used. When there are 3 metrics. The sum of 100 is divided in 3:2:1*/
         function set_input_hidden_values(){
             //sets right values to hidden (metrics ranking is the same as on start)
             let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
@@ -290,6 +299,8 @@
         function handleDragLeave(e) {
             this.classList.remove('over');
         }
+
+        /* Swap the html of the dragged box and the box where the first was dragged */
         function handleDrop(e) {
             e.stopPropagation(); // stops the browser from redirecting.
             if (dragSrcEl !== this) {
@@ -304,6 +315,7 @@
             return false;
         }
 
+        /* Order drag boxes of metrics when page is loaded. According to the rnaking user last used.*/
         function order_drag_boxes_at_start(){
             let drag_ranges = document.getElementById("input-metrics-group").getElementsByClassName('dragbox');
             if (drag_ranges.length==0){
@@ -348,7 +360,7 @@
 
     var userMetricModal = document.getElementById('userMetricModal')
 
-    /* Set modal content */
+    /* Set modal content. Shows dialog with change of type of the metric. */
     userMetricModal.addEventListener('shown.bs.modal', function (event) {
         event.preventDefault();
         var button = event.relatedTarget

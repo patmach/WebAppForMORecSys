@@ -24,6 +24,7 @@
             </div>
         </form>
     }
+
     <div id="DetailsDiv" style="margin-bottom:5px;"></div>
     <div id="Previews" style="width:100%">
         <div class="PropertyBlocks">
@@ -31,7 +32,8 @@
         </div>
         @foreach (var item in Model.Items)
         {
-            @await Html.PartialAsync("../"+controller+"/Preview", new PreviewDetailViewModel(item, Model.CurrentUser, Model.CurrentUserRatings))
+            @await Html.PartialAsync("../"+controller+"/Preview", new PreviewDetailViewModel(item, Model.CurrentUser,
+                Model.CurrentUserRatings))
         }
     </div>
 

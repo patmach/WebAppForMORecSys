@@ -18,5 +18,6 @@ WORKDIR /app
 COPY --from=build /app ./
 RUN apt-get update
 RUN apt-get install curl -y
-ENTRYPOINT echo 'RS train started by sending first request' && curl -s http://rs:5000/ \
+#Sleep to make sure RS started and first request can be sent
+ENTRYPOINT sleep 60 && echo 'RS train started by sending first request' && curl -s http://rs:5000/ \
     && echo 'RS ready to be used' && dotnet WebAppForMORecSys.dll

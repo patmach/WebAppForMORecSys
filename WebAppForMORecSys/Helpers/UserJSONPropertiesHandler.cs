@@ -580,6 +580,11 @@ namespace WebAppForMORecSys.Helpers
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose rated and seen items should be returned</param>
+        /// <param name="context">Databse context</param>
+        /// <returns>Rated and seen items by user</returns>
         public static List<int> GetRatedAndSeenItems(this User user, ApplicationDbContext context)
         {
             var rated = context.Ratings.Where(r => r.UserID == user.Id).Select(r => r.ItemID).ToList();
@@ -589,11 +594,23 @@ namespace WebAppForMORecSys.Helpers
             return rated.Union(seen).ToList();
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose codes of selected metric variants should be returned</param>
+        /// <param name="context">Database context</param>
+        /// <param name="metricIDs">IDs of metrics whose variants codes should be returned</param>
+        /// <returns>Codes of variants of metrics selected by user</returns>
         public static string[] GetMetricVariantCodes(this User user, ApplicationDbContext context, List<int> metricIDs)
         {
             return GetMetricVariants(user, context, metricIDs).Select(mv=> mv?.Code ?? "").ToArray();
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User whose selected metric variants should be returned</param>
+        /// <param name="context">Database context</param>
+        /// <param name="metricIDs">IDs of metrics whose variants should be returned</param>
+        /// <returns>Variants of metrics selected by user</returns>
         public static List<MetricVariant> GetMetricVariants(this User user, ApplicationDbContext context, List<int> metricIDs)
         {
             var variants = new List<MetricVariant>();
@@ -607,6 +624,24 @@ namespace WebAppForMORecSys.Helpers
                 variants.Add(userChoice ?? defaultMVs.Where(mv => mv.MetricID == metricID).FirstOrDefault() ?? null);
             }
             return variants;
+        }
+
+        /// <summary>
+        /// Instance of random, used by SetRandomSettingsForNewUser
+        /// </summary>
+        static Random rnd = new Random();
+
+        /// <summary>
+        /// Chooses random values od configurable user settings
+        /// </summary>
+        /// <param name="user">Newly created user</param>
+        public static void SetRandomSettingsForNewUser(this User user)
+        {
+            user.SetAddBlockRuleView(rnd.Next(Enum.GetValues(typeof(AddBlockRuleView)).Length));
+            user.SetExplanationView(rnd.Next(Enum.GetValues(typeof(ExplanationView)).Length));
+            user.SetMetricContributionScoreView(rnd.Next(Enum.GetValues(typeof(MetricContributionScoreView)).Length));
+            user.SetPreviewExplanationView(rnd.Next(Enum.GetValues(typeof(PreviewExplanationView)).Length));
+            user.SetMetricsView(rnd.Next(Enum.GetValues(typeof(MetricsView)).Length));
         }
 
     }

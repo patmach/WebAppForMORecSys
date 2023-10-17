@@ -329,4 +329,6 @@ a.disabled {
 }
 
 
-/*make popover scrollable*/
+.card-body {
+    text-align: center;
+}

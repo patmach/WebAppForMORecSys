@@ -22,7 +22,7 @@
     string borderImage = "";
     string border = "";
     string titleColor = "";
-    if (Model.MetricsContribution != null)
+    if ((Model.MetricsContribution != null) && (Model.MetricsContribution.Count > 0))
     {
         string typeOfBorder = "";
         PreviewExplanationView previewExplanationView = Model.User.GetPreviewExplanationView();

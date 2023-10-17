@@ -18,13 +18,12 @@
 
 </div>
 <script>
+    /* Saves new user choice of metric variant. */
     function saveUserMetricVariant(code) {
         const body = {
             variant: code,
         };
         const url = '@Url.Action("SaveUserMetricVariant","Home")';
-        $.post(url, body, (data, status) => {
-            
-        });
+        $.post(url, body, (data, status) => { });
     }
 </script>

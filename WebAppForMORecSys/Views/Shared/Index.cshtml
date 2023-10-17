@@ -13,6 +13,7 @@
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     @await Html.PartialAsync("../"+controller+"/Filter")
 </div>
+
 <div id="main">
     @if (!string.IsNullOrEmpty(Model.Info)){
         <div class="card">
@@ -26,14 +27,15 @@
     <form asp-controller="Movies" asp-action="Index" method="get">
         <div class="form-floating mb-3">
             @await Html.PartialAsync("../Shared/Search")
-            @await Html.PartialAsync("../Shared/MetricsFilter",  new MetricsFilterViewModel{Metrics= Model.Metrics, User= Model.User})
+            @await Html.PartialAsync("../Shared/MetricsFilter",  
+                new MetricsFilterViewModel{Metrics= Model.Metrics, User= Model.User})
         </div>
     </form>
     <div id="DetailsDiv" style="margin-bottom:5px;"></div>
     <div id="Previews" style="width:100%">
     @foreach (var item in Model.Items)
     {
-        Dictionary<Metric,double> metricsContribution =  null;
+        Dictionary<Metric,double> metricsContribution =  new Dictionary<Metric, double>();
             
         if(Model.ItemsToMetricContributionScore!=null){
                 metricsContribution = Enumerable.Range(0, Model.Metrics.Count)
@@ -41,7 +43,7 @@
         }       
         
         @await Html.PartialAsync("../"+controller+"/Preview", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution, Model.UsedVariants))
-        @if (metricsContribution != null)
+        @if (metricsContribution.Count > 0)
         {
                 @await Html.PartialAsync("../Shared/Explanations", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution, Model.UsedVariants))
         }
@@ -53,17 +55,20 @@
 
 <script>
     var seen = [];
+    var controller = '@controller';
     $(document).ready(function () {
-        SetAutoComplete("titlesearch", "Movies/GetAllMovieNames");
-        SetAutoComplete("idirector", "Movies/GetAllDirectors");
-        SetAutoComplete("iactor", "Movies/GetAllActors");
+        /*Loads possible values to autocomplete the text boxes*/
+        SetAutoComplete("titlesearch", controller + "/GetAllNames");
+        SetAutoComplete("idirector", controller + "/GetAllDirectors");
+        SetAutoComplete("iactor", controller + "/GetAllActors");
 
+        /* Sets flag seen for each item to false*/
         seen = $('.ItemPreview').map(function (ip) {
             return false;
         });
 
         
-        /*popover style is not deleted*/
+        /*sets popover for item previews*/
         $.fn.tooltip.Constructor.Default.allowList['*'].push('style')
 
         popoverExplanationOptions = {
@@ -84,6 +89,7 @@
     window.onscroll = function(){
         SaveSeenInteractions();
     };
+    /* if scrolled check if user seen some whole preview of item that he hasn't seen before (on this loading of page)*/
 
     function SaveSeenInteractions() {
         var itempreviews = $('.ItemPreview')
@@ -106,6 +112,7 @@
         }
     }
 
+    /* Checking if the whole element can be seen by user*/
     function isElementInView(element) {
         var pageTop = $(window).scrollTop();
         var pageBottom = pageTop + $(window).height();

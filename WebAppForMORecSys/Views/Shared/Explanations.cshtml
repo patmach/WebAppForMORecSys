@@ -67,10 +67,10 @@
     </div>
 }
 <script>
-
+    // Set popover with explanation to main preview element
     $('#@itempreviewid').on('inserted.bs.popover', function () {
         let popoverbodies = document.getElementsByClassName("popover-body");
-        /*For loop is there because sometimes new popover is inserted faster than the previous is hidden.*/ 
+        /*For loop is there because sometimes new popover is inserted quicker than the previous is hidden.*/ 
         for (let i=0; i<popoverbodies.length; i++){
             let popoverbody=popoverbodies[i];
             popoverbody.style.borderTop = "5px solid";

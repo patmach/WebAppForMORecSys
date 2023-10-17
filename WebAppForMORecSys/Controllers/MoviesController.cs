@@ -159,7 +159,7 @@ namespace WebAppForMORecSys.Controllers
         /// </summary>
         /// <param name="prefix">Searched value</param>
         /// <returns>All movie names that contains searched value</returns>
-        public List<string> GetAllMovieNames(string prefix)
+        public List<string> GetAllNames(string prefix)
         {
             User user = GetCurrentUser();
             if (user == null)

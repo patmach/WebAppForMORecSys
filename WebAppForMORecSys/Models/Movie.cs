@@ -166,12 +166,13 @@ namespace WebAppForMORecSys.Models
         /// <param name="context">Database context</param>
         public static void SetAllGenres(ApplicationDbContext context)
         {
-            if (Movie.AllGenres == null)
+            if ((Movie.AllGenres == null) || (Movie.AllGenres.Count == 0))
             {
                 var genres = new List<string>();
                 context.Items.ToList().ForEach(m => genres.AddRange(MovieJSONPropertiesHandler.GetGenres(m)));
                 Movie.AllGenres = genres.Distinct().ToList();
-                Movie.AllGenres.Remove("(no genres listed)");
+                if (Movie.AllGenres.Contains("(no genres listed)"))
+                    Movie.AllGenres.Remove("(no genres listed)");
             }
         }
 
@@ -181,7 +182,7 @@ namespace WebAppForMORecSys.Models
         /// <param name="context">Database context</param>
         public static void SetAllDirectors(ApplicationDbContext context)
         {
-            if (AllDirectors == null)
+            if ((AllDirectors == null) || (Movie.AllDirectors.Count == 0))
             {
                 var directors = new List<string>();
                 context.Items.ToList().ForEach(m => directors.Add(MovieJSONPropertiesHandler.GetDirector(m)));
@@ -195,7 +196,7 @@ namespace WebAppForMORecSys.Models
         /// <param name="context">Database context</param>
         public static void SetAllActors(ApplicationDbContext context)
         {
-            if (AllActors == null)
+            if ((AllActors == null)|| (Movie.AllActors.Count == 0))
             {
                 var actors = new List<string>();
                 context.Items.ToList().ForEach(m => actors.AddRange(MovieJSONPropertiesHandler.GetActors(m)));

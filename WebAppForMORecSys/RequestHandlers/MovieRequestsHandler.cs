@@ -87,10 +87,10 @@ namespace WebAppForMORecSys.RequestHandlers
             }
             if (viewModel.UserRatings.Where(r => r.RatingScore > 5).Count() < 10)
             {
-                var possibleItems = whitelistIDs.Count() > 0 ? whitelist
-                                        : _context.Items.Where( i => movieIDsSortedByRatings.Take(250).Contains(i.Id));
+                var possibleItems = whitelistIDs.Length > 0 ? whitelist
+                                        : _context.Items.Where(i => movieIDsSortedByRatings.Take(250).Contains(i.Id));
                 viewModel.Items = possibleItems.OrderBy(x => Guid.NewGuid()).Take(15);
-                viewModel.Info = "Please rate positively atleast 10 movies you like so the recommender system can work properly.";
+                viewModel.Info = "Please rate positively atleast 10 movies you like so the recommender system can work.";
                 return viewModel;
             }
             List<int> blacklist = BlockedItemsCache.GetBlockedItemIdsForUser(user.Id.ToString(), _context);
