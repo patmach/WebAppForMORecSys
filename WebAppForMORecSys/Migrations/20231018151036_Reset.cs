@@ -6,11 +6,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WebAppForMORecSys.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class Reset : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
-        {
+        {/*
+            migrationBuilder.CreateTable(
+                name: "Acts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Priority = table.Column<int>(type: "int", nullable: false),
+                    SuggestionText = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Acts", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -58,13 +72,28 @@ namespace WebAppForMORecSys.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ShortDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    JSONParams = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    ImageURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ShortDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    JSONParams = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Items", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Questions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AnswerType = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Questions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -90,9 +119,9 @@ namespace WebAppForMORecSys.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    JSONBlockRules = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    JSONFilter = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SearchHistory = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    JSONBlockRules = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    JSONFilter = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserChoices = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -206,6 +235,52 @@ namespace WebAppForMORecSys.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Answers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    QuestionID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Answers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Answers_Questions_QuestionID",
+                        column: x => x.QuestionID,
+                        principalTable: "Questions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "QuestionsActs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ActID = table.Column<int>(type: "int", nullable: false),
+                    QuestionID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_QuestionsActs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_QuestionsActs_Acts_ActID",
+                        column: x => x.ActID,
+                        principalTable: "Acts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_QuestionsActs_Questions_QuestionID",
+                        column: x => x.QuestionID,
+                        principalTable: "Questions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Metrics",
                 columns: table => new
                 {
@@ -277,37 +352,125 @@ namespace WebAppForMORecSys.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Ratings_Users_UserID",
-                        column: x => x.UserID,                        
+                        column: x => x.UserID,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UsersMetrics",
+                name: "UserActs",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserID = table.Column<int>(type: "int", nullable: false),
-                    MetricID = table.Column<int>(type: "int", nullable: false)
+                    ActID = table.Column<int>(type: "int", nullable: false),
+                    UserID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UsersMetrics", x => x.Id);
+                    table.PrimaryKey("PK_UserActs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UsersMetrics_Metrics_MetricID",
-                        column: x => x.MetricID,
-                        principalTable: "Metrics",
+                        name: "FK_UserActs_Acts_ActID",
+                        column: x => x.ActID,
+                        principalTable: "Acts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UsersMetrics_Users_UserID",
+                        name: "FK_UserActs_Users_UserID",
                         column: x => x.UserID,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "UserAnswers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    QuestionID = table.Column<int>(type: "int", nullable: false),
+                    UserID = table.Column<int>(type: "int", nullable: false),
+                    Value = table.Column<int>(type: "int", nullable: true),
+                    AnswerID = table.Column<int>(type: "int", nullable: true),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAnswers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserAnswers_Answers_AnswerID",
+                        column: x => x.AnswerID,
+                        principalTable: "Answers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserAnswers_Questions_QuestionID",
+                        column: x => x.QuestionID,
+                        principalTable: "Questions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserAnswers_Users_UserID",
+                        column: x => x.UserID,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MetricVariants",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MetricID = table.Column<int>(type: "int", nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DefaultVariant = table.Column<bool>(type: "bit", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Explanation = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MetricVariants", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MetricVariants_Metrics_MetricID",
+                        column: x => x.MetricID,
+                        principalTable: "Metrics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserMetricVariants",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserID = table.Column<int>(type: "int", nullable: false),
+                    MetricVariantID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserMetricVariants", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserMetricVariants_MetricVariants_MetricVariantID",
+                        column: x => x.MetricVariantID,
+                        principalTable: "MetricVariants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserMetricVariants_Users_UserID",
+                        column: x => x.UserID,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Answers_QuestionID",
+                table: "Answers",
+                column: "QuestionID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -364,6 +527,21 @@ namespace WebAppForMORecSys.Migrations
                 column: "RecommenderSystemID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MetricVariants_MetricID",
+                table: "MetricVariants",
+                column: "MetricID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_QuestionsActs_ActID",
+                table: "QuestionsActs",
+                column: "ActID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_QuestionsActs_QuestionID",
+                table: "QuestionsActs",
+                column: "QuestionID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Ratings_ItemID",
                 table: "Ratings",
                 column: "ItemID");
@@ -374,19 +552,44 @@ namespace WebAppForMORecSys.Migrations
                 column: "UserID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UsersMetrics_MetricID",
-                table: "UsersMetrics",
-                column: "MetricID");
+                name: "IX_UserActs_ActID",
+                table: "UserActs",
+                column: "ActID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UsersMetrics_UserID",
-                table: "UsersMetrics",
+                name: "IX_UserActs_UserID",
+                table: "UserActs",
                 column: "UserID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAnswers_AnswerID",
+                table: "UserAnswers",
+                column: "AnswerID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAnswers_QuestionID",
+                table: "UserAnswers",
+                column: "QuestionID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAnswers_UserID",
+                table: "UserAnswers",
+                column: "UserID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserMetricVariants_MetricVariantID",
+                table: "UserMetricVariants",
+                column: "MetricVariantID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserMetricVariants_UserID",
+                table: "UserMetricVariants",
+                column: "UserID");*/
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
-        {
+        {/*
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -406,10 +609,19 @@ namespace WebAppForMORecSys.Migrations
                 name: "Interactions");
 
             migrationBuilder.DropTable(
+                name: "QuestionsActs");
+
+            migrationBuilder.DropTable(
                 name: "Ratings");
 
             migrationBuilder.DropTable(
-                name: "UsersMetrics");
+                name: "UserActs");
+
+            migrationBuilder.DropTable(
+                name: "UserAnswers");
+
+            migrationBuilder.DropTable(
+                name: "UserMetricVariants");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -421,13 +633,25 @@ namespace WebAppForMORecSys.Migrations
                 name: "Items");
 
             migrationBuilder.DropTable(
-                name: "Metrics");
+                name: "Acts");
+
+            migrationBuilder.DropTable(
+                name: "Answers");
+
+            migrationBuilder.DropTable(
+                name: "MetricVariants");
 
             migrationBuilder.DropTable(
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "RecommenderSystems");
+                name: "Questions");
+
+            migrationBuilder.DropTable(
+                name: "Metrics");
+
+            migrationBuilder.DropTable(
+                name: "RecommenderSystems");*/
         }
     }
 }

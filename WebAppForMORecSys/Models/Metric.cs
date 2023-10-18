@@ -11,7 +11,17 @@ namespace WebAppForMORecSys.Models
         /// Unique ID of metric
         /// </summary>
         public int Id { get; set; }
+        
+        /// <summary>
+        /// Description of the metric
+        /// </summary>
+        public string Description { get; set; }
 
+        /// <summary>
+        /// Example of the metric meaning
+        /// </summary>
+        public string? Example { get; set; }
+        
         /// <summary>
         /// Name of the metric
         /// </summary>

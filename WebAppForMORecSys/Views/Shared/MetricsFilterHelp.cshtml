@@ -1,0 +1,54 @@
+﻿@using static WebAppForMORecSys.Helpers.UserJSONPropertiesHandler
+@using static WebAppForMORecSys.Settings.MetricsViewExtensions
+@model WebAppForMORecSys.Models.ViewModels.MetricsFilterViewModel
+@{
+    var metricIDsToColors = Model.User.GetMetricIDsToColors();
+    var usedFilter = Model.User.GetMetricsView();
+}
+<div style="font-size:1vw">
+      In this metric filter you can tweak the objective importances.
+      Different ratio of the metrics/objectives will produce different recommendations.
+<br>
+<br>
+<br>
+
+<button type="button" class="btn btn-info" data-bs-toggle="collapse" data-bs-target="#metrics">
+    What is the meaning of these metrics?
+</button>
+<div id="metrics" class="collapse">
+    <br>
+    @foreach (var metric in Model.Metrics.Keys)
+    {
+        <b style="color:@(metricIDsToColors[metric.Id])">@metric.Name</b>
+            <p>@metric.Description</p>
+        @if (!string.IsNullOrEmpty(metric.Example))
+        {
+                <p><i>Example:</i> @metric.Example</p>
+            <br>
+        }
+        @if (metric.HasVariants())
+        {
+            <p>There are different variant how to percieve @(metric.Name).</p>
+            <p>You can change the used variant by clicking on the name of @(metric.Name) inside the filter and choosing different option.</p>
+            <br>
+        }
+   
+    }
+</div>
+<br>
+<br>
+<br>
+
+    <button type="button" class="btn btn-info" data-bs-toggle="collapse" data-bs-target="#usage">
+    How to use the filter?
+</button>
+<div id="usage" class="collapse">
+    <br>
+    @usedFilter.Manual()
+    <p>
+        There are 3 different types of this filter. You can select them in the <a href="Home/AppSettings">App Settings page</a>.
+    </p>
+</div>
+</div>
+
+<br>

@@ -2,10 +2,16 @@
 @using WebAppForMORecSys.Settings;
 @using WebAppForMORecSys.Helpers;
 
+<div>
+    <a class="btn btn-info" style="display:flex; text-align:center;" id="metricsfilterhelper" data-bs-toggle="modal" data-bs-target="#userMetricModal"
+    href="javascript:void(0;)">
+        What is the meaning of this filter and how should I use it?
+    </a>
+</div>
+<br />
 <div class="input-group" id="input-metrics-group" style="font-size: 1.3vw ;">
     @{
         int index = 0;
-
     }
     @foreach (Metric metric in Model.Metrics.Keys)
         {
@@ -18,7 +24,7 @@
             else if (index == Model.Metrics.Keys.Count - 1) {
                 margin = "margin-right:auto;";
         }
-
+        
         @if (Model.User.GetMetricsView() == MetricsView.DragAndDrop)
             {
 
@@ -364,17 +370,29 @@
     userMetricModal.addEventListener('shown.bs.modal', function (event) {
         event.preventDefault();
         var button = event.relatedTarget
-        var metricId = button.getAttribute('data-bs-metricid')
-        $.ajax({
-            url: '@Url.Action("UserMetricSetting","Home")' + '?metricID=' + metricId,
-            cache: false,
-            success: function (data) {
-                $('#userMetricModalBody').html(data);
-                $('#userMetricLabel').html($('#chooseVariantTitle')[0].innerHTML);
-                $('#chooseVariantTitle').html('');
+        if (button.hasAttribute('data-bs-metricid')) {
+            var metricId = button.getAttribute('data-bs-metricid')
+            $.ajax({
+                url: '@Url.Action("UserMetricSetting","Home")' + '?metricID=' + metricId,
+                cache: false,
+                success: function (data) {
+                    $('#userMetricModalBody').html(data);
+                    $('#userMetricLabel').html($('#chooseVariantTitle')[0].innerHTML);
+                    $('#chooseVariantTitle').html('');
 
-            }
-        });
+                }
+            });
+        }
+        else if (button.Id = 'metricsfilterhelper') {
+            $.ajax({
+                url: '@Url.Action("MetricsFilterHelp","Home")',
+                cache: false,
+                success: function (data) {
+                    $('#userMetricModalBody').html(data);
+                    $('#userMetricLabel').html('What is the meaning of this filter and how should I use it?');
+                }
+            });
+        }
     })
 
     /* Removes modal content */

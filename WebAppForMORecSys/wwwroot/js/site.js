@@ -61,14 +61,24 @@ $(document).ready(function () {
             url: elementUrl,
             cache: false,
             success: function (data) {
-                $('#DetailsDiv').html(data);
-                document.getElementById("DetailsDiv").style.display = ""
-                document.getElementById("Previews").style.display = "none";
-                window.scrollTo(0, 0);
+                var details = document.getElementById('DetailsDiv');
+                details.innerHTML = data;
+                details.style.display = ""
+                document.getElementById('Previews').style.display = "none";
+                coords = getElementCoords(details);
+                window.scrollTo(coords.left, coords.top);
             }
         });
     });
 });
+
+function getElementCoords(el) {
+    const rect = el.getBoundingClientRect();
+    return {
+        left: rect.left + window.scrollX,
+        top: rect.top + window.scrollY
+    };
+}
 
 function BackToList() {
     document.getElementById('DetailsDiv').style.display = "none";

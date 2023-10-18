@@ -12,15 +12,15 @@ using WebAppForMORecSys.Data;
 namespace WebAppForMORecSys.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230228204017_Try create new DB")]
-    partial class TrycreatenewDB
+    [Migration("20231018151437_MetricDesc")]
+    partial class MetricDesc
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.3")
+                .HasAnnotation("ProductVersion", "7.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -230,6 +230,48 @@ namespace WebAppForMORecSys.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("WebAppForMORecSys.Models.Act", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SuggestionText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Acts");
+                });
+
+            modelBuilder.Entity("WebAppForMORecSys.Models.Answer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("QuestionID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionID");
+
+                    b.ToTable("Answers");
+                });
+
             modelBuilder.Entity("WebAppForMORecSys.Models.Interaction", b =>
                 {
                     b.Property<int>("Id")
@@ -303,6 +345,13 @@ namespace WebAppForMORecSys.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Example")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -315,6 +364,81 @@ namespace WebAppForMORecSys.Migrations
                     b.HasIndex("RecommenderSystemID");
 
                     b.ToTable("Metrics");
+                });
+
+            modelBuilder.Entity("WebAppForMORecSys.Models.MetricVariant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("DefaultVariant")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Explanation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MetricID")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MetricID");
+
+                    b.ToTable("MetricVariants");
+                });
+
+            modelBuilder.Entity("WebAppForMORecSys.Models.Question", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AnswerType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Questions");
+                });
+
+            modelBuilder.Entity("WebAppForMORecSys.Models.QuestionAct", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuestionID")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActID");
+
+                    b.HasIndex("QuestionID");
+
+                    b.ToTable("QuestionsActs");
                 });
 
             modelBuilder.Entity("WebAppForMORecSys.Models.Rating", b =>
@@ -389,7 +513,7 @@ namespace WebAppForMORecSys.Migrations
                     b.Property<string>("JSONFilter")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SearchHistory")
+                    b.Property<string>("UserChoices")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
@@ -401,7 +525,7 @@ namespace WebAppForMORecSys.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("WebAppForMORecSys.Models.UserMetric", b =>
+            modelBuilder.Entity("WebAppForMORecSys.Models.UserAct", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -409,7 +533,7 @@ namespace WebAppForMORecSys.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("MetricID")
+                    b.Property<int>("ActID")
                         .HasColumnType("int");
 
                     b.Property<int>("UserID")
@@ -417,11 +541,68 @@ namespace WebAppForMORecSys.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MetricID");
+                    b.HasIndex("ActID");
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("UsersMetrics");
+                    b.ToTable("UserActs");
+                });
+
+            modelBuilder.Entity("WebAppForMORecSys.Models.UserAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AnswerID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuestionID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Value")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnswerID");
+
+                    b.HasIndex("QuestionID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("UserAnswers");
+                });
+
+            modelBuilder.Entity("WebAppForMORecSys.Models.UserMetricVariants", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MetricVariantID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MetricVariantID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("UserMetricVariants");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -475,6 +656,17 @@ namespace WebAppForMORecSys.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("WebAppForMORecSys.Models.Answer", b =>
+                {
+                    b.HasOne("WebAppForMORecSys.Models.Question", "Question")
+                        .WithMany("Answers")
+                        .HasForeignKey("QuestionID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+                });
+
             modelBuilder.Entity("WebAppForMORecSys.Models.Interaction", b =>
                 {
                     b.HasOne("WebAppForMORecSys.Models.Item", "Item")
@@ -505,6 +697,36 @@ namespace WebAppForMORecSys.Migrations
                     b.Navigation("RecommenderSystem");
                 });
 
+            modelBuilder.Entity("WebAppForMORecSys.Models.MetricVariant", b =>
+                {
+                    b.HasOne("WebAppForMORecSys.Models.Metric", "Metric")
+                        .WithMany("metricVariants")
+                        .HasForeignKey("MetricID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Metric");
+                });
+
+            modelBuilder.Entity("WebAppForMORecSys.Models.QuestionAct", b =>
+                {
+                    b.HasOne("WebAppForMORecSys.Models.Act", "Act")
+                        .WithMany("QuestionsActs")
+                        .HasForeignKey("ActID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebAppForMORecSys.Models.Question", "Question")
+                        .WithMany("QuestionsActs")
+                        .HasForeignKey("QuestionID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Act");
+
+                    b.Navigation("Question");
+                });
+
             modelBuilder.Entity("WebAppForMORecSys.Models.Rating", b =>
                 {
                     b.HasOne("WebAppForMORecSys.Models.Item", "Item")
@@ -524,11 +746,55 @@ namespace WebAppForMORecSys.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebAppForMORecSys.Models.UserMetric", b =>
+            modelBuilder.Entity("WebAppForMORecSys.Models.UserAct", b =>
                 {
-                    b.HasOne("WebAppForMORecSys.Models.Metric", "Metric")
-                        .WithMany("UserMetricList")
-                        .HasForeignKey("MetricID")
+                    b.HasOne("WebAppForMORecSys.Models.Act", "Act")
+                        .WithMany("UserActs")
+                        .HasForeignKey("ActID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebAppForMORecSys.Models.User", "User")
+                        .WithMany("UserActs")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Act");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebAppForMORecSys.Models.UserAnswer", b =>
+                {
+                    b.HasOne("WebAppForMORecSys.Models.Answer", "Answer")
+                        .WithMany("UserAnswers")
+                        .HasForeignKey("AnswerID");
+
+                    b.HasOne("WebAppForMORecSys.Models.Question", "Question")
+                        .WithMany("UserAnswers")
+                        .HasForeignKey("QuestionID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebAppForMORecSys.Models.User", "User")
+                        .WithMany("UserAnswers")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Answer");
+
+                    b.Navigation("Question");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebAppForMORecSys.Models.UserMetricVariants", b =>
+                {
+                    b.HasOne("WebAppForMORecSys.Models.MetricVariant", "MetricVariant")
+                        .WithMany("UserMetricVariantsList")
+                        .HasForeignKey("MetricVariantID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -538,9 +804,21 @@ namespace WebAppForMORecSys.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Metric");
+                    b.Navigation("MetricVariant");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebAppForMORecSys.Models.Act", b =>
+                {
+                    b.Navigation("QuestionsActs");
+
+                    b.Navigation("UserActs");
+                });
+
+            modelBuilder.Entity("WebAppForMORecSys.Models.Answer", b =>
+                {
+                    b.Navigation("UserAnswers");
                 });
 
             modelBuilder.Entity("WebAppForMORecSys.Models.Item", b =>
@@ -552,7 +830,21 @@ namespace WebAppForMORecSys.Migrations
 
             modelBuilder.Entity("WebAppForMORecSys.Models.Metric", b =>
                 {
-                    b.Navigation("UserMetricList");
+                    b.Navigation("metricVariants");
+                });
+
+            modelBuilder.Entity("WebAppForMORecSys.Models.MetricVariant", b =>
+                {
+                    b.Navigation("UserMetricVariantsList");
+                });
+
+            modelBuilder.Entity("WebAppForMORecSys.Models.Question", b =>
+                {
+                    b.Navigation("Answers");
+
+                    b.Navigation("QuestionsActs");
+
+                    b.Navigation("UserAnswers");
                 });
 
             modelBuilder.Entity("WebAppForMORecSys.Models.RecommenderSystem", b =>
@@ -565,6 +857,10 @@ namespace WebAppForMORecSys.Migrations
                     b.Navigation("Interactions");
 
                     b.Navigation("Ratings");
+
+                    b.Navigation("UserActs");
+
+                    b.Navigation("UserAnswers");
 
                     b.Navigation("UserMetricList");
                 });

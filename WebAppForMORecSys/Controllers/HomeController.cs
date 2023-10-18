@@ -11,6 +11,10 @@ using WebAppForMORecSys.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using WebAppForMORecSys.Cache;
+using System.Text;
+using System.Drawing;
+using System;
+using Newtonsoft.Json.Linq;
 
 namespace WebAppForMORecSys.Controllers
 {
@@ -95,6 +99,23 @@ namespace WebAppForMORecSys.Controllers
                 });                
             }
             return PartialView(variants);
+        }
+
+
+        public async Task<IActionResult> MetricsFilterHelp()
+        {
+            User user = GetCurrentUser();
+            RecommenderSystem rs = SystemParameters.RecommenderSystem;
+            List<Metric> metrics = await _context.Metrics.Include(m => m.metricVariants)
+                .Where(m => m.RecommenderSystemID == rs.Id).ToListAsync();
+            var dict = metrics.Zip(new List<int>(new int[metrics.Count]), (k, v) => new { k, v })
+              .ToDictionary(x => x.k, x => x.v); //Dictionary only created for usage of existing viewmodel MetricsFilterViewModel
+            var viewModel = new MetricsFilterViewModel
+            {
+                User = user,
+                Metrics = dict
+            };
+            return PartialView(viewModel);
         }
 
         public IResult SaveUserMetricVariant(string variant)
@@ -316,6 +337,8 @@ namespace WebAppForMORecSys.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+
         
     }
-}
+} 
