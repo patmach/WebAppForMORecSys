@@ -2,10 +2,10 @@
 @using WebAppForMORecSys.Settings;
 @using WebAppForMORecSys.Helpers;
 
-<div>
-    <a class="btn btn-info" style="display:flex; text-align:center;" id="metricsfilterhelper" data-bs-toggle="modal" data-bs-target="#userMetricModal"
+<div style="display:flex; text-align:center; justify-content:center">
+    <a class="btn btn-warning" id="metricsfilterhelper" data-bs-toggle="modal" data-bs-target="#userMetricModal"
     href="javascript:void(0;)">
-        What is the meaning of this filter and how should I use it?
+        What is the purpose of this filter and how should I use it?
     </a>
 </div>
 <br />
@@ -18,7 +18,6 @@
             string id = "range" + index;        
             string valueAsNumber = id + ".valueAsNumber";
             string margin = "";
-            string radius = "border-top-right-radius: 0.5em; border-bottom-right-radius:0.5em;";
             if (index == 0)
                 margin = "margin-left:auto;";
             else if (index == Model.Metrics.Keys.Count - 1) {
@@ -29,8 +28,8 @@
             {
 
                 <div draggable="true" id="@("drag_" +@index)" class="drag box dragbox"
-                 style="background-color: @Model.User.GetMetricIDsToColors()[metric.Id] ; width: @(100/Model.Metrics.Count - 5)%; @margin 
-                    @radius">
+                 style="background-color: @Model.User.GetMetricIDsToColors()[metric.Id] ; width: @(100/Model.Metrics.Count - 5)%; 
+                    border-radius:0.5em; @margin">
                 @if (metric.HasVariants()){
                     <a title="Set how to compute @metric.Name" data-bs-toggle="modal" data-bs-target="#userMetricModal" href="javascript:void(0;)"
                     style="color:white;" data-bs-metricid="@metric.Id">@metric.Name</a>
@@ -286,7 +285,10 @@
         }
 
         function handleDragEnd(e) {
-            this.style.opacity = '1';
+            let length = inputranges.length;
+            for (let i = 0; i < length; i++) {
+                inputranges[index].style.opacity = '1';
+            }
 
             items.forEach(function (item) {
                 item.classList.remove('over');
@@ -389,7 +391,7 @@
                 cache: false,
                 success: function (data) {
                     $('#userMetricModalBody').html(data);
-                    $('#userMetricLabel').html('What is the meaning of this filter and how should I use it?');
+                    $('#userMetricLabel').html('What is the purpose of this filter and how should I use it?');
                 }
             });
         }
