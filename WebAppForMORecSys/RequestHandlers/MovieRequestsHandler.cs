@@ -22,9 +22,9 @@ namespace WebAppForMORecSys.RequestHandlers
         private ApplicationDbContext _context;
 
         /// <summary>
-        /// IDs of all movies in database sorted by number od rating
+        /// IDs of all movies in database sorted by number of ratings
         /// </summary>
-        private List<int> movieIDsSortedByRatings = new List<int>();
+        private static List<int> movieIDsSortedByRatings = new List<int>();
 
         /// <summary>
         /// Constructor. Sets connection to db. Prepares list movieIDsSortedByRatings
@@ -33,8 +33,11 @@ namespace WebAppForMORecSys.RequestHandlers
         public MovieRequestsHandler(ApplicationDbContext context)
         {
             _context = context;
-            movieIDsSortedByRatings = context.Items.Include(i => i.Ratings).OrderByDescending(i => i.Ratings.Count)
-                .Select(i => i.Id).ToList();
+            if (movieIDsSortedByRatings.Count == 0)
+            {
+                movieIDsSortedByRatings = context.Items.Include(i => i.Ratings).OrderByDescending(i => i.Ratings.Count)
+                    .Select(i => i.Id).ToList();
+            }
         }
 
 
@@ -65,7 +68,7 @@ namespace WebAppForMORecSys.RequestHandlers
                                                       select rating).ToListAsync();
                
             }
-            RecommenderSystem rs = SystemParameters.RecommenderSystem;
+            RecommenderSystem rs = SystemParameters.GetRecommenderSystem(_context);
             List<Metric> metrics = await _context.Metrics.Include(m => m.metricVariants)
                 .Where(m => m.RecommenderSystemID == rs.Id).ToListAsync();
             viewModel.SetMetricImportance(user, metrics, metricsimportance, _context);

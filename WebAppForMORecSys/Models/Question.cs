@@ -1,4 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
+using System.ComponentModel.DataAnnotations;
+using WebAppForMORecSys.Data;
+using WebAppForMORecSys.Settings;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace WebAppForMORecSys.Models
 {
@@ -22,7 +27,7 @@ namespace WebAppForMORecSys.Models
         /// Type of the answer
         /// </summary>
         [Required]
-        public TypeOfAnswer AnswerType {  get; set; }
+        public TypeOfAnswer AnswerType { get; set; }
 
         /// <summary>
         /// List of answers if AnswerType is optional
@@ -38,6 +43,7 @@ namespace WebAppForMORecSys.Models
         /// Users answers on this question
         /// </summary>
         public List<UserAnswer> UserAnswers { get; set; }
+
     }
 
     public enum TypeOfAnswer
@@ -45,5 +51,41 @@ namespace WebAppForMORecSys.Models
         AgreeScale,
         Options,
         Text
+    }
+
+    public enum AgreeScale
+    {
+        StronglyDisagree,
+        Disagree,
+        Neutral,
+        Agree,
+        StronglyAgree
+    }
+
+    public static class AgreeScaleExtensions
+    {
+        /// <summary>
+        /// </summary>
+        /// <param name="agreeScale"></param>
+        /// <returns>Name to display for the enum value</returns>
+        public static string ToFriendlyString(this AgreeScale agreeScale)
+        {
+            switch (agreeScale)
+            {
+                case AgreeScale.StronglyDisagree:
+                    return "Strongly disagree";
+                case AgreeScale.Disagree:
+                    return "Disagree";
+                case AgreeScale.Neutral:
+                    return "Neutral / Don't know";
+                case AgreeScale.Agree:
+                    return "Agree";
+                case AgreeScale.StronglyAgree:
+                    return "Strongly agree";
+                default:
+                    break;
+            }
+            return "";
+        }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Identity.Client;
+using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Models;
 
 namespace WebAppForMORecSys.Settings
@@ -26,7 +28,17 @@ namespace WebAppForMORecSys.Settings
         /// <summary>
         /// Used recommender system
         /// </summary>
-        public static RecommenderSystem RecommenderSystem { get; set; }
+        public static RecommenderSystem GetRecommenderSystem(ApplicationDbContext context) 
+        {            
+            if (_recommenderSystem == null) {
+                _recommenderSystem = context.RecommenderSystems.Where(rs => rs.Name == "MOO as voting fast").First();
+                var metrics = context.Metrics.Where(m => m.RecommenderSystemID == _recommenderSystem.Id).ToArray();
+                MetricsToColors = Enumerable.Range(0, metrics.Length).ToDictionary(i => metrics[i], i => Colors[i]);
+            }
+            return _recommenderSystem;           
+        }
+
+        private static RecommenderSystem _recommenderSystem;
 
         /// <summary>
         /// Default colours for used metrics (according to their ranking in the database)
@@ -58,6 +70,8 @@ namespace WebAppForMORecSys.Settings
         /// </summary>
         public static PreviewExplanationView PreviewExplanationView { get; set; } = PreviewExplanationView.FullBorderImage;
 
+
+        
     }
 
 

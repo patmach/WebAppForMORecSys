@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebAppForMORecSys.Models
 {
@@ -11,6 +12,11 @@ namespace WebAppForMORecSys.Models
         /// Unique ID of the act
         /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Unique code of the act
+        /// </summary>
+        public string Code { get; set; }
 
         /// <summary>
         /// Priority of the act

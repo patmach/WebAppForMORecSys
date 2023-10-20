@@ -285,13 +285,9 @@
         }
 
         function handleDragEnd(e) {
-            let length = inputranges.length;
-            for (let i = 0; i < length; i++) {
-                inputranges[index].style.opacity = '1';
-            }
-
-            items.forEach(function (item) {
-                item.classList.remove('over');
+            dragboxes.forEach(function (dragbox) {
+                dragbox.classList.remove('over');
+                dragbox.style.opacity = '1';
             });
         }
 
@@ -354,8 +350,8 @@
 
         }
 
-        let items = document.querySelectorAll('.container .box');
-        items.forEach(function (item) {
+        let dragboxes = document.querySelectorAll('.dragbox');
+        dragboxes.forEach(function (item) {
             item.addEventListener('dragstart', handleDragStart);
             item.addEventListener('dragover', handleDragOver);
             item.addEventListener('dragenter', handleDragEnter);

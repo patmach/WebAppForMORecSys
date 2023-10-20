@@ -1,0 +1,149 @@
+﻿@model WebAppForMORecSys.Models.ViewModels.FormularViewModel
+@{
+}
+
+@if (!Model.UserDoneAllNeededActs)
+{
+    <div class="card">
+        <div class="card-body" style="background-color:red">
+            <h3>You're not ready yet for participating in user study.</h3>
+            <br/>
+            <h5>Please return on the <a href="@Url.Action("Index","Home")">main page</a> and follow the tips inside the orange box on top of the page.</h5>
+            <h6>Thank you!</h6>
+            <br />
+            <br />
+            <h5>All required acts you haven't done yet:</h5>
+            <ul>
+            @foreach (var suggestion in Model.NotDoneRequiredActsSuggestions)
+            {
+                <li>
+                    <p>@suggestion</p>
+                </li>
+            }
+            </ul>
+        </div>
+    </div>
+}
+else 
+{
+
+    <div id="userstudystart" style="@((Model.LastQuestionID == -1) ? "display:none" : "")">
+        You can start answering user study question by clicking on the 'Go to first question' button.
+        <br>
+        <br>
+        <button type="button" onclick="changequestion(0)" style="float:right" class="btn btn-primary">Go to first question</button>
+    </div>
+
+    <div id="userstudyfinished" style="@((Model.LastQuestionID == int.MaxValue) ? "display:none" : "")">
+        bla bla
+        <br>
+        <br>
+        <div id="questionslist">            
+        </div>
+        Thank you for participating in this user study!
+        <br>
+        <br>
+        <button type="button" onclick="changequestion(@(Model.QuestionIDs.Count - 1))" style="" class="btn btn-primary">Previous question</button>
+        <br>
+        <br>
+        <button type="button" onclick="changequestion(0)" style="float:left" class="btn btn-warning">Go to first question</button>
+    </div>
+
+    <div id="userstudy" style="@((Model.LastQuestionID > 0) && (Model.LastQuestionID < Model.QuestionIDs.Count) ? "" : "display:none")">
+        <div class="card">
+            <div class="card-body" style="background-color:orange">
+                <p>There are @Model.QuestionIDs.Count questions you can answer.</p>
+                <p>You can switch between the questions by the buttons on the left and right side below the answers.</p>
+            </div>
+        </div>
+        
+        <div id="questiondiv"> </div>
+        <br>
+        <button type="button" onclick="previousquestion()" style="float:left" class="btn btn-primary">Previous question</button>
+        <button type="button" onclick="nextquestion()" style="float:right" class="btn btn-primary">Next question</button>
+        <br>
+        <br>
+        <button type="button" onclick="changequestion(0)" style="float:left" class="btn btn-warning">Go to first question</button>
+    </div>
+    
+}
+<script>
+    var questionarray = @Html.Raw(Json.Serialize(Model.QuestionIDs as List<int>));
+    var currentindex = @(Model.QuestionIDs.Contains(Model.LastQuestionID) 
+        ? Model.QuestionIDs.IndexOf(Model.LastQuestionID)
+        : Model.LastQuestionID);
+    changequestion(currentindex);
+    function changequestion(index) {
+        if (index < 0) {
+            debug = $('#questiondiv')[0];
+            $('#userstudy')[0].style.display = 'none';
+            $('#userstudystart')[0].style.display = '';
+            $('#userstudyfinished')[0].style.display = 'none';
+            currentindex = -1;
+        }
+        else if (index >= questionarray.length) {
+            
+            $.ajax({
+                url: '@Url.Action("ListOfQuestions","Home", new { onlyNotAnswered = true })',
+                cache: false,
+                success: function (data) {    
+                    data = '<h5>You still haven\'t answered these: </h5><br/>' + data
+                    $('#userstudy')[0].style.display = 'none';
+                    $('#userstudystart')[0].style.display = 'none';
+                    $('#userstudyfinished')[0].style.display = '';
+                    $('#questionslist').html(data);
+                    currentindex = @int.MaxValue;
+                }
+            });
+        }
+        else {
+            $.ajax({
+                url: '@Url.Action("Question","Home")/' + questionarray[index],
+                cache: false,
+                success: function (data) {                    
+                    $('#userstudy')[0].style.display = '';
+                    $('#questiondiv').html(data);
+                    $('#userstudystart')[0].style.display = 'none';
+                    $('#userstudyfinished')[0].style.display = 'none';
+                    currentindex = index;
+                }
+            });
+        }
+        
+    }
+
+    function nextquestion() {
+        changequestion(currentindex+1)
+    }
+
+    function previousquestion() {
+        changequestion(currentindex - 1)
+    }
+
+    
+    function saveTextAnswer(qid, textboxid) {
+        text = $(textboxid)[0].value;
+        $.ajax({
+            url: '@Url.Action("SaveAnswer","Home")/' +'?questionID=' + qid + '&text='+text,
+            cache: false,
+            success: function (data) {
+            }
+        });
+    }
+    function saveValueAnswer(qid, value) {
+        $.ajax({
+            url: '@Url.Action("SaveAnswer","Home")/' + '?questionID=' + qid + '&value=' + value,
+            cache: false,
+            success: function (data) {
+            }
+        });
+    }
+    function saveOptionAnswer(qid, aid) {
+        $.ajax({
+            url: '@Url.Action("SaveAnswer","Home")/' + '?questionID=' + qid + '&answerID=' + aid,
+            cache: false,
+            success: function (data) {
+            }
+        });
+    }
+</script>

@@ -589,7 +589,7 @@ namespace WebAppForMORecSys.Migrations
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
-        {/*
+        {
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -651,7 +651,7 @@ namespace WebAppForMORecSys.Migrations
                 name: "Metrics");
 
             migrationBuilder.DropTable(
-                name: "RecommenderSystems");*/
+                name: "RecommenderSystems");
         }
     }
 }

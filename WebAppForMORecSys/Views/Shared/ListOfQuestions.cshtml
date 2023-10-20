@@ -1,0 +1,13 @@
+﻿@model List<Question>
+<br />
+@foreach (var question in Model)
+    {
+        
+        <div>
+            @await Html.PartialAsync("../Shared/Question",question)
+        </div>
+        <br />
+        <br />
+        <br />
+    }
+

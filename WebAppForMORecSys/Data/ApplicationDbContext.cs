@@ -15,12 +15,7 @@ namespace WebAppForMORecSys.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-            if ((RecommenderSystems != null) && (Metrics != null))
-            {
-                SystemParameters.RecommenderSystem = RecommenderSystems.Where(rs => rs.Name == "MOO as voting fast").First();
-                var metrics = Metrics.Where(m => m.RecommenderSystemID == SystemParameters.RecommenderSystem.Id).ToArray();
-                SystemParameters.MetricsToColors = Enumerable.Range(0, metrics.Length).ToDictionary(i => metrics[i], i => SystemParameters.Colors[i]);
-            }
+
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

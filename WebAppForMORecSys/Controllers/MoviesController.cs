@@ -26,6 +26,7 @@ using WebAppForMORecSys.Models.ViewModels;
 using WebAppForMORecSys.RequestHandlers;
 using WebAppForMORecSys.Settings;
 using static WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler;
+using static WebAppForMORecSys.Helpers.UserActHelper;
 using Interaction = WebAppForMORecSys.Models.Interaction;
 
 namespace WebAppForMORecSys.Controllers
@@ -60,6 +61,7 @@ namespace WebAppForMORecSys.Controllers
             Movie.SetAllDirectors(context);
             Movie.SetAllActors(context);
             
+            
         }
 
         /// <summary>
@@ -83,6 +85,8 @@ namespace WebAppForMORecSys.Controllers
                 releasedateto, releasedatefrom, metricsimportance).Result;
             if (!viewModel.Message.IsNullOrEmpty())
                 TempData["msg"] = viewModel.Message;
+            if (viewModel.Info.IsNullOrEmpty())
+                viewModel.Info = CheckUserActs(user.Id, _context, Request);
             return View(viewModel);
         }
 
@@ -146,6 +150,7 @@ namespace WebAppForMORecSys.Controllers
                                                      select rating).ToListAsync();
             }
             Interaction.Save(id, user.Id, TypeOfInteraction.Click, _context);
+            UserActCache.AddActs(user.Id.ToString(), new List<string> { "DetailsClicked" }, _context);
             return PartialView(new PreviewDetailViewModel(
                 _context.Items.First(x => x.Id == id),
                 user,

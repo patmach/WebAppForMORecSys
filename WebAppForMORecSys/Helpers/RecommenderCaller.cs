@@ -9,6 +9,9 @@ namespace WebAppForMORecSys.Helpers
     /// </summary>
     public class RecommenderCaller
     {
+        /// <summary>
+        /// Http client used for sending requests
+        /// </summary>
         static HttpClient client = new HttpClient();
 
         /// <summary>

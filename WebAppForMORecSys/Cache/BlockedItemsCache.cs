@@ -23,7 +23,7 @@ namespace WebAppForMORecSys.Cache
         /// <summary>
         /// Expiration time of data in cache
         /// </summary>
-        private static readonly TimeSpan _expiration = TimeSpan.FromMinutes(10);
+        private static readonly TimeSpan _expiration = TimeSpan.FromMinutes(30);
 
         /// <summary>
         /// </summary>

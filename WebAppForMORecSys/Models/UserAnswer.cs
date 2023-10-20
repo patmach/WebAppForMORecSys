@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
+using WebAppForMORecSys.Data;
 
 namespace WebAppForMORecSys.Models
 {
@@ -41,6 +43,11 @@ namespace WebAppForMORecSys.Models
         public string? Text { get; set; }
 
         /// <summary>
+        /// Time when user answered
+        /// </summary>
+        public DateTime Date { get; set; }
+
+        /// <summary>
         /// Question that has been answered
         /// </summary>
         public Question Question { get; set; }
@@ -54,6 +61,41 @@ namespace WebAppForMORecSys.Models
         /// Set if type of the answer is Options
         /// </summary>
         public Answer? Answer { get; set; }
+
+
+        /// <summary>
+        /// Saves user's answer to a question
+        /// </summary>
+        /// <param name="user">User that answered</param>
+        /// <param name="questionID">Question that was answered</param>
+        /// <param name="answerID">If the answer is TypeOfAnswer.Option answer ID is saved as answer</param>
+        /// <param name="value">If the answer is TypeOfAnswer.AgreeScale value is saved as answer</param>
+        /// <param name="text">If the answer is TypeOfAnswer.Text text is saved as answer</param>
+        /// <param name="context">Database context</param>
+        public static void Save(User user, int questionID, int? answerID, int? value, string? text, ApplicationDbContext context)
+        {
+            Question question = context.Questions.Include(q => q.UserAnswers).Where(q => q.Id == questionID).FirstOrDefault();
+            var useranswer = question.UserAnswers.Where(ua => ua.UserID == user.Id).FirstOrDefault();
+            bool isNew = useranswer == null;
+            if (isNew)
+                useranswer = new UserAnswer
+                {
+                    QuestionID = questionID,
+                    UserID = user.Id
+                };
+            useranswer.Date = DateTime.Now;
+            if (answerID.HasValue)
+                useranswer.AnswerID = answerID.Value;
+            if (value.HasValue)
+                useranswer.Value = value.Value;
+            if (!string.IsNullOrEmpty(text))
+                useranswer.Text = text;
+            if (isNew)
+                context.Add(useranswer);
+            else
+                context.Update(useranswer);
+            context.SaveChanges();
+        }
 
     }
 }

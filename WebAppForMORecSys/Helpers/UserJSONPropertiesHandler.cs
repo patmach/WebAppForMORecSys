@@ -595,6 +595,34 @@ namespace WebAppForMORecSys.Helpers
         }
 
         /// <summary>
+        /// Sets ID of last question user saw in the formular
+        /// </summary>
+        /// <param name="user">User that sees the question</param>
+        /// <param name="value">Value to be saved</param>
+        public static void SetLastQuestionID(this User user, int value)
+        {
+            SetStringValueToUserChoices(user, "LastQuestionID", value.ToString());
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="user">User that saw this question as last one</param>
+        /// <returns>Last question user saw in the formular</returns>
+        public static int GetLastQuestionID(this User user)
+        {
+            var lastQuestionID = GetStringValueInUserChoices(user, "LastQuestionID");
+            int value;
+            if ((lastQuestionID == null) || !int.TryParse(lastQuestionID, out value))
+            {
+                return -1;
+            }
+            else
+            {
+                return value;
+            }
+        }
+
+        /// <summary>
         /// </summary>
         /// <param name="user">User whose codes of selected metric variants should be returned</param>
         /// <param name="context">Database context</param>

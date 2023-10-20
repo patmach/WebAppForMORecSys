@@ -13,7 +13,7 @@
     @{
         byte index = 0;
     }
-    <h4>Which metrics filter do you want to use?</h4>
+    <h4 id="metricsfiltersetting">Which metrics filter do you want to use?</h4>
     <div style="display:flex; margin-bottom:3px; width:100%">
     @foreach (MetricsView value in Enum.GetValues(typeof(MetricsView))){
 
@@ -33,7 +33,7 @@
     <br />
     <br />
 
-    <h4>Which type of explanations do you want to see?</h4>
+    <h4 id="explanationtypesetting">Which type of explanations do you want to see?</h4>
     <div style="display:flex; margin-bottom:3px; width:100%">
         @{
             index = 0;
@@ -106,7 +106,7 @@
     @{
         index = 0;
     }
-    <h4>Choose Metric Colors</h4>
+    <h4 id="colorssetting">Choose Metric Colors</h4>
     <form asp-controller="Home" asp-action="SetMetricsColors" method="post" style="display:grid">
         <div class="input-group color-group" style="width:100%">
             @foreach (var metric in Model.Metrics.Keys)
@@ -132,7 +132,7 @@
     @{
         index = 0;
     }
-    <h4>Which type of creating new block rule do you want to use?</h4>
+    <h4 id="addblockrulesetting"">Which type of creating new block rule do you want to use?</h4>
     <div style="display:flex; margin-bottom:3px; width:100%">
         @foreach (var value in Enum.GetValues(typeof(AddBlockRuleView)))
         {

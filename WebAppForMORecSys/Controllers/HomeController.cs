@@ -15,6 +15,7 @@ using System.Text;
 using System.Drawing;
 using System;
 using Newtonsoft.Json.Linq;
+using Microsoft.IdentityModel.Tokens;
 
 namespace WebAppForMORecSys.Controllers
 {
@@ -70,7 +71,7 @@ namespace WebAppForMORecSys.Controllers
         public async Task<IActionResult> AppSettings()
         {
             MainViewModel viewModel = new MainViewModel();
-            var rs = SystemParameters.RecommenderSystem;
+            var rs = SystemParameters.GetRecommenderSystem(_context);
             var metrics = await (_context.Metrics.Include(m=> m.metricVariants).Where(m => m.RecommenderSystemID == rs.Id)
                 .ToListAsync());
             viewModel.User = GetCurrentUser();
@@ -83,29 +84,97 @@ namespace WebAppForMORecSys.Controllers
             return View(viewModel);
         }
 
-
-        public async Task<IActionResult> UserMetricSetting(int metricID)
+        /// <summary>
+        /// Choose questions user can answer and loads page with user study form
+        /// </summary>
+        /// <returns>Page with user study form</returns>
+        public async Task<IActionResult> Formular()
         {
             var user = GetCurrentUser();
-            var variants = _context.MetricVariants.Where(mv => mv.MetricID == metricID).ToList();
-            var choosed = _context.UserMetricVariants.Include(um => um.MetricVariant).
-                Where(um => um.UserID == user.Id && variants.Contains(um.MetricVariant)).FirstOrDefault();
-            if(choosed != null)
+            var actIDsDoneByUser = UserActCache.GetActs(user.Id.ToString(), _context);
+            var questions = _context.Questions.Include(q=> q.QuestionsActs)
+                .Where(q=> q.QuestionsActs.Select(qa=> qa.ActID).All(actid => actIDsDoneByUser.Contains(actid)));
+            FormularViewModel viewModel = new FormularViewModel
             {
-                variants.ForEach(v => {
-                    if (v == choosed.MetricVariant)
-                        v.DefaultVariant = true;
-                    else v.DefaultVariant = false;
-                });                
-            }
-            return PartialView(variants);
+                CurrentUser = user,
+                QuestionIDs = await questions.Select(q => q.Id).ToListAsync(),
+                LastQuestionID = user.GetLastQuestionID()
+            };
+            viewModel.IsUserStudyAllowed(user, _context);
+            return View(viewModel);
         }
 
+        /// <summary>
+        /// Choose question that are should be part of the list and returns partial view with these questions
+        /// </summary>
+        /// <param name="onlyNotAnswered">If set only questions user can answer and haven't yet answered are displayed.</param>
+        /// <param name="specificIDs">If set only questions with these IDs user can answer are displayed.</param>
+        /// <returns>Partial view with list of questions</returns>
+        public async Task<IActionResult> ListOfQuestions(bool onlyNotAnswered, int[]? specificIDs)
+        {
+            var user = GetCurrentUser();
+            var actIDsDoneByUser = UserActCache.GetActs(user.Id.ToString(), _context);
+            var questions = _context.Questions.Include(q => q.QuestionsActs).Include(q => q.Answers)
+                .Where(q => q.QuestionsActs.Select(qa => qa.ActID).All(actid => actIDsDoneByUser.Contains(actid)));
+            if ((specificIDs != null) && (specificIDs.Length > 0))
+            {
+                questions = questions.Where(q => specificIDs.Contains(q.Id));
+            }
+            if (onlyNotAnswered)
+            {
+                var answered = _context.UserAnswers.Where(ua => (ua.UserID == user.Id)).Select(ua => ua.QuestionID);
+                questions = questions.Where(q => !answered.Contains(q.Id));
+            }
+            
+            var questionList = questions.ToList();
+            questionList.ForEach(q => {
+                q.UserAnswers = _context.UserAnswers.Where(ua => (ua.UserID == user.Id)
+                                        && (ua.QuestionID == q.Id)).ToList();
+            });
+            user.SetLastQuestionID(questionList.LastOrDefault()?.Id ?? int.MaxValue);
+            _context.Update(user);
+            _context.SaveChanges();
+            return PartialView(questionList);
+        }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="id">Id of the question</param>
+        /// <returns>Partial view with one question</returns>
+        public async Task<IActionResult> Question(int id)
+        {
+            var user = GetCurrentUser();
+            Question question = _context.Questions.Include(q => q.Answers).Where(q => q.Id == id).FirstOrDefault();
+            question.UserAnswers = _context.UserAnswers.Where(ua => (ua.UserID == user.Id)
+                                        && (ua.QuestionID == question.Id)).ToList();
+            user.SetLastQuestionID(question.Id);
+            _context.Update(user);
+            _context.SaveChanges();
+            return PartialView(question);
+        }
+
+        /// <summary>
+        /// Saves user's answer to a question
+        /// </summary>
+        /// <param name="questionID">Question that was answered</param>
+        /// <param name="answerID">If the answer is TypeOfAnswer.Option answer ID is saved as answer</param>
+        /// <param name="value">If the answer is TypeOfAnswer.AgreeScale value is saved as answer</param>
+        /// <param name="text">If the answer is TypeOfAnswer.Text text is saved as answer</param>
+        /// <returns>No content</returns>
+        public async Task<IResult> SaveAnswer(int questionID, int? answerID, int? value, string? text)
+        {
+            var user = GetCurrentUser();
+            UserAnswer.Save(user, questionID, answerID, value, text, _context);
+            return Results.NoContent();
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <returns>Partial view with manual how to use metrics filter.</returns>
         public async Task<IActionResult> MetricsFilterHelp()
         {
             User user = GetCurrentUser();
-            RecommenderSystem rs = SystemParameters.RecommenderSystem;
+            RecommenderSystem rs = SystemParameters.GetRecommenderSystem(_context);
             List<Metric> metrics = await _context.Metrics.Include(m => m.metricVariants)
                 .Where(m => m.RecommenderSystemID == rs.Id).ToListAsync();
             var dict = metrics.Zip(new List<int>(new int[metrics.Count]), (k, v) => new { k, v })
@@ -118,6 +187,32 @@ namespace WebAppForMORecSys.Controllers
             return PartialView(viewModel);
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="metricID">ID of metric whose variant will be selected</param>
+        /// <returns>Partial view where user can select which metric variant he wants to use.</returns>
+        public async Task<IActionResult> UserMetricSetting(int metricID)
+        {
+            var user = GetCurrentUser();
+            var variants = _context.MetricVariants.Include(mv => mv.Metric).Where(mv => mv.MetricID == metricID).ToList();
+            var choosed = _context.UserMetricVariants.Include(um => um.MetricVariant).
+                Where(um => um.UserID == user.Id && variants.Contains(um.MetricVariant)).FirstOrDefault();
+            if(choosed != null)
+            {
+                variants.ForEach(v => {
+                    if (v.Id == choosed.MetricVariant.Id)
+                        v.DefaultVariant = true;
+                    else v.DefaultVariant = false;
+                });                
+            }
+            return PartialView(variants);
+        }
+
+        /// <summary>
+        /// Saves variant of the metric that user has selected to use
+        /// </summary>
+        /// <param name="variant">Code of selected metric variant</param>
+        /// <returns>No Content - if everything goes well</returns>
         public IResult SaveUserMetricVariant(string variant)
         {
             User user = GetCurrentUser();
@@ -247,7 +342,7 @@ namespace WebAppForMORecSys.Controllers
         /// <returns>App settings page</returns>
         public IActionResult SetMetricsColors(string[] metriccolor)
         {
-            var rs = SystemParameters.RecommenderSystem;
+            var rs = SystemParameters.GetRecommenderSystem(_context);
             if ((metriccolor == null) ||(metriccolor.Length < 0) 
                 || (metriccolor.Length != _context.Metrics.Where(m=> m.RecommenderSystemID == rs.Id).Count()))
                 return RedirectToAction("AppSettings");

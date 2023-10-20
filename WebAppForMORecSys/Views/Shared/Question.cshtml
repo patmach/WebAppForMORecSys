@@ -1,0 +1,39 @@
+﻿@model Question
+@{
+    bool userAnswered = Model.UserAnswers.Count > 0;
+    string textanswer = userAnswered ? Model.UserAnswers[0].Text ?? "" : "";
+    int? valueAnswer = userAnswered ? Model.UserAnswers[0].Value : null;
+    int? optionAnswer = userAnswered ? Model.UserAnswers[0].AnswerID : null;
+}
+<h4>@Model.Text</h4>
+<div id="answer@(Model.Id)">
+    @if (Model.AnswerType == TypeOfAnswer.Text)
+    {
+        <input id="input_@Model.Id" class="form-control rounded m-3 textanswer" aria-required="true"
+               name="answer" value="@textanswer" onunload="saveTextAnswer(@Model.Id, input_@Model.Id);"
+               onfocusout="saveTextAnswer(@Model.Id, input_@Model.Id);" />
+    }
+    @if (Model.AnswerType == TypeOfAnswer.AgreeScale)
+    {
+        @foreach (AgreeScale agreeScaleOption in Enum.GetValues(typeof(AgreeScale)))
+        {
+            <div  style="color: #0d6efd">
+                <input onclick="saveValueAnswer(@Model.Id, @((int)agreeScaleOption))" type="radio" name="answer" id="@(Model.Id + agreeScaleOption.ToString())"
+                       value="@((int)agreeScaleOption)" checked="@(userAnswered && ((int)agreeScaleOption == valueAnswer))">
+                <label for="@(Model.Id + agreeScaleOption.ToString())">@agreeScaleOption.ToFriendlyString()</label>
+            </div>
+        }
+    }
+    @if ((Model.AnswerType == TypeOfAnswer.Options) && (Model.Answers != null))
+    {
+        @foreach (Answer answer in Model.Answers)
+        {
+            <div style="color: #0d6efd">
+                <input onclick="saveOptionAnswer(@Model.Id, @answer.Id)" type="radio" name="answer" id="@(Model.Id + answer.Id.ToString())"
+                       value="@answer.Id" checked="@(userAnswered &&((int)answer.Id == optionAnswer))">
+                <label for="@(Model.Id + answer.Id.ToString())">@answer.Text</label>
+            </div>
+        }
+    }
+
+
