@@ -65,6 +65,7 @@ $(document).ready(function () {
                 details.innerHTML = data;
                 details.style.display = ""
                 document.getElementById('Previews').style.display = "none";
+                document.getElementById('loadmore_btn').style.display = "none";
                 coords = getElementCoords(details);
                 window.scrollTo(coords.left, coords.top);
             }
@@ -84,6 +85,7 @@ function BackToList() {
     document.getElementById('DetailsDiv').style.display = "none";
     document.getElementById('DetailsDiv').innerHTML = "";
     document.getElementById("Previews").style.display = "";
+    document.getElementById('loadmore_btn').style.display = "";
     window.scrollTo(xcoord_b4_details, ycoord_b4_details);
 }
 
@@ -149,6 +151,10 @@ function show_new_rating_value(newValue, itemId) {
     }
 }
 
+function close_infocard(element_id) {
+    var infocard = document.querySelector('#'+element_id).closest('.infocard');
+    infocard.style.display = 'none';
+}
 
 
 

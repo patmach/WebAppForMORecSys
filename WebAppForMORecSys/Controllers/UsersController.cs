@@ -55,7 +55,7 @@ namespace WebAppForMORecSys.Controllers
             _context.SaveChanges();
             user.SetRandomSettingsForNewUser();
             if(returnUrl != null) 
-                return LocalRedirect(returnUrl);
+                return LocalRedirect(returnUrl);//CHANGE TO MANUAL
             return Ok();
         }
 

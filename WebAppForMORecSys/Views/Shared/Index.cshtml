@@ -7,6 +7,34 @@
     string controller = WebAppForMORecSys.Settings.SystemParameters.Controller;
     int index = 0;
     Metric[] metricsArr = Model.Metrics.Keys.ToArray();
+    var loadMoreURLArguments = new
+    {
+        typeOfSearch = Model.FilterValues["TypeOfSearch"] ?? "",
+        search = Model.SearchValue ?? "",
+        director = Model.FilterValues["Director"] ?? "",
+        actor = Model.FilterValues["Actor"] ?? "",
+        genres = Model.FilterValues["Genres"].Split(',') ?? new string[0],
+        releasedateto = Model.FilterValues["ReleaseDateTo"] ?? "",
+        releasedatefrom = Model.FilterValues["ReleaseDateFrom"] ?? "",
+        metricsimportance = Model.FilterValues["MetricsImportance"].Split(',') ?? new string[0]
+    };
+    var loadMoreURL = Url.Action("Recommendations", controller, loadMoreURLArguments);
+
+}
+@if (!string.IsNullOrEmpty(Model.Info))
+{
+    <div class="card bg-warning infocard ">
+        <div class="card-header">
+            Tip
+            <button type="button" class="close bg-dark" aria-label="Close" style="float:right" title="Close tip" id="close_infocard_btn"
+                onclick="close_infocard(this.id)">
+                <span style="color: orange" aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="card-body" >
+            @Model.Info
+        </div>
+    </div>
 }
 <div id="mySidebar" class="sidebar">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
@@ -14,13 +42,7 @@
 </div>
 
 <div id="main">
-    @if (!string.IsNullOrEmpty(Model.Info)){
-        <div class="card">
-          <div class="card-body" style="background-color:orange">
-            @Model.Info
-          </div>
-        </div>
-    }
+    
     <div id="openfilterbtn"><button id="openfilterbtn " class="openbtn btn" onclick="openNav()">&#9776; Open Filter</button></div>
     <div id="closefilterbtn" style="display:none"> <button class="openbtn btn" onclick="closeNav()">&#9776; Close Filter</button></div>
     <form asp-controller="Movies" asp-action="Index" method="get">
@@ -32,23 +54,11 @@
     </form>
     <div id="DetailsDiv" style="margin-bottom:5px;"></div>
     <div id="Previews" style="width:100%">
-    @foreach (var item in Model.Items)
-    {
-        Dictionary<Metric,double> metricsContribution =  new Dictionary<Metric, double>();
-            
-        if(Model.ItemsToMetricContributionScore!=null){
-                metricsContribution = Enumerable.Range(0, Model.Metrics.Count)
-                    .ToDictionary(i => metricsArr[i], i => Model.ItemsToMetricContributionScore[index][i]);
-        }       
-        
-        @await Html.PartialAsync("../"+controller+"/Preview", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution, Model.UsedVariants))
-        @if (metricsContribution.Count > 0)
-        {
-                @await Html.PartialAsync("../Shared/Explanations", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution, Model.UsedVariants))
-        }
-        index++;
-    }
+        <div>
+        @await Html.PartialAsync($"../{controller}/Recommendations", Model)
+        </div>
     </div>
+    <button id="loadmore_btn" type="button" class="btn btn-primary" style="margin:auto" onclick="loadmore()">Load more</button>
     
 </div>
 
@@ -118,6 +128,26 @@
         var elementTop = $(element).offset().top;
         var elementBottom = elementTop + $(element).height();        
         return ((pageTop < elementTop) && (pageBottom > elementBottom));        
+    }
+
+    var loadingmore = false;
+
+    function loadmore() {
+        if ('Movies' == '@controller')
+        {
+            if (!loadingmore) {
+                loadingmore = true;
+                $.ajax({
+                    url: '@Html.Raw(loadMoreURL)',
+                    cache: false,
+                    success: function (data) {
+                        $('#Previews').html($('#Previews')[0].innerHTML + data);
+                        loadingmore = false;
+                    },
+                });
+            }
+            
+        }
     }
     
 </script>

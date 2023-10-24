@@ -75,12 +75,13 @@ namespace WebAppForMORecSys.RequestHandlers
 
             viewModel.UsedVariants = user.GetMetricVariants(_context, metrics.Select(m => m.Id).ToList());
             viewModel.SearchValue = search ?? "";
+            viewModel.FilterValues.Add("TypeOfSearch", typeOfSearch);
             viewModel.FilterValues.Add("Director", director);
             viewModel.FilterValues.Add("Actor", actor);
             viewModel.FilterValues.Add("ReleaseDateFrom", releasedatefrom);
             viewModel.FilterValues.Add("ReleaseDateTo", releasedateto);
             viewModel.FilterValues.Add("Genres", string.Join(',', genres));
-
+            viewModel.FilterValues.Add("MetricsImportance", string.Join(',', metricsimportance ?? new string[0]));
             IQueryable<Item> whitelist = Movie.GetPossibleItems(_context.Items, user, search, director, actor, genres, typeOfSearch, releasedateto, releasedatefrom);
             int[] whitelistIDs = whitelist == null ? new int[0] : await whitelist.Select(item => item.Id).ToArrayAsync();
             if((whitelistIDs.Length>0 && whitelistIDs.Length < 20))
@@ -89,16 +90,17 @@ namespace WebAppForMORecSys.RequestHandlers
                 return viewModel;
             }
             var positivelyRatedCount = viewModel.UserRatings.Where(r => r.RatingScore > 5).Count();
+            List<int> blacklist = BlockedItemsCache.GetBlockedItemIdsForUser(user.Id.ToString(), _context);
+            blacklist = blacklist.Union(user.GetRatedAndSeenItems(_context)).ToList();
             if (positivelyRatedCount < 10)
             {
                 var possibleItems = whitelistIDs.Length > 0 ? whitelist
-                                        : _context.Items.Where(i => movieIDsSortedByRatings.Take(250).Contains(i.Id));
+                                        : _context.Items.Where(i => movieIDsSortedByRatings.Take(500).Contains(i.Id));
+                possibleItems = possibleItems.Where(i => !blacklist.Contains(i.Id));
                 viewModel.Items = possibleItems.OrderBy(x => Guid.NewGuid()).Take(15);
                 viewModel.Info = $"Please rate positively atleast another {10 - positivelyRatedCount} movies you like so the recommender system can work.\nUse search or filter for finding your favourite movies.";
                 return viewModel;
-            }
-            List<int> blacklist = BlockedItemsCache.GetBlockedItemIdsForUser(user.Id.ToString(), _context);
-            blacklist = blacklist.Union(user.GetRatedAndSeenItems(_context)).ToList();
+            }            
             var recommendations = await RecommenderCaller.GetRecommendations(whitelistIDs, blacklist.ToArray(),
                 viewModel.Metrics.Values.ToArray(), user.Id, rs.HTTPUri,
                 user.GetMetricVariantCodes(_context, metrics.Select(m => m.Id).ToList()));

@@ -75,7 +75,7 @@ namespace WebAppForMORecSys.Controllers
         /// <param name="releasedateto">Movie filter user search on the latest release date</param>
         /// <param name="releasedatefrom">Movie filter user search on the earliest release date</param>
         /// <param name="metricsimportance">Metrics importance in % according to user input</param>
-        /// <returns>View with recommended movies</returns>
+        /// <returns>View with the main page and recommended movies</returns>
         public async Task<IActionResult> Index(string search, string director,
           string actor, string[] genres, string typeOfSearch, string releasedateto, string releasedatefrom, 
           string[] metricsimportance)
@@ -88,6 +88,28 @@ namespace WebAppForMORecSys.Controllers
             if (viewModel.Info.IsNullOrEmpty())
                 viewModel.Info = CheckUserActs(user.Id, _context, Request);
             return View(viewModel);
+        }
+
+        /// <summary>
+        /// Filters possible movies from user input and sends request to Recommender API.
+        /// </summary>
+        /// <param name="search">Main user search on title</param>
+        /// <param name="director">Movie filter user search on director</param>
+        /// <param name="actor">Movie filter user search on actor></param>
+        /// <param name="genres">Movie filter user search on genres</param>
+        /// <param name="typeOfSearch">Specifies if user clicked the search for main search or in movie filter</param>
+        /// <param name="releasedateto">Movie filter user search on the latest release date</param>
+        /// <param name="releasedatefrom">Movie filter user search on the earliest release date</param>
+        /// <param name="metricsimportance">Metrics importance in % according to user input</param>
+        /// <returns>Partial view with recommended movies</returns>
+        public async Task<IActionResult> Recommendations(string search, string director,
+          string actor, string[] genres, string typeOfSearch, string releasedateto, string releasedatefrom,
+          string[] metricsimportance)
+        {
+            User user = GetCurrentUser();
+            var viewModel = _requestsHandler.ProcessMainQuery(user, search, director, actor, genres, typeOfSearch,
+                releasedateto, releasedatefrom, metricsimportance).Result;
+            return PartialView(viewModel);
         }
 
         /// <summary>

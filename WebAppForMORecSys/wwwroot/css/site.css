@@ -332,3 +332,11 @@ a.disabled {
 .card-body {
     text-align: center;
 }
+
+/* Stays on top even when scrolling */
+.infocard {
+    position: sticky !important;
+    top: 3px;
+    z-index: 100;
+    text-align: center;
+}
