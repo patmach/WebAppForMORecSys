@@ -53,9 +53,10 @@ namespace WebAppForMORecSys.Controllers
             User user = new User { UserName = userName };
             _context.Add(user);
             _context.SaveChanges();
-            user.SetRandomSettingsForNewUser();
-            if(returnUrl != null) 
-                return LocalRedirect(returnUrl);//CHANGE TO MANUAL
+            user.SetRandomSettingsForNewUser(_context);
+            UserMetricVariants.SetRandomMetricVariants(user, _context);
+            if (returnUrl != null) 
+                return LocalRedirect(returnUrl);//TODO CHANGE TO MANUAL
             return Ok();
         }
 

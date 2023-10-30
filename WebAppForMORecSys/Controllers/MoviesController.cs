@@ -1,4 +1,6 @@
-﻿using Elfie.Serialization;
+﻿using CsvHelper;
+using Elfie.Serialization;
+using Humanizer.Localisation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
@@ -56,12 +58,13 @@ namespace WebAppForMORecSys.Controllers
             _userManager = userManager;
             _requestsHandler = new MovieRequestsHandler(context);
             //Uncomment next line if you want to load movielens data to the database
-            //new MovielensLoader(filter: true).LoadMovielensData(context/*, moviesFromLoadedFile: true*/);
+            //new MovielensLoader(filter: true).LoadMovielensData(context, moviesFromLoadedFile: true);
+            /*var answers = CSVParsingMethods.ParseAnswers();
+            _context.AddRange(answers);
+            _context.SaveChanges(); */           
             Movie.SetAllGenres(context);
             Movie.SetAllDirectors(context);
-            Movie.SetAllActors(context);
-            
-            
+            Movie.SetAllActors(context);          
         }
 
         /// <summary>
@@ -85,8 +88,9 @@ namespace WebAppForMORecSys.Controllers
                 releasedateto, releasedatefrom, metricsimportance).Result;
             if (!viewModel.Message.IsNullOrEmpty())
                 TempData["msg"] = viewModel.Message;
+            AddUserActsFromMainViewModel(viewModel, typeOfSearch, _context);
             if (viewModel.Info.IsNullOrEmpty())
-                viewModel.Info = CheckUserActs(user.Id, _context, Request);
+                viewModel.Info = FindUserActsTips(user.Id, _context, Request);
             return View(viewModel);
         }
 
@@ -101,14 +105,16 @@ namespace WebAppForMORecSys.Controllers
         /// <param name="releasedateto">Movie filter user search on the latest release date</param>
         /// <param name="releasedatefrom">Movie filter user search on the earliest release date</param>
         /// <param name="metricsimportance">Metrics importance in % according to user input</param>
+        /// <param name="l">IDs of recommended movies displayed on the page</param>
         /// <returns>Partial view with recommended movies</returns>
         public async Task<IActionResult> Recommendations(string search, string director,
           string actor, string[] genres, string typeOfSearch, string releasedateto, string releasedatefrom,
-          string[] metricsimportance)
+          string[] metricsimportance, int[] l)
         {
+            int[] currentList = l; 
             User user = GetCurrentUser();
             var viewModel = _requestsHandler.ProcessMainQuery(user, search, director, actor, genres, typeOfSearch,
-                releasedateto, releasedatefrom, metricsimportance).Result;
+                releasedateto, releasedatefrom, metricsimportance, currentList).Result;
             return PartialView(viewModel);
         }
 
@@ -140,14 +146,9 @@ namespace WebAppForMORecSys.Controllers
         public async Task<IActionResult> Preview(int id)
         {
             User user = GetCurrentUser();
-            List<Rating> ratings = null;
-            if (user != null)
-            {
-                user = user;
-                ratings = await (from rating in _context.Ratings
+            List<Rating> ratings = await (from rating in _context.Ratings
                                  where rating.UserID == user.Id
-                                 select rating).ToListAsync();
-            }
+                                 select rating).ToListAsync();            
             return PartialView(new PreviewDetailViewModel(
                 _context.Items.First(x => x.Id == id),
                 user,
@@ -163,22 +164,31 @@ namespace WebAppForMORecSys.Controllers
         public async Task<IActionResult> Details(int id)
         {
             User user = GetCurrentUser();
-            List<Rating> ratings = null;
-            if (user != null)
-            {
-                user =  user;
-                ratings = await(from rating in _context.Ratings
-                                                     where rating.UserID == user.Id
-                                                     select rating).ToListAsync();
-            }
+            List<Rating> ratings = await _context.Ratings.Where(r=> r.UserID == user.Id).ToListAsync();            
             Interaction.Save(id, user.Id, TypeOfInteraction.Click, _context);
-            UserActCache.AddActs(user.Id.ToString(), new List<string> { "DetailsClicked" }, _context);
+            UserActCache.AddAct(user.Id.ToString(), "DetailsClicked", _context);
             return PartialView(new PreviewDetailViewModel(
                 _context.Items.First(x => x.Id == id),
                 user,
                 ratings
                 ));
 
+        }
+
+        /// <summary>
+        /// Instance of random, used by FindUserActsTips
+        /// </summary>
+        public static Random rnd = new Random();
+
+        /// <summary>
+        /// </summary>
+        /// <returns>Preview partial view for a random movie from the list of rated by user</returns>
+        public async Task<IActionResult> PreviewOfRandomRated()
+        {
+            User user = GetCurrentUser();
+            List<Rating> ratings = await _context.Ratings.Where(r => r.UserID == user.Id).ToListAsync();
+            var randomRatedItemID = ratings[rnd.Next(ratings.Count)].ItemID;
+            return RedirectToAction("Preview","Movies", new { id = randomRatedItemID });
         }
 
 
@@ -189,10 +199,6 @@ namespace WebAppForMORecSys.Controllers
         public List<string> GetAllNames(string prefix)
         {
             User user = GetCurrentUser();
-            if (user == null)
-            {
-                return null;
-            }
             return _context.Items.Where(m => EF.Functions.Like(m.Name, $"%{prefix}%"))
                 /*.Except(user.GetAllBlockedItems(_context.Items))*/
                 .Select(m => m.Name).Take(15).ToList();
@@ -206,10 +212,6 @@ namespace WebAppForMORecSys.Controllers
         public List<string> GetAllDirectors(string prefix)
         {
             User user = GetCurrentUser();
-            if (user == null)
-            {
-                return null;
-            }
             return Movie.AllDirectors.Where(d => d.Contains(prefix, StringComparison.OrdinalIgnoreCase))
                 .Except(user.GetDirectorsInBlackList()).Take(10).ToList();
 
@@ -222,10 +224,6 @@ namespace WebAppForMORecSys.Controllers
         public List<string> GetAllActors(string prefix)
         {
             User user = GetCurrentUser();
-            if (user == null)
-            {
-                return null;
-            }
             return Movie.AllActors.Where(a => a.Contains(prefix, StringComparison.OrdinalIgnoreCase))
                 .Except(user.GetActorsInBlackList()).Take(10).ToList();
 
@@ -239,12 +237,53 @@ namespace WebAppForMORecSys.Controllers
         public List<string> GetAllGenres(string prefix)
         {
             User user = GetCurrentUser();
-            if (user == null)
-            {
-                return null;
-            }
             return Movie.AllGenres.Where(g => g.Contains(prefix, StringComparison.OrdinalIgnoreCase))
                 .Except(user.GetGenresInBlackList()).Take(10).ToList();
+
+        }
+
+        /// <summary>
+        /// Returns distribution of genres in user profile.
+        /// </summary>
+        /// <returns>Text representation of user profiles</returns>
+        public string GetUserProfileForCalibration()
+        {
+            User user = GetCurrentUser();
+            var genres = Movie.AllGenres;
+            var positively_rated = _context.Ratings.Where(r => (r.UserID == user.Id) && (r.RatingScore > 5))
+                .Include(r=> r.Item).Select(r => r.Item).Distinct().ToList();
+            var genresProb = new double[genres.Count];
+            foreach (var movie in positively_rated)
+            {
+                var moviegenres = movie.GetGenres().ToList();
+                moviegenres.Remove("(no genres listed)");
+                foreach (var genre in moviegenres)
+                {
+                    genresProb[genres.IndexOf(genre)] += 1;
+                }
+            }
+            double sum = genresProb.Sum();
+            if (sum > 0)
+            {
+                for (int i = 0; i < genresProb.Length; i++)
+                {
+                    genresProb[i] /= sum;
+                }
+            }
+            StringBuilder sb = new StringBuilder("Your profile ratio - (");
+            for (int i = 0; i < genres.Count; i++)
+            {
+                if (genresProb[i] > 0)
+                {
+                    sb.Append(genres[i]);
+                    sb.Append(": ");
+                    sb.Append(Math.Round(genresProb[i] * 100, 0));
+                    sb.Append(" %, ");
+                }
+            }
+            sb.Remove(sb.Length - 2, 2);
+            sb.Append(")");
+            return sb.ToString();
 
         }
 
@@ -261,38 +300,6 @@ namespace WebAppForMORecSys.Controllers
             return possibleBlocks;
         }
 
-        /// <summary>
-        /// Saves new user rating for a movie
-        /// </summary>
-        /// <param name="id">Movie ID</param>
-        /// <param name="score">Rating score</param>
-        /// <returns>HTTP response without content</returns>
-        public IResult Rate(int id, byte score)
-        {
-            User user = GetCurrentUser();
-            if (user == null)
-            {
-                return Results.Unauthorized();
-            }
-            Rating.Save(id, user.Id, score, _context);
-            return Results.NoContent();
-        }
-
-        /// <summary>
-        /// Deletes user rating of a movie
-        /// </summary>
-        /// <param name="id">Movie ID</param>
-        /// <returns>HTTP response without content</returns>
-        public IResult Unrate(int id)
-        {
-            User user = GetCurrentUser();
-            if (user == null)
-            {
-                return Results.Unauthorized();
-            }
-            Rating.Remove(id, user.Id, _context);
-            return Results.NoContent();
-        }
 
         /// <summary>
         /// </summary>
@@ -318,13 +325,10 @@ namespace WebAppForMORecSys.Controllers
             if (!Movie.AllDirectors.Contains(director))
                 return Results.NoContent();
             User user = GetCurrentUser();
-            if (user == null)
-            {
-                return Results.Unauthorized();
-            }
             user.AddDirectorToBlackList(director);
             _context.Update(user);
             _context.SaveChanges();
+            UserActCache.AddAct(user.Id.ToString(), "PropertyBlock", _context);
             return Results.NoContent();
         }
 
@@ -338,13 +342,10 @@ namespace WebAppForMORecSys.Controllers
             if (!Movie.AllActors.Contains(actor))
                 return Results.NoContent();
             User user = GetCurrentUser();
-            if (user == null)
-            {
-                return Results.Unauthorized();
-            }
             user.AddActorToBlackList(actor);
             _context.Update(user);
             _context.SaveChanges();
+            UserActCache.AddAct(user.Id.ToString(), "PropertyBlock", _context);
             return Results.NoContent();
         }
 
@@ -358,13 +359,10 @@ namespace WebAppForMORecSys.Controllers
             if (!Movie.AllGenres.Contains(genre))
                 return Results.NoContent();
             User user = GetCurrentUser();
-            if (user == null)
-            {
-                return Results.Unauthorized();
-            }
             user.AddGenreToBlackList(genre);
             _context.Update(user);
             _context.SaveChanges();
+            UserActCache.AddAct(user.Id.ToString(), "PropertyBlock", _context);
             return Results.NoContent();
         }
 
@@ -376,10 +374,6 @@ namespace WebAppForMORecSys.Controllers
         public IResult ShowDirector(string director)
         {
             User user = GetCurrentUser();
-            if (user == null)
-            {
-                return Results.Unauthorized();
-            }
             user.RemoveDirectorFromBlackList(director);
             _context.Update(user);
             _context.SaveChanges();
@@ -394,10 +388,6 @@ namespace WebAppForMORecSys.Controllers
         public IResult ShowActor(string actor)
         {
             User user = GetCurrentUser();
-            if (user == null)
-            {
-                return Results.Unauthorized();
-            }
             user.RemoveActorFromBlackList(actor);
             _context.Update(user);
             _context.SaveChanges();
@@ -412,14 +402,12 @@ namespace WebAppForMORecSys.Controllers
         public IResult ShowGenre(string genre)
         {
             User user = GetCurrentUser();
-            if (user == null)
-            {
-                return Results.Unauthorized();
-            }
             user.RemoveGenreFromBlackList(genre);
             _context.Update(user);
             _context.SaveChanges();
             return Results.NoContent();
         }
+
+
     }
 }

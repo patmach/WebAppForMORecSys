@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using System.IO;
+using System.Linq;
 using System.Web.Razor.Parser.SyntaxTree;
 using WebAppForMORecSys.Cache;
 using WebAppForMORecSys.Data;
@@ -35,8 +37,7 @@ namespace WebAppForMORecSys.RequestHandlers
             _context = context;
             if (movieIDsSortedByRatings.Count == 0)
             {
-                movieIDsSortedByRatings = context.Items.Include(i => i.Ratings).OrderByDescending(i => i.Ratings.Count)
-                    .Select(i => i.Id).ToList();
+                movieIDsSortedByRatings = context.Ratings.GroupBy(r => r.ItemID).OrderByDescending(g => g.Count()).Select(g => g.Key).ToList();
             }
         }
 
@@ -53,12 +54,14 @@ namespace WebAppForMORecSys.RequestHandlers
         /// <param name="releasedateto">Movie filter user search on the latest release date</param>
         /// <param name="releasedatefrom">Movie filter user search on the earliest release date</param>
         /// <param name="metricsimportance">Metrics importance in % according to user input</param>
+        /// <param name="currentList">IDs of recommended movies displayed on the page</param>
         /// <returns>ViewModel for the main page</returns>
         public async Task<MainViewModel> ProcessMainQuery(User user, string search, string director,
           string actor, string[] genres, string typeOfSearch, string releasedateto, string releasedatefrom,
-          string[] metricsimportance)
+          string[] metricsimportance, int[]? currentList = null)
         {
-            var numberOfShownItems = 15;
+            if (currentList == null)
+                currentList = new int[0];
             var viewModel = new MainViewModel();
             if (user != null)
             {
@@ -71,42 +74,40 @@ namespace WebAppForMORecSys.RequestHandlers
             RecommenderSystem rs = SystemParameters.GetRecommenderSystem(_context);
             List<Metric> metrics = await _context.Metrics.Include(m => m.metricVariants)
                 .Where(m => m.RecommenderSystemID == rs.Id).ToListAsync();
-            viewModel.SetMetricImportance(user, metrics, metricsimportance, _context);
-
-            viewModel.UsedVariants = user.GetMetricVariants(_context, metrics.Select(m => m.Id).ToList());
-            viewModel.SearchValue = search ?? "";
-            viewModel.FilterValues.Add("TypeOfSearch", typeOfSearch);
-            viewModel.FilterValues.Add("Director", director);
-            viewModel.FilterValues.Add("Actor", actor);
-            viewModel.FilterValues.Add("ReleaseDateFrom", releasedatefrom);
-            viewModel.FilterValues.Add("ReleaseDateTo", releasedateto);
-            viewModel.FilterValues.Add("Genres", string.Join(',', genres));
-            viewModel.FilterValues.Add("MetricsImportance", string.Join(',', metricsimportance ?? new string[0]));
+            SetMainViewModel(viewModel, user, metrics, metricsimportance, search, typeOfSearch, director, actor,
+                releasedatefrom, releasedateto, genres);
             IQueryable<Item> whitelist = Movie.GetPossibleItems(_context.Items, user, search, director, actor, genres, typeOfSearch, releasedateto, releasedatefrom);
-            int[] whitelistIDs = whitelist == null ? new int[0] : await whitelist.Select(item => item.Id).ToArrayAsync();
-            if((whitelistIDs.Length>0 && whitelistIDs.Length < 20))
-            {
-                viewModel.Items = whitelist;
-                return viewModel;
-            }
+            List<int> whitelistIDs = whitelist == null ? new List<int>() : await whitelist.Select(item => item.Id).ToListAsync();
             var positivelyRatedCount = viewModel.UserRatings.Where(r => r.RatingScore > 5).Count();
-            List<int> blacklist = BlockedItemsCache.GetBlockedItemIdsForUser(user.Id.ToString(), _context);
-            blacklist = blacklist.Union(user.GetRatedAndSeenItems(_context)).ToList();
+            if (positivelyRatedCount < 10)  
+                viewModel.Info = $"Please rate positively atleast another {10 - positivelyRatedCount} movies you like so the recommender system can work.\n" +
+                    "More ratings make recommmendations better.\n" +
+                    $"You can use search or filter for finding your favourite movies.\n\n" +
+                    $"The database contains selected movies from 1990-2019.";
+            if (ReturnSearched(viewModel, whitelistIDs, currentList, whitelist, out viewModel))
+                return viewModel;    
             if (positivelyRatedCount < 10)
             {
-                var possibleItems = whitelistIDs.Length > 0 ? whitelist
-                                        : _context.Items.Where(i => movieIDsSortedByRatings.Take(500).Contains(i.Id));
-                possibleItems = possibleItems.Where(i => !blacklist.Contains(i.Id));
-                viewModel.Items = possibleItems.OrderBy(x => Guid.NewGuid()).Take(15);
-                viewModel.Info = $"Please rate positively atleast another {10 - positivelyRatedCount} movies you like so the recommender system can work.\nUse search or filter for finding your favourite movies.";
-                return viewModel;
-            }            
-            var recommendations = await RecommenderCaller.GetRecommendations(whitelistIDs, blacklist.ToArray(),
-                viewModel.Metrics.Values.ToArray(), user.Id, rs.HTTPUri,
-                user.GetMetricVariantCodes(_context, metrics.Select(m => m.Id).ToList()));
+                return ReturnNonPersonalized(viewModel, whitelistIDs, whitelist, currentList.ToList(), positivelyRatedCount);
+            }
+            return await ReturnPersonalized(viewModel, whitelistIDs, whitelist, rs, metrics, currentList, search,
+                actor, director, releasedatefrom, releasedateto, genres);
+        }
+
+        private async Task<MainViewModel> ReturnPersonalized(MainViewModel viewModel, List<int> whitelistIDs, 
+            IQueryable<Item> whitelist, RecommenderSystem rs, List<Metric> metrics, int[] currentList,
+            string search, string actor, string director, string releasedatefrom, string releasedateto, string[] genres)
+        {
+            List<int> blacklist = BlockedItemsCache.GetBlockedItemIdsForUser(viewModel.User.Id.ToString(), _context);
+            blacklist = blacklist.Union(viewModel.User.GetRatedAndSeenItems(_context)).Union(currentList).ToList();
+            var recommendations = await RecommenderCaller.GetRecommendations(whitelistIDs.ToArray(), blacklist.ToArray(),
+                viewModel.Metrics.Values.ToArray(), viewModel.User.Id, rs.HTTPUri,
+                viewModel.User.GetMetricVariantCodes(_context, metrics.Select(m => m.Id).ToList()),
+                currentList);
             if (recommendations.Count > 0)
             {
-                viewModel.Items = _context.Items.Where(item => recommendations.Keys.Contains(item.Id));
+                viewModel.Items = _context.Items.Where(item => recommendations.Keys.Contains(item.Id)).ToList()
+                    .OrderBy(item => recommendations.Keys.ToList().IndexOf(item.Id)).ToList();
                 viewModel.ItemsToMetricContributionScore = recommendations.Values.ToArray();
                 if (whitelist.IsNullOrEmpty() && (!search.IsNullOrEmpty() || !actor.IsNullOrEmpty() || !director.IsNullOrEmpty() || !genres.IsNullOrEmpty()
                         || !releasedatefrom.IsNullOrEmpty() || !releasedateto.IsNullOrEmpty()))
@@ -121,10 +122,53 @@ namespace WebAppForMORecSys.RequestHandlers
                 {
                     viewModel.Message = "<script>alert('There are no results for your search.\\n\\nTry to make simpler search or check your block rules.');</script>";
                 }
-                viewModel.Items = _context.Items.Where(item => !blacklist.Contains(item.Id)).Take(numberOfShownItems);
+                viewModel.Items = await _context.Items.Where(item => !blacklist.Contains(item.Id))
+                    .Take(SystemParameters.LengthOfRecommendationsList).ToListAsync();
             }
-            //TODO: AddInfo
+
             return viewModel;
+        }
+
+        private MainViewModel ReturnNonPersonalized(MainViewModel viewModel, List<int> whitelistIDs, 
+            IQueryable<Item> whitelist, List<int> blacklist, int positivelyRatedCount)
+        {
+            var possibleItems = whitelistIDs.Count > 0 ? whitelist
+                                        : _context.Items.Where(i => movieIDsSortedByRatings.Take(500).Contains(i.Id));
+            possibleItems = possibleItems.Where(i => !blacklist.Contains(i.Id));
+            viewModel.Items = possibleItems.OrderBy(x => Guid.NewGuid()).Take(15).ToList();            
+            return viewModel;
+        }
+
+        private bool ReturnSearched(MainViewModel viewModel, List<int> whitelistIDs, int[] currentList,
+            IQueryable<Item> whitelist, out MainViewModel returnedViewModel)
+        {
+            returnedViewModel = viewModel;
+            if (whitelistIDs.Count > 0){
+                whitelistIDs.RemoveAll(id => currentList.Contains(id));
+                if (whitelistIDs.Count <= 15)
+                {
+                    returnedViewModel.Items = whitelist.Where(item => whitelistIDs.Contains(item.Id)).ToList();
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        private void SetMainViewModel(MainViewModel viewModel, User user, List<Metric> metrics, string[] metricsimportance, 
+            string search, string typeOfSearch, string director, string actor, string releasedatefrom, string releasedateto,
+            string[] genres)
+        {
+            viewModel.SetMetricImportance(user, metrics, metricsimportance, _context);
+            viewModel.UsedVariants = user.GetMetricVariants(_context, metrics.Select(m => m.Id).ToList());
+            viewModel.SearchValue = search ?? "";
+            viewModel.FilterValues.Add("TypeOfSearch", typeOfSearch);
+            viewModel.FilterValues.Add("Director", director);
+            viewModel.FilterValues.Add("Actor", actor);
+            viewModel.FilterValues.Add("ReleaseDateFrom", releasedatefrom);
+            viewModel.FilterValues.Add("ReleaseDateTo", releasedateto);
+            viewModel.FilterValues.Add("Genres", string.Join(',', genres));
+            viewModel.FilterValues.Add("MetricsImportance", string.Join(',', metricsimportance ?? new string[0]));
         }
 
         /// <summary>

@@ -16,6 +16,11 @@ namespace WebAppForMORecSys.Settings
         public static string Controller { get; set; } = "Movies";
 
         /// <summary>
+        /// Length of list of recommendatins returned by RS
+        /// </summary>
+        public static int LengthOfRecommendationsList { get; set; } = 15;
+
+        /// <summary>
         /// Displayed name of web app
         /// </summary>
         public static string Name { get => Controller; }
@@ -26,19 +31,27 @@ namespace WebAppForMORecSys.Settings
         public static MetricsView MetricsView { get; set; } = MetricsView.PlusMinusButtons;
 
         /// <summary>
-        /// Used recommender system
+        /// Get used recommender system
         /// </summary>
         public static RecommenderSystem GetRecommenderSystem(ApplicationDbContext context) 
         {            
             if (_recommenderSystem == null) {
-                _recommenderSystem = context.RecommenderSystems.Where(rs => rs.Name == "MOO as voting fast").First();
+                _recommenderSystem = context.RecommenderSystems.Where(rs => rs.Name == _recommenderSystemName).First();
                 var metrics = context.Metrics.Where(m => m.RecommenderSystemID == _recommenderSystem.Id).ToArray();
                 MetricsToColors = Enumerable.Range(0, metrics.Length).ToDictionary(i => metrics[i], i => Colors[i]);
             }
             return _recommenderSystem;           
         }
 
-        private static RecommenderSystem _recommenderSystem;
+        /// <summary>
+        /// Name of used recommender system
+        /// </summary>
+        private static string _recommenderSystemName = "MOO as voting fast";
+
+        /// <summary>
+        /// Used recommender system
+        /// </summary>
+        private static RecommenderSystem? _recommenderSystem;
 
         /// <summary>
         /// Default colours for used metrics (according to their ranking in the database)
@@ -48,7 +61,7 @@ namespace WebAppForMORecSys.Settings
         /// <summary>
         /// Dictionary mapping metrics to their default colours
         /// </summary>
-        public static Dictionary<Metric, string> MetricsToColors { get; set; }
+        public static Dictionary<Metric, string>? MetricsToColors { get; set; }
 
         /// <summary>
         /// Default type of new block rules addition

@@ -85,6 +85,25 @@ namespace WebAppForMORecSys.Cache
         }
 
         /// <summary>
+        /// Add one act done by the user
+        /// </summary>
+        /// <param name="userId">Id of user that has done new act.</param>
+        /// <param name="actCode">Code of act user has done</param>
+        /// <param name="context">Database context</param>
+        public static void AddAct(string userId, string actCode, ApplicationDbContext context)
+        {
+            int actID = AllActs.Where(a => a.Code==actCode).Select(a => a.Id).FirstOrDefault();
+            if (actID == 0)
+                return;
+            List<int> list = GetActs(userId, context);
+            if (!list.Contains(actID))
+            {
+                list.Add(actID);
+            }
+            _cache.Set(userId, list, new CacheItemPolicy { SlidingExpiration = _expiration });
+        }
+
+        /// <summary>
         /// Sets timer for repeatedly calling function that saves cache contents to database
         /// </summary>
         /// <param name="context">Database context</param>
@@ -118,12 +137,13 @@ namespace WebAppForMORecSys.Cache
         public static void SaveUserActsToDb(ApplicationDbContext context)
         {
             var userIDs = context.Users.Select(u => u.Id);
+            var allActsIDs = AllActs.Select(a => a.Id).ToList();
             foreach (var userID in userIDs)
             {
                 string id = userID.ToString();
                 if (_cache.Contains(id)) {
                     List<int> actIDs = (List<int>)_cache.Get(id);
-                    var useracts = actIDs.Select(actId => new UserAct { ActID = actId, UserID = userID });
+                    var useracts = actIDs.Select(actId => new UserAct { ActID = actId, UserID = userID }).ToList();
                     foreach (var useract in useracts)
                     {
                         context.UserActs.AddIfNotExists(useract, ua=> (ua.UserID == useract.UserID) && (ua.ActID == useract.ActID));                    

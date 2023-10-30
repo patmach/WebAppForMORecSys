@@ -8,7 +8,7 @@
     {
         Percentage,
         Raw,
-        HundredTimes,
+        Rounded,
         Bar
     }
 
@@ -26,8 +26,8 @@
                     return "Percentage share of full score";
                 case MetricContributionScoreView.Raw:
                     return "Raw score";
-                case MetricContributionScoreView.HundredTimes:
-                    return "Raw score multiplied by 100";
+                case MetricContributionScoreView.Rounded:
+                    return "Rounded score";
                 case MetricContributionScoreView.Bar:
                     return "Bar chart";
             }

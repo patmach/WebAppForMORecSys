@@ -1,10 +1,16 @@
 ﻿using Azure;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NuGet.DependencyResolver;
 using NuGet.ProjectModel;
+using System;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Nodes;
+using System.Web.Helpers;
 using WebAppForMORecSys.Models;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace WebAppForMORecSys.Helpers.MovielensLoaders
 {
@@ -109,33 +115,93 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
         {
             JsonObject jsonResponse = (JsonObject)JsonNode.Parse(response);
             JsonNode results;
-            jsonResponse.TryGetPropertyValue("results", out results);
-            JsonArray jArr = results.AsArray();
-            foreach(JsonNode node in jArr){
-                var nodeobj = node.AsObject();
-                JsonNode site;
-                nodeobj.TryGetPropertyValue("site", out site);
-                JsonNode type;
-                nodeobj.TryGetPropertyValue("type", out type);
-                if ((site.ToString().ToLower() == "youtube")&&(type.ToString().ToLower()=="trailer"))
+            if (jsonResponse.TryGetPropertyValue("results", out results))
+            {
+                JsonArray jArr = results.AsArray();
+                foreach (JsonNode node in jArr)
                 {
-                    JsonNode key;
-                    nodeobj.TryGetPropertyValue("key", out key);
-                    if (key != null)
+                    var nodeobj = node.AsObject();
+                    JsonNode site;
+                    if (!nodeobj.TryGetPropertyValue("site", out site))
+                        continue;
+                    JsonNode type;
+                    if (!nodeobj.TryGetPropertyValue("type", out type))
+                        continue;
+                    if ((site.ToString().ToLower() == "youtube") && (type.ToString().ToLower() == "trailer"))
                     {
-                        JsonObject jparams = (JsonObject)JsonNode.Parse(movie.JSONParams);
-                        jparams.Remove("YoutubeKey");
-                        jparams["YoutubeKey"]= key.ToString();
-                        movie.JSONParams = jparams.ToJsonString();
-                        break;
-                    }
+                        JsonNode key;
+                        if(!nodeobj.TryGetPropertyValue("key", out key))
+                            continue;
+                        if (key != null)
+                        {
+                            try
+                            {
+                             
+                                JsonObject jparams = (JsonObject)JsonNode.Parse(movie.JSONParams);
+                                jparams.Remove("YoutubeKey");
+                                jparams["YoutubeKey"] = key.ToString();
+                                movie.JSONParams = jparams.ToJsonString();
+                                break;
+                            }
+                            catch (Exception e)
+                            {
+                                break;
+                            }
+                            
+                        }
 
+                    }
                 }
             }
-            
+        }
+            /*
+        public static List<Rating> DeserializeRatings()
+        {
 
+            var ratingsFile = "Resources/genome_2021/ratings.json";
+            string json = "";
+            using (var reader = new StreamReader(ratingsFile))
+            {
+                json = reader.ReadToEnd();
+            }
+            List<DeserializedRating> dsRatings = JsonConvert.DeserializeObject<List<DeserializedRating>>(json);
+            var ratings = dsRatings.Select(dr => new Rating
+            {
+                UserID = dr.user_id,
+                ItemID = dr.item_id,
+                RatingScore = (byte)(dr.rating * 2.0),
+                Date = new DateTime(2021, 12, 1)
+            }).ToList();
+            return ratings;
         }
 
+        public static List<Metadata> DeserializeMetadata()
+        {
 
+            var metadataFile = "Resources/genome_2021/metadata.json";
+            string json = "";
+            using (var reader = new StreamReader(metadataFile))
+            {
+                json = reader.ReadToEnd();
+            }
+            List<Metadata> metadata = JsonConvert.DeserializeObject<List<Metadata>>(json);
+            return metadata;
+        }
+            */
+     
     }
+    /*
+    public class Metadata
+    {
+        public int item_id;
+        public string imdbId;
+    }
+
+    public class DeserializedRating
+    {
+        public int item_id;
+        public int user_id;
+        public double rating;
+    }
+    */
 }

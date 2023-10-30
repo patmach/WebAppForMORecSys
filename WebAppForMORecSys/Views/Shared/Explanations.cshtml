@@ -51,16 +51,22 @@
                         {
                             <b>@orderedMetrics[i].Name score - @Math.Round(values[i], 2)</b>
                         }
-                        else if (metricContributionScoreView == MetricContributionScoreView.HundredTimes)
+                        else if (metricContributionScoreView == MetricContributionScoreView.Rounded)
                         {
-                            <b>@orderedMetrics[i].Name score - @Math.Round(values[i]*100, 2)</b>
+                            <b>@orderedMetrics[i].Name score - @Math.Round(values[i], 0)</b>
                         }
                     </p>
                 }
                 <p style="color: @Model.User.GetMetricIDsToColors()[keys[i]];">
                     @(Model.UsedVariants?.Where(mv => (mv !=null) && (mv?.MetricID == @orderedMetrics[i].Id)).FirstOrDefault()?.Explanation
                         ?? orderedMetrics[i].DefaultExplanation)
-                </p>                
+                              
+                @if (orderedMetrics[i].Name == "Calibration")
+                {
+                    <br/>
+                    <span class="calibrationprofile_span" style="font-size:0.6rem"></span>
+                }
+                </p>
                 lastvalue = values[i];
             }
         </div>

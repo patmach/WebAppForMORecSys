@@ -79,7 +79,7 @@ namespace WebAppForMORecSys.Controllers
             viewModel.UserRatings = await (from rating in _context.Ratings
                                                   where rating.UserID == viewModel.User.Id
                                                   select rating).ToListAsync();
-            viewModel.Items = _context.Items.Where(item=> !blockedItems.Contains(item.Id)).Take(5);
+            viewModel.Items = await _context.Items.Where(item=> !blockedItems.Contains(item.Id)).Take(5).ToListAsync();
             viewModel.SetMetricImportance(viewModel.User, metrics, new string[0], _context);
             return View(viewModel);
         }
@@ -154,6 +154,14 @@ namespace WebAppForMORecSys.Controllers
         }
 
         /// <summary>
+        /// </summary>
+        /// <returns>Preview partial view for a random movie from the list of rated by user</returns>
+        public async Task<IActionResult> PreviewOfRandomRated()
+        {
+            return RedirectToAction("PreviewOfRandomRated", SystemParameters.Controller);
+        }
+
+        /// <summary>
         /// Saves user's answer to a question
         /// </summary>
         /// <param name="questionID">Question that was answered</param>
@@ -203,7 +211,7 @@ namespace WebAppForMORecSys.Controllers
                     if (v.Id == choosed.MetricVariant.Id)
                         v.DefaultVariant = true;
                     else v.DefaultVariant = false;
-                });                
+                });
             }
             return PartialView(variants);
         }
@@ -227,6 +235,7 @@ namespace WebAppForMORecSys.Controllers
                 return Results.Unauthorized();
             }
             UserMetricVariants.Save(user.Id, metricVariant, _context);
+            AddAct(metricVariant.Code);
             return Results.NoContent();
         }
 
@@ -247,6 +256,7 @@ namespace WebAppForMORecSys.Controllers
             user.SetMetricsView(metricsview);
             _context.Update(user);
             _context.SaveChanges();
+            AddAct(((MetricsView)metricsview).ToString());
             return RedirectToAction("AppSettings");
 
         }
@@ -282,13 +292,10 @@ namespace WebAppForMORecSys.Controllers
             if ((explanationview < 0) || (explanationview >= Enum.GetValues(typeof(ExplanationView)).Length))
                 return RedirectToAction("AppSettings");
             User user = GetCurrentUser();
-            if (user == null)
-            {
-                return Unauthorized();
-            }
             user.SetExplanationView(explanationview);
             _context.Update(user);
             _context.SaveChanges();
+            AddAct(((ExplanationView)explanationview).ToString());
             return RedirectToAction("AppSettings");
 
         }
@@ -303,13 +310,10 @@ namespace WebAppForMORecSys.Controllers
             if ((previewExplanationView < 0) || (previewExplanationView >= Enum.GetValues(typeof(PreviewExplanationView)).Length))
                 return RedirectToAction("AppSettings");
             User user = GetCurrentUser();
-            if (user == null)
-            {
-                return Unauthorized();
-            }
             user.SetPreviewExplanationView(previewExplanationView);
             _context.Update(user);
             _context.SaveChanges();
+            AddAct(((PreviewExplanationView)previewExplanationView).ToString());
             return RedirectToAction("AppSettings");
 
         }
@@ -324,13 +328,10 @@ namespace WebAppForMORecSys.Controllers
             if ((metricContributionScoreView < 0) || (metricContributionScoreView >= Enum.GetValues(typeof(MetricContributionScoreView)).Length))
                 return RedirectToAction("AppSettings");
             User user = GetCurrentUser();
-            if (user == null)
-            {
-                return Unauthorized();
-            }
             user.SetMetricContributionScoreView(metricContributionScoreView);
             _context.Update(user);
             _context.SaveChanges();
+            AddAct(((MetricContributionScoreView)metricContributionScoreView).ToString());
             return RedirectToAction("AppSettings");
 
         }
@@ -372,6 +373,34 @@ namespace WebAppForMORecSys.Controllers
         }
 
         /// <summary>
+        /// Saves new user rating for a movie
+        /// </summary>
+        /// <param name="id">Movie ID</param>
+        /// <param name="score">Rating score</param>
+        /// <returns>HTTP response without content</returns>
+        public IResult Rate(int id, byte score)
+        {
+            User user = GetCurrentUser();
+            Rating.Save(id, user.Id, score, _context);
+            int ratingsCount = _context.Ratings.Where(r => (r.UserID == user.Id) && (r.RatingScore > 5)).Count();
+            if (ratingsCount == 10)
+                return Results.Redirect("/Home/Index");
+            return Results.NoContent();
+        }
+
+        /// <summary>
+        /// Deletes user rating of a movie
+        /// </summary>
+        /// <param name="id">Movie ID</param>
+        /// <returns>HTTP response without content</returns>
+        public IResult Unrate(int id)
+        {
+            User user = GetCurrentUser();
+            Rating.Remove(id, user.Id, _context);
+            return Results.NoContent();
+        }
+
+        /// <summary>
         /// Saves new user interaction with an item
         /// </summary>
         /// <param name="id">Item ID</param>
@@ -405,6 +434,7 @@ namespace WebAppForMORecSys.Controllers
             user.AddItemToBlackList(id);
             _context.Update(user);
             _context.SaveChanges();
+            AddAct("MovieBlock");
             return Results.NoContent();
         }
 
@@ -433,7 +463,18 @@ namespace WebAppForMORecSys.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
+        /// <summary>
+        /// Saves act done by user
+        /// </summary>
+        /// <param name="code">Code of the act</param>
+        /// <returns>No Content</returns>
+        public IResult AddAct(string code)
+        {
+            User user = GetCurrentUser();
+            UserActCache.AddAct(user.Id.ToString(), code, _context);
+            return Results.NoContent();
+        }
 
-        
+
     }
 } 

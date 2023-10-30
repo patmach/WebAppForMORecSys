@@ -88,7 +88,7 @@
                         onchange="changeValues(this.value, @index)" />
                     <output style="background-color: @Model.User.GetColors()[index]" class="bubble"></output>
                     }
-                @if (Model.User.GetMetricsView() == MetricsView.TextBoxNumbers)
+                @if (Model.User.GetMetricsView() == MetricsView.Textboxes)
                     {
                     <label for="@id">
                         @if (metric.HasVariants())
@@ -168,7 +168,7 @@
 
     /* When there is a change of value of metrics importance, other values are decreased (if needed to be)
         for the sum of all importances be less than 100. */
-    function changeValues(value, index) {
+    function changeValues(value, index) {       
         let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
         let length = inputranges.length;
         let sum = getSumOfRangeValues();
@@ -190,7 +190,10 @@
         }
         setBubbles();
         copyValuesToOtherForm(inputranges)
-
+        $.ajax({
+            url: '@Url.Action("AddAct","Home", new { code = "MetricsFilterUsage" })',
+            cache: false
+        });
     }
 
     /* Load metrics importance values to item filter form. 
@@ -285,10 +288,7 @@
         }
 
         function handleDragEnd(e) {
-            dragboxes.forEach(function (dragbox) {
-                dragbox.classList.remove('over');
-                dragbox.style.opacity = '1';
-            });
+            
         }
 
         function handleDragOver(e) {
@@ -315,7 +315,9 @@
                 this.innerHTML = e.dataTransfer.getData('text/html');
             }
             set_input_hidden_values()
-
+            dragboxes.forEach(function (dragbox) {
+                dragbox.style.opacity = '1';
+            });
             return false;
         }
 

@@ -642,7 +642,8 @@ namespace WebAppForMORecSys.Helpers
         public static List<MetricVariant> GetMetricVariants(this User user, ApplicationDbContext context, List<int> metricIDs)
         {
             var variants = new List<MetricVariant>();
-            var defaultMVs = context.MetricVariants.Where(mv => metricIDs.Contains(mv.MetricID) && mv.DefaultVariant).ToList();
+            var defaultMVs = context.MetricVariants.Where(mv => metricIDs.Contains(mv.MetricID) && mv.DefaultVariant)
+                .ToList();
             var userMVs = context.UserMetricVariants.Include(umv => umv.MetricVariant).
                 Where(umv => (umv.UserID == user.Id) && metricIDs.Contains(umv.MetricVariant.MetricID))
                 .Select(umv => umv.MetricVariant).ToList();
@@ -663,13 +664,30 @@ namespace WebAppForMORecSys.Helpers
         /// Chooses random values od configurable user settings
         /// </summary>
         /// <param name="user">Newly created user</param>
-        public static void SetRandomSettingsForNewUser(this User user)
+        public static void SetRandomSettingsForNewUser(this User user, ApplicationDbContext context)
         {
-            user.SetAddBlockRuleView(rnd.Next(Enum.GetValues(typeof(AddBlockRuleView)).Length));
-            user.SetExplanationView(rnd.Next(Enum.GetValues(typeof(ExplanationView)).Length));
-            user.SetMetricContributionScoreView(rnd.Next(Enum.GetValues(typeof(MetricContributionScoreView)).Length));
-            user.SetPreviewExplanationView(rnd.Next(Enum.GetValues(typeof(PreviewExplanationView)).Length));
-            user.SetMetricsView(rnd.Next(Enum.GetValues(typeof(MetricsView)).Length));
+            int addBlockRuleView = rnd.Next(Enum.GetValues(typeof(AddBlockRuleView)).Length);
+            user.SetAddBlockRuleView(addBlockRuleView);
+            int explanationView = rnd.Next(Enum.GetValues(typeof(ExplanationView)).Length);
+            user.SetExplanationView(explanationView);
+            int metricContributionScoreView = rnd.Next(Enum.GetValues(typeof(MetricContributionScoreView)).Length);
+            user.SetMetricContributionScoreView(metricContributionScoreView);
+            int previewExplanationView = rnd.Next(Enum.GetValues(typeof(PreviewExplanationView)).Length);
+            user.SetPreviewExplanationView(previewExplanationView);
+            int metricsView = rnd.Next(Enum.GetValues(typeof(MetricsView)).Length);
+            user.SetMetricsView(metricsView);
+            context.Add(user);
+            context.SaveChanges();
+            UserActCache.AddActs(user.Id.ToString(),
+                new List<string>
+                {
+                    ((AddBlockRuleView)addBlockRuleView).ToString(),
+                    ((ExplanationView)explanationView).ToString(),
+                    ((MetricContributionScoreView)metricContributionScoreView).ToString(),
+                    ((PreviewExplanationView)previewExplanationView).ToString(),
+                    ((MetricsView)metricsView).ToString()
+                },
+                context);
         }
 
     }

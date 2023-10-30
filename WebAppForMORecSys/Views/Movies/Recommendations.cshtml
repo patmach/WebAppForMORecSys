@@ -1,25 +1,39 @@
 ﻿@using WebAppForMORecSys.Models.ViewModels
+@using WebAppForMORecSys.Settings
 @model WebAppForMORecSys.Models.ViewModels.MainViewModel
 @{
     string controller = WebAppForMORecSys.Settings.SystemParameters.Controller;
     int index = 0;
     Metric[] metricsArr = Model.Metrics.Keys.ToArray();
 }
-    @foreach (var item in Model.Items)
+
+@foreach (var item in Model.Items)
+{
+    Dictionary<Metric, double> metricsContribution = new Dictionary<Metric, double>();
+
+    if (Model.ItemsToMetricContributionScore != null)
     {
-        Dictionary<Metric, double> metricsContribution = new Dictionary<Metric, double>();
-
-        if (Model.ItemsToMetricContributionScore != null)
-        {
-            metricsContribution = Enumerable.Range(0, Model.Metrics.Count)
-            .ToDictionary(i => metricsArr[i], i => Model.ItemsToMetricContributionScore[index][i]);
-        }
-
-        @await Html.PartialAsync("../"+controller+"/Preview", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution, Model.UsedVariants))
-        @if (metricsContribution.Count > 0)
-        {
-            @await Html.PartialAsync("../Shared/Explanations", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution, Model.UsedVariants))
-        }
-        index++;
+        metricsContribution = Enumerable.Range(0, Model.Metrics.Count)
+        .ToDictionary(i => metricsArr[i], i => Model.ItemsToMetricContributionScore[index][i]);
     }
+
+    @await Html.PartialAsync("../"+controller+"/Preview", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution, Model.UsedVariants))
+    @if (metricsContribution.Count > 0)
+    {
+        @await Html.PartialAsync("../Shared/Explanations", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution, Model.UsedVariants))
+    }
+    index++;
+}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function (event) {
+        $.ajax({
+            url: '@Url.Action("GetUserProfileForCalibration", SystemParameters.Controller)',
+            cache: false,
+            success: function (data) {
+                $('.calibrationprofile_span').html(data);
+            },
+        });
+    });
+</script>
 

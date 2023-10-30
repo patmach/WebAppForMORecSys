@@ -55,11 +55,11 @@ namespace WebAppForMORecSys.Models
 
     public enum AgreeScale
     {
-        StronglyDisagree,
-        Disagree,
-        Neutral,
+        StronglyAgree,
         Agree,
-        StronglyAgree
+        Neutral,
+        Disagree,
+        StronglyDisagree
     }
 
     public static class AgreeScaleExtensions

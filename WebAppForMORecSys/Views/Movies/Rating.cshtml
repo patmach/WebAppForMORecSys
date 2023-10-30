@@ -1,7 +1,7 @@
 ﻿@model WebAppForMORecSys.Models.ViewModels.PreviewDetailViewModel
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-<div>
+<div class="rating">
     <span>
         @{
             string aclass = Model.User != null ? "" : "disabled";
@@ -12,12 +12,12 @@
         @for (int i = 0; i < 10; i++)
         {
             <a style="text-decoration:unset" onclick="show_new_rating_value(@Html.Raw(i+1), @Model.Item.Id)" class="@aclass"
-               href='@Url.Action("Rate","Movies", new { id=Model.Item.Id, score= i+1 })'>
+               href='@Url.Action("Rate","Home", new { id=Model.Item.Id, score= i+1 })'>
                 <i class="@ratingClass fa fa-star-o" aria-hidden="true" title="@((i+1) + "/10")"></i>
             </a>
         }
         <a style="text-decoration:unset; color:red" onclick="show_new_rating_value(0, @Model.Item.Id)" class="@removeClass @aclass"
-            href='@Url.Action("Unrate","Movies", new { id=Model.Item.Id})'>
+            href='@Url.Action("Unrate","Home", new { id=Model.Item.Id})'>
             <i class="fa fa-remove" aria-hidden="true" title="Remove my rating")"></i>
         </a>
         

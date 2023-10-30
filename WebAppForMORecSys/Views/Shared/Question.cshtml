@@ -5,7 +5,15 @@
     int? valueAnswer = userAnswered ? Model.UserAnswers[0].Value : null;
     int? optionAnswer = userAnswered ? Model.UserAnswers[0].AnswerID : null;
 }
-<h4>@Model.Text</h4>
+<h4>
+    @Model.Text
+</h4>
+    @if (Model.Text.Contains("Do you remember seeing this movie?"))
+    {
+        <span id="randompreviewofrated" style="float:right" ="getRandomPreview('@Url.Action("PreviewOfRandomRated", "Home")')">
+        </span>
+    }
+
 <div id="answer@(Model.Id)">
     @if (Model.AnswerType == TypeOfAnswer.Text)
     {
@@ -33,7 +41,12 @@
                        value="@answer.Id" checked="@(userAnswered &&((int)answer.Id == optionAnswer))">
                 <label for="@(Model.Id + answer.Id.ToString())">@answer.Text</label>
             </div>
+            @if (answer.Text == "Other")
+            {
+                <input id="input_@Model.Id" class="form-control rounded m-3 textanswer" aria-required="true"
+                       name="answer" value="@textanswer" onunload="saveTextAnswer(@Model.Id, input_@Model.Id);"
+                       onfocusout="saveTextAnswer(@Model.Id, input_@Model.Id);" />
+            }
         }
     }
-
 

@@ -1,6 +1,9 @@
 ﻿using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Cache;
 using WebAppForMORecSys.Models;
+using WebAppForMORecSys.Models.ViewModels;
+using Microsoft.IdentityModel.Tokens;
+using System.IO;
 
 namespace WebAppForMORecSys.Helpers
 {
@@ -10,28 +13,50 @@ namespace WebAppForMORecSys.Helpers
     public static class UserActHelper
     {
         /// <summary>
-        /// CheckUserActs
+        /// Instance of random, used by FindUserActsTips
         /// </summary>
         public static Random rnd = new Random();
 
         /// <summary>
-        /// Checks acts user hasn't done yet
+        /// Add user acts retrieved from main view model
+        /// </summary>
+        /// <param name="mainViewModel">View model of the main page</param>
+        /// <param name="typeOfSearch">Specifies if user clicked the search for main search or in movie filter</param>
+        /// <param name="context">Database context</param>
+        public static void AddUserActsFromMainViewModel(MainViewModel mainViewModel, string typeOfSearch, ApplicationDbContext context)
+        {
+            if ((typeOfSearch == "Search") && (!mainViewModel.SearchValue.IsNullOrEmpty()))
+            {
+                UserActCache.AddAct(mainViewModel.User.Id.ToString(), "Search", context);
+            }
+            else if (typeOfSearch == "MovieFilter")
+            {
+                List<string> keys = new List<string> { "Director", "Actor", "ReleaseDateFrom", "ReleaseDateTo", "Genres" };
+                if (keys.Any(k => mainViewModel.FilterValues.ContainsKey(k) 
+                                    &&!mainViewModel.FilterValues[k].IsNullOrEmpty()))
+                    UserActCache.AddAct(mainViewModel.User.Id.ToString(), "MovieFilter", context);
+            }
+        }
+
+
+        /// <summary>
+        /// Finds acts user hasn't done yet
         /// </summary>
         /// <param name="userID">user whose actions are checked</param>
         /// <param name="context">Database context</param>
         /// <param name="Request">HTTP Request (to get base address if it's the first call)</param>
         /// <returns>Suggestion of one of the not done acts</returns>
-        public static string CheckUserActs(int userID, ApplicationDbContext context, HttpRequest Request)
+        public static string FindUserActsTips(int userID, ApplicationDbContext context, HttpRequest Request)
         {
             UserActCache.SetSaveToDbTimer(context, Request);
             List<Act> actsNotDoneByUser = new List<Act>();
             List<int> actsDoneByUser = UserActCache.GetActs(userID.ToString(), context);
-            int maxPriority = UserActCache.AllActs.Select(a => a.Priority).Max();
+            int maxPriority = UserActCache.AllActs.Select(a => a.Priority).Max() + 1;
             foreach (var act in UserActCache.AllActs)
             {
                 if (!actsDoneByUser.Contains(act.Id))
                 {
-                    for (int i = 0; i <= maxPriority - act.Priority; i++)
+                    for (int i = 0; i <= (maxPriority - act.Priority) * 2; i++)
                     {
                         actsNotDoneByUser.Add(act);
                     }

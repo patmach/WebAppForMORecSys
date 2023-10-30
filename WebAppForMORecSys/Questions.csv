@@ -1,0 +1,47 @@
+Age group;1
+Gender;1
+I know what is a recommender system.;0
+I am familiar with the basics of recommender systems and machine learning.;0
+The information provided from the preview of the recommended movies (poster, first lines of description, director) was sufficient to judge whether I gonna like them.;0
+The information provided when clicking the details of the recommended movies (poster, description, genres, trailer, director, actors) was sufficient to judge whether I gonna like them.;0
+What type of explanation on metrics share in preview of the movie was most helpful?;1
+What type of explanation on scores of movie with regards to objectives was most helpful?;1
+What type of explanation on contribution of metrics was most helpful?;1
+Overall, the explanations on why the item was recommended was sufficient.;0
+The description of relevance was clear and sufficient.;0
+I was able to get more (or less) relevant items by tweaking the value of relevance;0
+What was my understandment of relevance of movie before participating in this study?;1
+What type of relevance behaved closest to what I except from relevance?;1
+Answer to this question has to be „Strongly disagree“.;0
+The description of popularity was clear and sufficient.;0
+I was able to get more (or less) popular items by tweaking the value of popularity;0
+What was my understandment of popularity of movie before participating in this study?;1
+What type of popularity behaved closest to what I except from popularity?;1
+The description of calibration was clear and sufficient.;0
+I was able to get more (or less) items of my favourite genres by tweaking the value of calibration;0
+The description of diversity was clear and sufficient.;0
+I was able to get more (or less) diverse items by tweaking the value of diversity.;0
+What was my understandment of diversity of movie before participating in this study?;1
+What type of diversity behaved closest to what I except from diversity?;1
+The description of novelty was clear and sufficient.;0
+I was able to get more (or less) novel items by tweaking the value of diversity.;0
+Do you remember seeing this movie?;1
+What was my understandment of novelty of movie before participating in this study?;1
+What type of novelty behaved closest to what I except from novelty?;1
+Being able to change the relevance, diversity, novelty, popularity and calibration ratios were useful for me.;0
+Overall, the effect of tweaking relevance, diversity, novelty, popularity and calibration fulfilled my expectations.;0
+Overall, after modifying the relevance, diversity, novelty, popularity and calibration ratios, recommendations improved.;0
+Which metrics filter for tweaking the objectives provided me with the most sufficient control over recommendations.;1
+Answer to this question has to be „Agree“;0
+Which metrics filter for tweaking the objectives provided was the most sufficient to tell the system what recommendations I want.;1
+Which metrics filter for tweaking the objectives provided was the most understandable and intuitive.;1
+With which metrics filter for tweaking the objectives were the approximate ratios easiest to set.;1
+Overall, the mechanism that I find as best for tweaking the objectives is;1
+Overall, I am satisfied with the recommender.;0
+Overall, I find the ability to tweak the objectives useful for getting better recommendations.;0
+I prefer recommendations without the needed effort of understanding and tweaking the objectives.  (In other words I prefer system recommending automatically without setting the objetives.);0
+I find the text-search on movie title helpful.;0
+I find the movie filter on genres, directors, actors and release date helpful.;0
+I find the ability to block movies directly („Don’t recommend this movie“) helpful.;0
+I find the ability to block movies on genre, director or actor helpful.;0
+I appreciated the possibility of changing colours of the objectives.;0

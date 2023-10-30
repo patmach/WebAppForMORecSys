@@ -57,29 +57,30 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
                     {
                         JSONParse.AddDetailsToMovie(TMBDApiHelper.getMovieDetail(link.TMBDID).Result, movie);
                         JSONParse.AddCastToMovie(TMBDApiHelper.getMovieCredits(link.TMBDID).Result, movie);
+                        movie.JSONParams = '{' + movie.JSONParams + '}';
                         JSONParse.AddYoutubeKeyToMovie(TMBDApiHelper.getMovieYoutubeKey(link.TMBDID).Result, movie);
 
                     }
                 }
-                movies.ForEach(m => { m.JSONParams = '{' + m.JSONParams.Replace("\n", "").Replace("...", "").Replace("\t", "") + '}'; });
-            }
-            try
-            {
-                var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
+                movies.ForEach(m => { m.JSONParams = /*'{' +*/ m.JSONParams.Replace("\n", "").Replace("...", "").Replace("\t", "") /*+ '}'*/; });
+                try
                 {
-                    HasHeaderRecord = true,
-                    Delimiter= ":::",
-                };
-                using (var writer = new StreamWriter("moviesloaded.csv"))
-                using (var csv = new CsvWriter(writer,configuration))
-                {
-                    csv.Context.RegisterClassMap<LoadedMovieMap>();
-                    csv.WriteRecords(movies);
+                    var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
+                    {
+                        HasHeaderRecord = true,
+                        Delimiter = ":::",
+                    };
+                    using (var writer = new StreamWriter("moviesloaded.csv"))
+                    using (var csv = new CsvWriter(writer, configuration))
+                    {
+                        csv.Context.RegisterClassMap<LoadedMovieMap>();
+                        csv.WriteRecords(movies);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                LogError(ex);
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                }
             }
             var ratings = CSVParsingMethods.ParseRatings(movielensDataset);
 
@@ -87,12 +88,12 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
 
             if (filter)
             {
-                ratings = Filtering.RatingLowFilter(ratings);
+                //ratings = Filtering.RatingLowFilter(ratings);
                 movies = Filtering.MovieFilterByYear(movies);
                 ratings = Filtering.RatingFilterOld(ratings);
-                movies = Filtering.RatingsPerYearFilter(movies, ratings);
+                movies = Filtering.RatingsPerYearFilter(movies, ratings, minimalratingsperyear: 75);
                 ratings = Filtering.RatingFilter(movies, users, ratings);
-                users = Filtering.RatingUserFilter(users, ratings, 100);
+                users = Filtering.RatingUserFilter(users, ratings);
                 ratings = Filtering.RatingFilter(movies, users, ratings);
                 movies = Filtering.RatedMovieFilter(movies, ratings);
                 users = Filtering.UsersWithRaitingFilter(users, ratings);
@@ -125,7 +126,6 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
             {
                 LogError(ex);
             }
-            finally { context.Database.CloseConnection(); }
         }
     }
 }

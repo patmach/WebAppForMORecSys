@@ -22,7 +22,7 @@ namespace WebAppForMORecSys.Models.ViewModels
         /// <summary>
         /// Items to be shown
         /// </summary>
-        public IQueryable<Item> Items { get; set; }
+        public List<Item> Items { get; set; }
 
         /// <summary>
         /// Metric contribution scores for each item

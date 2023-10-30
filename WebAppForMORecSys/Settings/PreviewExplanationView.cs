@@ -21,7 +21,7 @@
             switch (previewExplanationView)
             {
                 case PreviewExplanationView.FullBorderImage:
-                    return "Share of metrics";
+                    return "Share of metrics on full border";
                 case PreviewExplanationView.LeftBorderImage:
                     return "Share of metrics only on left side";
                 case PreviewExplanationView.TitleColor:

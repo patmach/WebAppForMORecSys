@@ -51,7 +51,8 @@ function SetAutoComplete(textbox, url)
 
 var xcoord_b4_details = 0;
 var ycoord_b4_details = 0;
-$(document).ready(function () {
+
+function setPreviewClick(){
     $(".ajaxdetail").on("click", function (e) {
         e.preventDefault();
         xcoord_b4_details = window.scrollX;
@@ -65,12 +66,16 @@ $(document).ready(function () {
                 details.innerHTML = data;
                 details.style.display = ""
                 document.getElementById('Previews').style.display = "none";
-                document.getElementById('loadmore_btn').style.display = "none";
+                document.getElementById('loadmore_div').style.display = "none";
                 coords = getElementCoords(details);
                 window.scrollTo(coords.left, coords.top);
             }
         });
     });
+}
+
+$(document).ready(function () {
+    setPreviewClick();
 });
 
 function getElementCoords(el) {
@@ -85,7 +90,7 @@ function BackToList() {
     document.getElementById('DetailsDiv').style.display = "none";
     document.getElementById('DetailsDiv').innerHTML = "";
     document.getElementById("Previews").style.display = "";
-    document.getElementById('loadmore_btn').style.display = "";
+    document.getElementById('loadmore_div').style.display = "";
     window.scrollTo(xcoord_b4_details, ycoord_b4_details);
 }
 
@@ -156,5 +161,18 @@ function close_infocard(element_id) {
     infocard.style.display = 'none';
 }
 
+/*Preview of random rated item*/
+function getRandomPreview(url) {
+    if ($('#randompreviewofrated').length > 0) {
+        $.ajax({
+            url: url,
+            cache: false,
+            success: function (data) {
+                $('#randompreviewofrated').html(data);
+                $(".rating")[0].style.display = "none";
+            },
+        });
+    }
+}
 
 

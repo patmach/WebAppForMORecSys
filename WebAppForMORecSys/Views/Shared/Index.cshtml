@@ -32,7 +32,11 @@
             </button>
         </div>
         <div class="card-body" >
-            @Model.Info
+            @foreach (var part in @Model.Info.Replace("\\n","\n").Split('\n'))
+            {
+               @Html.Raw(part)<br/>
+            }
+            
         </div>
     </div>
 }
@@ -48,8 +52,11 @@
     <form asp-controller="Movies" asp-action="Index" method="get">
         <div class="form-floating mb-3">
             @await Html.PartialAsync("../Shared/Search")
-            @await Html.PartialAsync("../Shared/MetricsFilter",  
-                new MetricsFilterViewModel{Metrics= Model.Metrics, User= Model.User})
+
+            @if (Model.UserRatings.Where(r => (r.RatingScore > 5)).Count() >= 10){
+                @await Html.PartialAsync("../Shared/MetricsFilter",  
+                    new MetricsFilterViewModel{Metrics= Model.Metrics, User= Model.User})
+            }
         </div>
     </form>
     <div id="DetailsDiv" style="margin-bottom:5px;"></div>
@@ -58,11 +65,45 @@
         @await Html.PartialAsync($"../{controller}/Recommendations", Model)
         </div>
     </div>
-    <button id="loadmore_btn" type="button" class="btn btn-primary" style="margin:auto" onclick="loadmore()">Load more</button>
+    <div id="loadmore_div">
+        <br />
+        <button id="loadmore_btn" type="button" class="btn btn-primary" style="margin:auto" onclick="loadmore()" 
+            title="Load more recommendations with the same parameters">
+            Load more
+        </button>
+        <br />
+        <br />
+        <div class="card bg-warning" id="loadmore_lbl" style="display:none">
+            <div class="card-body">
+                @if (Model.UserRatings.Where(r => (r.RatingScore > 5)).Count() >= 10)
+                {
+                    <h5>Get different recommendations by tweaking the objectives and clicking the "RECOMMEND" or "SEARCH" button on top of the page.</h5>
+                }
+                else{
+                    <h5>If you rated 10 movies, you can click the "RECOMMEND" or "SEARCH" button on top of the page to get recommendations.</h5>
+                }
+            </div>
+        </div>
+    </div>
     
 </div>
 
 <script>
+
+    function setPopover() {
+        popoverExplanationOptions = {
+            content: function () {
+                var classname = '.popover-content' + this.id;
+                return $(this).siblings(classname).html();
+            },
+            trigger: 'hover',
+            animation: true,
+            placement: 'top',
+            html: true,
+            title: 'Why is this item recommended?'
+        };
+        $('.ItemPreview').popover(popoverExplanationOptions)
+    }
     var seen = [];
     var controller = '@controller';
     $(document).ready(function () {
@@ -80,23 +121,21 @@
         /*sets popover for item previews*/
         $.fn.tooltip.Constructor.Default.allowList['*'].push('style')
 
-        popoverExplanationOptions = {
-            content: function () {
-                var classname = '.popover-content' + this.id;
-                return $(this).siblings(classname).html();
-            },
-            trigger: 'hover',
-            animation: true,
-            placement: 'top',
-            html: true,
-            title: 'Why is this item recommended?'
-        };
-        $('.ItemPreview').popover(popoverExplanationOptions)
+        setPopover();
+
+        let IDsDisplayedOnLoaded = $('.itemIDhidden');
+        if ((IDsDisplayedOnLoaded.length == 0)
+            || ((IDsDisplayedOnLoaded.length % @LengthOfRecommendationsList) != 0)) // No new recommendations possible
+        {
+            $('#loadmore_btn')[0].style.display = 'none';
+        }
         
     });
 
     window.onscroll = function(){
-        SaveSeenInteractions();
+        if (@((Model.UserRatings.Where(r => (r.RatingScore > 5)).Count() >= 10) ? "true" : "false")) {
+            SaveSeenInteractions();
+        } 
     };
     /* if scrolled check if user seen some whole preview of item that he hasn't seen before (on this loading of page)*/
 
@@ -132,17 +171,51 @@
 
     var loadingmore = false;
 
+   
+
     function loadmore() {
         if ('Movies' == '@controller')
         {
+            var url = '@Html.Raw(loadMoreURL)';
+            if (!url.includes('?')) {
+                url += '/?';
+            }
+            else{
+                url += '&';
+            }
+            let IDsCurrentlyDisplayed = $('.itemIDhidden');
+            for (let i = 0; i < IDsCurrentlyDisplayed.length; i++) {
+                url += 'l=' + IDsCurrentlyDisplayed[i].value + '&';
+            }
             if (!loadingmore) {
                 loadingmore = true;
+                $('#loadmore_btn')[0].disabled = true;
                 $.ajax({
-                    url: '@Html.Raw(loadMoreURL)',
+                    url: url,
                     cache: false,
                     success: function (data) {
                         $('#Previews').html($('#Previews')[0].innerHTML + data);
-                        loadingmore = false;
+                        setPreviewClick();
+                        setPopover();         
+                        let IDsDisplayed = $('.itemIDhidden');
+                        if (IDsDisplayed.length >= @(LengthOfRecommendationsList * 2))
+                        {
+                            $('#loadmore_lbl')[0].style.display = '';
+                        }
+                        if (((IDsDisplayed.length == IDsCurrentlyDisplayed.length)
+                            || (IDsDisplayed.length % @LengthOfRecommendationsList != 0))//The next call wouldn't return any new recommendations
+                            || ((@((Model.UserRatings.Where(r => (r.RatingScore > 5)).Count() >= 10) ? "true" : "false"))
+                                && (((IDsDisplayed.length >= @(LengthOfRecommendationsList * 4)))))) // Recommender system is called and @(LengthOfRecommendationsList * 4) is maximum length of recommendations list used
+                        {
+                            $('#loadmore_btn')[0].style.display = 'none';
+                        }
+                    },
+                    error: function (data) {
+                        $('#loadmore_btn')[0].style.display = 'none';
+                    },
+                    complete: function (data) { 
+                        loadingmore = false; 
+                        $('#loadmore_btn')[0].disabled = false;
                     },
                 });
             }

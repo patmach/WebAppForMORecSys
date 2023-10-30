@@ -48,7 +48,7 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
             var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = true,
-                Delimiter= ":::",
+                Delimiter = ":::",
             };
             List<Item> movies = new List<Item>();
             string moviesfile = "moviesloaded.csv";
@@ -96,7 +96,7 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
                 Delimiter = movielensDataset == "25m" ? "," : movielensDataset == "1m" ? "::" : ""
             };
             List<Rating> ratings = new List<Rating>();
-            var ratingsfile= movielensDataset == "25m" ? "Resources/Movielens25m/ratings.csv" :
+            var ratingsfile = movielensDataset == "25m" ? "Resources/Movielens25m/ratings.csv" :
                 movielensDataset == "1m" ? "Resources/ml-1m/ratings.dat" : "";
             using (var reader = new StreamReader(ratingsfile))
             using (var csv = new CsvReader(reader, configuration))
@@ -106,7 +106,89 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
             }
             return ratings;
         }
+
+
+
+        public static List<Act> ParseActs()
+        {
+            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = true,
+                Delimiter = ";"
+            };
+            List<Act> acts = new List<Act>();
+            var actsfile = "Acts.csv";
+            using (var reader = new StreamReader(actsfile))
+            using (var csv = new CsvReader(reader, configuration))
+            {
+                csv.Context.RegisterClassMap<ActMap>();
+                acts = csv.GetRecords<Act>().ToList();
+            }
+            return acts;
+        }
+
+        public static List<Question> ParseQuestions()
+        {
+            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = false,
+                Delimiter = ";"
+            };
+            List<Question> questions = new List<Question>();
+            var questionsfile = "Questions.csv";
+            using (var reader = new StreamReader(questionsfile))
+            using (var csv = new CsvReader(reader, configuration))
+            {
+                csv.Context.RegisterClassMap<QuestionMap>();
+                questions = csv.GetRecords<Question>().ToList();
+            }
+            return questions;
+        }
+
+        public static List<Answer> ParseAnswers()
+        {
+            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = false,
+                Delimiter = ";"
+            };
+            List<Answer> answers = new List<Answer>();
+            var answersfile = "Answers.csv";
+            using (var reader = new StreamReader(answersfile))
+            using (var csv = new CsvReader(reader, configuration))
+            {
+                csv.Context.RegisterClassMap<AnswerMap>();
+                answers = csv.GetRecords<Answer>().ToList();
+            }
+            return answers;
+        }
     }
+
+    public class AnswerMap : ClassMap<Answer>
+    {
+        public AnswerMap()
+        {
+            Map(p => p.Text).Index(0);
+            Map(p => p.QuestionID).Convert(args => int.Parse(args.Row.GetField(1)));
+        }
+    }public class QuestionMap : ClassMap<Question>
+    {
+        public QuestionMap()
+        {
+            Map(p => p.Text).Index(0);
+            Map(p => p.AnswerType).Convert(args => (TypeOfAnswer)int.Parse(args.Row.GetField(1)));
+        }
+    }
+    public class ActMap : ClassMap<Act>
+    {
+        public ActMap()
+        {
+            Map(p => p.Priority).Convert(args => int.Parse(args.Row.GetField(0)));
+            Map(p => p.SuggestionText).Index(1);
+            Map(p => p.Code).Index(2);
+        }
+    }
+
 
     /// <summary>
     /// Class that describes mapping between movies.csv/movies.dat file and Movie Class

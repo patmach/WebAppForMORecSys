@@ -15,7 +15,7 @@ connection = "DefaultConnection";
 #endif
 var connectionString = builder.Configuration.GetConnectionString(connection) ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString, sqlServerOptions => sqlServerOptions.CommandTimeout(120)));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<Account>(options => options.SignIn.RequireConfirmedAccount = true)

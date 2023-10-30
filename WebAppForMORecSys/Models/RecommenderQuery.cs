@@ -8,12 +8,17 @@
         /// <summary>
         /// IDs of possible items
         /// </summary>
-        public int[] WhiteListItemIDs { get; set; }
+        public int[] WhiteListItemIDs { get; set; } = new int[0];
 
         /// <summary>
         /// IDs of items that shouldn't be returned
         /// </summary>
-        public int[] BlackListItemIDs { get; set; }
+        public int[] BlackListItemIDs { get; set; } = new int[0];
+
+        /// <summary>
+        /// IDs of items that are already part of displayed recommendations
+        /// </summary>
+        public int[] CurrentListItemIDs { get; set; } = new int[0];
 
         /// <summary>
         /// Number of items that should be returned
@@ -23,11 +28,11 @@
         /// <summary>
         /// Metrics importance specified by user
         /// </summary>
-        public int[] Metrics { get; set; }
+        public int[] Metrics { get; set; } = new int[0];
 
         /// <summary>
         /// Metric variants used by user
         /// </summary>
-        public string[] MetricVariantsCodes { get; set; }
+        public string[] MetricVariantsCodes { get; set; } = new string[0];
     }
 }

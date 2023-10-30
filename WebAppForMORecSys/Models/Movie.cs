@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Drawing.Text;
 using System.Text;
 using System.Text.Json.Nodes;
+using WebAppForMORecSys.Cache;
 using WebAppForMORecSys.Controllers;
 using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Helpers;
@@ -171,8 +172,7 @@ namespace WebAppForMORecSys.Models
                 var genres = new List<string>();
                 context.Items.ToList().ForEach(m => genres.AddRange(MovieJSONPropertiesHandler.GetGenres(m)));
                 Movie.AllGenres = genres.Distinct().ToList();
-                if (Movie.AllGenres.Contains("(no genres listed)"))
-                    Movie.AllGenres.Remove("(no genres listed)");
+                Movie.AllGenres.Remove("(no genres listed)");
             }
         }
 
