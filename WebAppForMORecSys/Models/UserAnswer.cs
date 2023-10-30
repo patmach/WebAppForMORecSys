@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using WebAppForMORecSys.Data;
+using WebAppForMORecSys.Loggers;
 
 namespace WebAppForMORecSys.Models
 {
@@ -95,7 +96,24 @@ namespace WebAppForMORecSys.Models
             else
                 context.Update(useranswer);
             context.SaveChanges();
+            useranswer.GetLogger().Log($"{useranswer.UserID};{useranswer.QuestionID};" +
+                $"{useranswer.Date.ToString(useranswer.GetLogger().format)};{useranswer.AnswerID.ToString() ?? ""};" +
+                $"{useranswer.Value.ToString() ?? ""};{useranswer.Text ?? ""}") ;
         }
 
+    }
+
+    public static class UserAnswerExtension
+    {
+
+        /// <summary>
+        /// For logging of every userAnswer to file
+        /// </summary>
+        private static MyFileLogger logger = new MyFileLogger("Logs/UserAnswers.txt");
+
+        /// <summary>
+        /// For logging of every act to file
+        /// </summary>
+        public static MyFileLogger GetLogger(this UserAnswer userAnswer) => logger;
     }
 }

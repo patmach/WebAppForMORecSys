@@ -183,11 +183,26 @@ namespace WebAppForMORecSys.Controllers
         /// <summary>
         /// </summary>
         /// <returns>Preview partial view for a random movie from the list of rated by user</returns>
-        public async Task<IActionResult> PreviewOfRandomRated()
+        public async Task<IActionResult> PreviewOfRandomRated(int? questionID)
         {
             User user = GetCurrentUser();
             List<Rating> ratings = await _context.Ratings.Where(r => r.UserID == user.Id).ToListAsync();
-            var randomRatedItemID = ratings[rnd.Next(ratings.Count)].ItemID;
+            int randomRatedItemID = -1;
+            if (questionID.HasValue)
+            {
+                var savedItemID = SanityCheckCache.Get(user.Id, questionID.Value);
+                if (savedItemID.HasValue) {
+                    randomRatedItemID = savedItemID.Value;
+                }
+                else {
+                    randomRatedItemID = ratings[rnd.Next(ratings.Count)].ItemID;
+                    SanityCheckCache.Add(user.Id, questionID.Value, randomRatedItemID);
+                }
+            }
+            else
+            {
+                randomRatedItemID = ratings[rnd.Next(ratings.Count)].ItemID;                
+            }
             return RedirectToAction("Preview","Movies", new { id = randomRatedItemID });
         }
 

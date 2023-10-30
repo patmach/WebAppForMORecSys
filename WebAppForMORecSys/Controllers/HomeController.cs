@@ -153,13 +153,6 @@ namespace WebAppForMORecSys.Controllers
             return PartialView(question);
         }
 
-        /// <summary>
-        /// </summary>
-        /// <returns>Preview partial view for a random movie from the list of rated by user</returns>
-        public async Task<IActionResult> PreviewOfRandomRated()
-        {
-            return RedirectToAction("PreviewOfRandomRated", SystemParameters.Controller);
-        }
 
         /// <summary>
         /// Saves user's answer to a question

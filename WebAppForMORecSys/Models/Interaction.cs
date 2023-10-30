@@ -1,7 +1,9 @@
-﻿using Microsoft.VisualBasic;
+﻿using Microsoft.Build.Logging;
+using Microsoft.VisualBasic;
 using System.ComponentModel.DataAnnotations.Schema;
 using WebAppForMORecSys.Areas.Identity.Data;
 using WebAppForMORecSys.Data;
+using WebAppForMORecSys.Loggers;
 
 namespace WebAppForMORecSys.Models
 {
@@ -61,13 +63,14 @@ namespace WebAppForMORecSys.Models
         /// <param name="userID">ID of user that interacted with item</param>
         /// <param name="typeOfInteraction">Type of interaction</param>
         /// <param name="context">Database context</param>
-        public static void Save(int itemID, int userID, TypeOfInteraction typeOfInteraction, ApplicationDbContext context)
+        public static void Save(int itemID, int userID,
+            TypeOfInteraction typeOfInteraction, ApplicationDbContext context)
         {
-            var interaction = context.Interactions.Where(i => i.ItemID == itemID && i.UserID == userID 
+            var interaction = context.Interactions.Where(i => i.ItemID == itemID && i.UserID == userID
                     && i.type == typeOfInteraction).FirstOrDefault();
             if (interaction == null)
             {
-                var newInteraction = new Interaction
+                interaction = new Interaction
                 {
                     UserID = userID,
                     ItemID = itemID,
@@ -76,7 +79,7 @@ namespace WebAppForMORecSys.Models
                     NumberOfInteractions = 1
 
                 };
-                context.Add(newInteraction);
+                context.Add(interaction);
             }
             else
             {
@@ -85,6 +88,8 @@ namespace WebAppForMORecSys.Models
                 context.Update(interaction);
             }
             context.SaveChanges();
+            interaction.GetLogger().Log($"{interaction.UserID};{interaction.ItemID};{interaction.type};" +
+                $"{interaction.Last.ToString(interaction.GetLogger().format)}");
         }
 
     }
@@ -93,5 +98,18 @@ namespace WebAppForMORecSys.Models
     {
         Click,
         Seen
+    }
+
+    public static class InteractionExtensions
+    {
+        /// <summary>
+        /// For logging of every interaction to file
+        /// </summary>
+        private static MyFileLogger logger = new MyFileLogger("Logs/Interactions.txt");
+
+        /// <summary>
+        /// For logging of every interactio to file
+        /// </summary>
+        public static MyFileLogger GetLogger(this Interaction interaction) => logger;
     }
 }

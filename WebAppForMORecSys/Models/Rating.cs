@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using System.ComponentModel.DataAnnotations.Schema;
 using WebAppForMORecSys.Areas.Identity.Data;
 using WebAppForMORecSys.Data;
+using WebAppForMORecSys.Loggers;
 using static System.Formats.Asn1.AsnWriter;
 
 namespace WebAppForMORecSys.Models
@@ -56,23 +58,23 @@ namespace WebAppForMORecSys.Models
         /// <summary>
         /// Saves new rating or updates the existing one
         /// </summary>
-        /// <param name="itemID">ID of item with which the interaction occur</param>
-        /// <param name="userID">ID of user that interacted with item</param>
-        /// <param name="typeOfInteraction">Type of interaction</param>
+        /// <param name="itemID">ID of rated item </param>
+        /// <param name="userID">ID of user that rated with item</param>
+        /// <param name="score">Score of the rating</param>
         /// <param name="context">Database context</param>
         public static void Save(int itemID, int userID, byte score, ApplicationDbContext context)
         {
             var rating = context.Ratings.Where(r => r.ItemID == itemID && r.UserID == userID).FirstOrDefault();
             if (rating == null)
             {
-                var newRating = new Rating
+                rating = new Rating
                 {
                     UserID = userID,
                     ItemID = itemID,
                     RatingScore = score,
                     Date = DateTime.Now,
                 };
-                context.Add(newRating);
+                context.Add(rating);
             }
             else
             {
@@ -81,8 +83,16 @@ namespace WebAppForMORecSys.Models
                 context.Update(rating);
             }
             context.SaveChanges();
+            rating.GetLogger().Log($"{rating.UserID};{rating.ItemID};{rating.RatingScore};" +
+                $"{rating.Date.ToString(rating.GetLogger().format)}");
         }
 
+        /// <summary>
+        /// Deletes rating
+        /// </summary>
+        /// <param name="itemID">ID of unrated item </param>
+        /// <param name="userID">ID of user that unrated with item</param>
+        /// <param name="context">Database context</param>
         public static void Remove(int itemID, int userID,ApplicationDbContext context)
         {
             var rating = context.Ratings.Where(r => r.ItemID == itemID && r.UserID == userID).FirstOrDefault();
@@ -93,5 +103,19 @@ namespace WebAppForMORecSys.Models
             }
             
         }
+    }
+
+    public static class RatingExtension 
+    { 
+
+         /// <summary>
+         /// For logging of every rating to file
+         /// </summary>
+        private static MyFileLogger logger = new MyFileLogger("Logs/Ratings.txt");
+
+        /// <summary>
+        /// For logging of every act to file
+        /// </summary>
+        public static MyFileLogger GetLogger(this Rating rating) => logger;
     }
 }

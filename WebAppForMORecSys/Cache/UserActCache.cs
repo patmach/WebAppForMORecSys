@@ -8,6 +8,7 @@ using System.Threading;
 using System.Timers;
 using System.Web.Mvc;
 using WebAppForMORecSys.Data;
+using WebAppForMORecSys.Loggers;
 using WebAppForMORecSys.Models;
 using static System.Net.WebRequestMethods;
 
@@ -62,12 +63,18 @@ namespace WebAppForMORecSys.Cache
             int id = -1;
             if (!int.TryParse(userId, out id))
                 return new List<int>();
-            List<UserAct> UserActs = context.Users.Include(u => u.UserActs).Where(u => u.Id == id).Select(u => u.UserActs)
+            List<UserAct>? UserActs = context.Users.Include(u => u.UserActs).Where(u => u.Id == id).Select(u => u.UserActs)
                 .FirstOrDefault();
             if (UserActs == null)
                 return new List<int>();
             return UserActs.Select(ua => ua.ActID).ToList();
         }
+
+        /// <summary>
+        /// For logging of every act to file
+        /// </summary>
+        private static MyFileLogger logger = new MyFileLogger("Logs/UserActs.txt");
+
 
         /// <summary>
         /// Add acts done by the user
@@ -82,6 +89,7 @@ namespace WebAppForMORecSys.Cache
             list.AddRange(actIDs);
             list = list.Distinct().ToList();
             _cache.Set(userId, list, new CacheItemPolicy { SlidingExpiration = _expiration });
+            actIDs.ForEach(actID => logger.Log($"{userId};{actID};{DateTime.Now.ToString(logger.format)}"));
         }
 
         /// <summary>
@@ -101,6 +109,7 @@ namespace WebAppForMORecSys.Cache
                 list.Add(actID);
             }
             _cache.Set(userId, list, new CacheItemPolicy { SlidingExpiration = _expiration });
+            logger.Log($"{userId};{actID};{DateTime.Now.ToString(logger.format)}");
         }
 
         /// <summary>

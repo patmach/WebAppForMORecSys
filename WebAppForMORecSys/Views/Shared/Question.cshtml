@@ -1,4 +1,5 @@
 ﻿@model Question
+@using WebAppForMORecSys.Settings
 @{
     bool userAnswered = Model.UserAnswers.Count > 0;
     string textanswer = userAnswered ? Model.UserAnswers[0].Text ?? "" : "";
@@ -10,7 +11,7 @@
 </h4>
     @if (Model.Text.Contains("Do you remember seeing this movie?"))
     {
-        <span id="randompreviewofrated" style="float:right" ="getRandomPreview('@Url.Action("PreviewOfRandomRated", "Home")')">
+        <span id="randompreviewofrated" >
         </span>
     }
 
@@ -49,4 +50,10 @@
             }
         }
     }
+
+<script>
+    $("#SomeDiv").ready( function () {
+        getRandomPreview('@Url.Action("PreviewOfRandomRated", SystemParameters.Controller, new {questionID = Model.Id})');
+    });
+</script>
 

@@ -1,5 +1,6 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
+using Microsoft.Build.Logging;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using WebAppForMORecSys.Data;
@@ -21,12 +22,15 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
             this.filter = filter;
         }
 
+        public static FileLogger Logger = new FileLogger();
+
         /// <summary>
         /// Print error to log file
         /// </summary>
         /// <param name="e">Exception that occured</param>
         static void LogError(Exception e)
         {
+            
             File.WriteAllText("movielensloader_log.txt", DateTime.Now.ToString() + e.Message + "\nInner exception:"
                 + (e.InnerException?.Message ?? "") + "\n\nST:"
                 + e.StackTrace + "\n\n Inner ST:" + (e.InnerException?.StackTrace ?? ""));
