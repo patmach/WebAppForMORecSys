@@ -72,7 +72,7 @@ namespace WebAppForMORecSys.Controllers
         {
             MainViewModel viewModel = new MainViewModel();
             var rs = SystemParameters.GetRecommenderSystem(_context);
-            var metrics = await (_context.Metrics.Include(m=> m.metricVariants).Where(m => m.RecommenderSystemID == rs.Id)
+            var metrics = await (_context.Metrics.Include(m=> m.MetricVariants).Where(m => m.RecommenderSystemID == rs.Id)
                 .ToListAsync());
             viewModel.User = GetCurrentUser();
             var blockedItems = BlockedItemsCache.GetBlockedItemIdsForUser(viewModel.User.Id.ToString(), _context);
@@ -176,7 +176,7 @@ namespace WebAppForMORecSys.Controllers
         {
             User user = GetCurrentUser();
             RecommenderSystem rs = SystemParameters.GetRecommenderSystem(_context);
-            List<Metric> metrics = await _context.Metrics.Include(m => m.metricVariants)
+            List<Metric> metrics = await _context.Metrics.Include(m => m.MetricVariants)
                 .Where(m => m.RecommenderSystemID == rs.Id).ToListAsync();
             var dict = metrics.Zip(new List<int>(new int[metrics.Count]), (k, v) => new { k, v })
               .ToDictionary(x => x.k, x => x.v); //Dictionary only created for usage of existing viewmodel MetricsFilterViewModel

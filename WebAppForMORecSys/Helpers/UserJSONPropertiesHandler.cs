@@ -588,8 +588,8 @@ namespace WebAppForMORecSys.Helpers
         public static List<int> GetRatedAndSeenItems(this User user, ApplicationDbContext context)
         {
             var rated = context.Ratings.Where(r => r.UserID == user.Id).Select(r => r.ItemID).ToList();
-            var seen = context.Interactions.Where(i => (i.type == TypeOfInteraction.Click && i.Last > DateTime.Now.AddHours(-1))
-            || (i.type == TypeOfInteraction.Seen && (i.Last > DateTime.Now.AddMinutes(-10) || i.NumberOfInteractions >= 3)))
+            var seen = context.Interactions.Where(i => (i.type == TypeOfInteraction.Click && i.Last > DateTime.Now.AddMinutes(-15))
+            || (i.type == TypeOfInteraction.Seen && (i.Last > DateTime.Now.AddMinutes(-5) || i.NumberOfInteractions >= 3)))
                 .Select(r => r.ItemID).ToList();
             return rated.Union(seen).ToList();
         }
@@ -655,28 +655,27 @@ namespace WebAppForMORecSys.Helpers
             return variants;
         }
 
-        /// <summary>
-        /// Instance of random, used by SetRandomSettingsForNewUser
-        /// </summary>
-        static Random rnd = new Random();
+        
 
         /// <summary>
         /// Chooses random values od configurable user settings
         /// </summary>
         /// <param name="user">Newly created user</param>
-        public static void SetRandomSettingsForNewUser(this User user, ApplicationDbContext context)
+        public static void SetRandomSettingsForNewUser(this User user, List<List<object>> latinSquares,
+            ApplicationDbContext context)
         {
-            int addBlockRuleView = rnd.Next(Enum.GetValues(typeof(AddBlockRuleView)).Length);
+            var selectedRow = latinSquares[user.Id % latinSquares.Count];
+            int addBlockRuleView = (int)selectedRow[0];
             user.SetAddBlockRuleView(addBlockRuleView);
-            int explanationView = rnd.Next(Enum.GetValues(typeof(ExplanationView)).Length);
+            int explanationView = (int)selectedRow[1];
             user.SetExplanationView(explanationView);
-            int metricContributionScoreView = rnd.Next(Enum.GetValues(typeof(MetricContributionScoreView)).Length);
+            int metricContributionScoreView = (int)selectedRow[2];
             user.SetMetricContributionScoreView(metricContributionScoreView);
-            int previewExplanationView = rnd.Next(Enum.GetValues(typeof(PreviewExplanationView)).Length);
+            int previewExplanationView = (int)selectedRow[3];
             user.SetPreviewExplanationView(previewExplanationView);
-            int metricsView = rnd.Next(Enum.GetValues(typeof(MetricsView)).Length);
+            int metricsView = (int)selectedRow[4];
             user.SetMetricsView(metricsView);
-            context.Add(user);
+            context.Update(user);
             context.SaveChanges();
             UserActCache.AddActs(user.Id.ToString(),
                 new List<string>

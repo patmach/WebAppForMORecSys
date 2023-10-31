@@ -39,18 +39,23 @@ namespace WebAppForMORecSys.Models
         public string DefaultExplanation { get; set; }
 
         /// <summary>
+        /// Default explanation why item is not contributing well to the metric
+        /// </summary>
+        public string DefaultNegativeExplanation { get; set; }
+
+        /// <summary>
         /// Recommender system that's using the metric
         /// </summary>
         public RecommenderSystem RecommenderSystem { get; set; }
 
-        public List<MetricVariant> metricVariants { get; set; }
+        public List<MetricVariant> MetricVariants { get; set; }
         
         public Metric()
         {
 
         }
 
-        public bool HasVariants() => (metricVariants != null) && (metricVariants.Count > 0);
+        public bool HasVariants() => (MetricVariants != null) && (MetricVariants.Count > 0);
         
     }
 }

@@ -53,13 +53,39 @@ namespace WebAppForMORecSys.Controllers
             User user = new User { UserName = userName };
             _context.Add(user);
             _context.SaveChanges();
-            user.SetRandomSettingsForNewUser(_context);
-            UserMetricVariants.SetRandomMetricVariants(user, _context);
+            var latinSquares = LatinSquaresForNewUser.GetLatinSquaresForFirstSetting(_context);
+            user.SetRandomSettingsForNewUser(latinSquares, _context);
+            UserMetricVariants.SetRandomMetricVariants(user, latinSquares, _context);
+            _context.Update(user);
+            _context.SaveChanges();
             if (returnUrl != null) 
                 return LocalRedirect(returnUrl);//TODO CHANGE TO MANUAL
             return Ok();
         }
+        /*
+        private User GetCurrentUser()
+        {
+            //TODO DELETE
+            var account = _userManager.GetUserAsync(User).Result;
+            User user = null;
+            if (account != null)
+            {
+                user = _context.Users.Where(u => u.UserName == account.UserName).FirstOrDefault();
+            }
+            return user;
+        }
 
+
+        public IActionResult Debug()
+        {
+            //TODO DELETE
+            User user = GetCurrentUser();
+            var latinSquares = LatinSquaresForNewUser.GetLatinSquaresForFirstSetting(_context);
+            user.SetRandomSettingsForNewUser(latinSquares, _context);
+            UserMetricVariants.SetRandomMetricVariants(user, latinSquares, _context);
+            return Ok();
+        }
+        */
 
         /// <summary>
         /// Checks if username is not already taken.

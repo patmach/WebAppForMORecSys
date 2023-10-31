@@ -40,9 +40,14 @@ namespace WebAppForMORecSys.Models
         public string Description { get; set; }
 
         /// <summary>
-        /// Explanation how item is contributing to the metric variant
+        /// Explanation on why item is contributing to the metric variant
         /// </summary>
         public string? Explanation { get; set; }
+
+        /// <summary>
+        /// Default explanation on why item is not contributing well to the metric
+        /// </summary>
+        public string NegativeExplanation { get; set; }
 
         /// <summary>
         /// Metric that variant belongs to

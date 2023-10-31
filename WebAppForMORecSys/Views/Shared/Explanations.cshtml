@@ -58,8 +58,19 @@
                     </p>
                 }
                 <p style="color: @Model.User.GetMetricIDsToColors()[keys[i]];">
-                    @(Model.UsedVariants?.Where(mv => (mv !=null) && (mv?.MetricID == @orderedMetrics[i].Id)).FirstOrDefault()?.Explanation
+                    @{
+                        var currentVariant = Model.UsedVariants?.Where(mv => (mv != null) && (mv?.MetricID == @orderedMetrics[i].Id)).FirstOrDefault();
+                    }
+                    @if (values[i] >= 50) {
+                        @(currentVariant?.Explanation
                         ?? orderedMetrics[i].DefaultExplanation)
+                    }
+                    else {
+                        @(currentVariant?.NegativeExplanation
+                            ?? orderedMetrics[i].DefaultNegativeExplanation
+                            ?? currentVariant?.Explanation
+                            ?? orderedMetrics[i].DefaultExplanation)
+                    }
                               
                 @if (orderedMetrics[i].Name == "Calibration")
                 {

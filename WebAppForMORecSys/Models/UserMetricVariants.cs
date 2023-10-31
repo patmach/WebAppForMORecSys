@@ -61,33 +61,28 @@ namespace WebAppForMORecSys.Models
             context.SaveChanges();
         }
 
-        /// <summary>
-        /// Instance of random, used by SetRandomMetricVariants
-        /// </summary>
-        static Random rnd = new Random();
-
+        
         /// <summary>
         /// Sets random metric variants for user 
         /// </summary>
         /// <param name="user">Newly created user</param>
         /// <param name="context">Database context</param>
-        public static void SetRandomMetricVariants(User user, ApplicationDbContext context)
+        public static void SetRandomMetricVariants(User user, List<List<object>> latinSquares, 
+            ApplicationDbContext context)
         {
-
-            var metricsWithVariants = context.Metrics.Include(m => m.metricVariants).Where(m => m.metricVariants.Count > 0).ToList();
+            var selectedRow = latinSquares[user.Id % latinSquares.Count];
+            var metricsWithVariants = context.Metrics.Include(m => m.MetricVariants)
+                .Where(m => m.MetricVariants.Count > 0).OrderBy(m => m.Id);
             List<string> selectedVariantsCodes = new List<string>();
+            int count = -1;
             foreach (var metric in metricsWithVariants)
             {
-                MetricVariant mv = metric.metricVariants[rnd.Next(metricsWithVariants.Count)];
-                var newUmv = new UserMetricVariants
-                {
-                    UserID = user.Id,
-                    MetricVariantID = mv.Id
-                };
-                context.Add(newUmv);
+                count++;
+                var code = (string)selectedRow[5 + count];
+                MetricVariant mv = metric.MetricVariants.Where(mv => mv.Code == code).First();
+                Save(user.Id, mv, context);
                 selectedVariantsCodes.Add(mv.Code);
             }
-            context.SaveChanges();
             UserActCache.AddActs(user.Id.ToString(), selectedVariantsCodes, context);
         }
     }

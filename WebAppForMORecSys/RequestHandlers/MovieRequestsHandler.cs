@@ -72,7 +72,7 @@ namespace WebAppForMORecSys.RequestHandlers
                
             }
             RecommenderSystem rs = SystemParameters.GetRecommenderSystem(_context);
-            List<Metric> metrics = await _context.Metrics.Include(m => m.metricVariants)
+            List<Metric> metrics = await _context.Metrics.Include(m => m.MetricVariants)
                 .Where(m => m.RecommenderSystemID == rs.Id).ToListAsync();
             SetMainViewModel(viewModel, user, metrics, metricsimportance, search, typeOfSearch, director, actor,
                 releasedatefrom, releasedateto, genres);
