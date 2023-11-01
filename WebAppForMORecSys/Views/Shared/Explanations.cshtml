@@ -61,15 +61,25 @@
                     @{
                         var currentVariant = Model.UsedVariants?.Where(mv => (mv != null) && (mv?.MetricID == @orderedMetrics[i].Id)).FirstOrDefault();
                     }
-                    @if (values[i] >= 50) {
-                        @(currentVariant?.Explanation
-                        ?? orderedMetrics[i].DefaultExplanation)
+                    @if (values[i] >= 75) 
+                    {
+                        @(currentVariant?.VeryPositiveExplanation
+                            ?? orderedMetrics[i].DefaultVeryPositiveExplanation)
                     }
-                    else {
-                        @(currentVariant?.NegativeExplanation
-                            ?? orderedMetrics[i].DefaultNegativeExplanation
-                            ?? currentVariant?.Explanation
-                            ?? orderedMetrics[i].DefaultExplanation)
+                    else if (values[i] >= 50)
+                    {
+                        @(currentVariant?.RatherPositiveExplanation
+                                ?? orderedMetrics[i].DefaultRatherPositiveExplanation)
+                    }
+                    else if (values[i]>= 25)
+                    {
+                        @(currentVariant?.RatherNegativeExplanation
+                            ?? orderedMetrics[i].DefaultRatherNegativeExplanation)
+                    }
+                    else
+                    {
+                        @(currentVariant?.VeryNegativeExplanation
+                            ?? orderedMetrics[i].DefaultVeryNegativeExplanation)
                     }
                               
                 @if (orderedMetrics[i].Name == "Calibration")

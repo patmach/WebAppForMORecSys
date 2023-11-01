@@ -12,7 +12,7 @@ namespace WebAppForMORecSys.Models.ViewModels
         /// <summary>
         /// IDs of questions user can answer
         /// </summary>
-        public List<int> QuestionIDs { get; set; }
+        public List<Question> Questions { get; set; }
 
         /// <summary>
         /// User for whom the page is loaded
@@ -32,7 +32,7 @@ namespace WebAppForMORecSys.Models.ViewModels
         /// <summary>
         /// True if user has done all acts that are needed for participating in user study
         /// </summary>
-        public int LastQuestionID { get; set; } = -1;
+        public int LastSectionID { get; set; } = -1;
 
         /// <summary>
         /// Message to be shown in alert window

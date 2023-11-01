@@ -165,7 +165,7 @@ namespace WebAppForMORecSys.Controllers
         {
             User user = GetCurrentUser();
             List<Rating> ratings = await _context.Ratings.Where(r=> r.UserID == user.Id).ToListAsync();            
-            Interaction.Save(id, user.Id, TypeOfInteraction.Click, _context);
+            SaveMethods.SaveInteraction(id, user.Id, TypeOfInteraction.Click, _context);
             UserActCache.AddAct(user.Id.ToString(), "DetailsClicked", _context);
             return PartialView(new PreviewDetailViewModel(
                 _context.Items.First(x => x.Id == id),
@@ -285,8 +285,16 @@ namespace WebAppForMORecSys.Controllers
                     genresProb[i] /= sum;
                 }
             }
+            List<int> indicesOfTop = new List<int>();
+            var listGenresProb = genresProb.ToList();
+            for (int i = 0; i < 4; i++)
+            {
+                var index = listGenresProb.IndexOf(listGenresProb.Max());
+                listGenresProb[index] = -1;
+                indicesOfTop.Add(index);
+            }
             StringBuilder sb = new StringBuilder("Your profile ratio - (");
-            for (int i = 0; i < genres.Count; i++)
+            foreach(int i in indicesOfTop)
             {
                 if (genresProb[i] > 0)
                 {
@@ -296,8 +304,7 @@ namespace WebAppForMORecSys.Controllers
                     sb.Append(" %, ");
                 }
             }
-            sb.Remove(sb.Length - 2, 2);
-            sb.Append(")");
+            sb.Append("...)");
             return sb.ToString();
 
         }
@@ -344,6 +351,7 @@ namespace WebAppForMORecSys.Controllers
             _context.Update(user);
             _context.SaveChanges();
             UserActCache.AddAct(user.Id.ToString(), "PropertyBlock", _context);
+            user.LogBlock("director", director);
             return Results.NoContent();
         }
 
@@ -361,6 +369,7 @@ namespace WebAppForMORecSys.Controllers
             _context.Update(user);
             _context.SaveChanges();
             UserActCache.AddAct(user.Id.ToString(), "PropertyBlock", _context);
+            user.LogBlock("actor", actor);
             return Results.NoContent();
         }
 
@@ -378,6 +387,7 @@ namespace WebAppForMORecSys.Controllers
             _context.Update(user);
             _context.SaveChanges();
             UserActCache.AddAct(user.Id.ToString(), "PropertyBlock", _context);
+            user.LogBlock("genre", genre);
             return Results.NoContent();
         }
 
@@ -392,6 +402,7 @@ namespace WebAppForMORecSys.Controllers
             user.RemoveDirectorFromBlackList(director);
             _context.Update(user);
             _context.SaveChanges();
+            user.LogUnblock("director", director);
             return Results.NoContent();
         }
 
@@ -406,6 +417,7 @@ namespace WebAppForMORecSys.Controllers
             user.RemoveActorFromBlackList(actor);
             _context.Update(user);
             _context.SaveChanges();
+            user.LogUnblock("actor", actor);
             return Results.NoContent();
         }
 
@@ -420,6 +432,7 @@ namespace WebAppForMORecSys.Controllers
             user.RemoveGenreFromBlackList(genre);
             _context.Update(user);
             _context.SaveChanges();
+            user.LogUnblock("genre", genre);
             return Results.NoContent();
         }
 

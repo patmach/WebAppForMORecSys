@@ -78,7 +78,7 @@ namespace WebAppForMORecSys.Models
             foreach (var metric in metricsWithVariants)
             {
                 count++;
-                var code = (string)selectedRow[5 + count];
+                var code = (string)selectedRow[count];
                 MetricVariant mv = metric.MetricVariants.Where(mv => mv.Code == code).First();
                 Save(user.Id, mv, context);
                 selectedVariantsCodes.Add(mv.Code);

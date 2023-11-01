@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebAppForMORecSys.Data;
 
@@ -11,9 +12,11 @@ using WebAppForMORecSys.Data;
 namespace WebAppForMORecSys.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231031220713_MorePolesExplanations")]
+    partial class MorePolesExplanations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -342,12 +345,6 @@ namespace WebAppForMORecSys.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("DefaultRatherNegativeExplanation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DefaultRatherPositiveExplanation")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("DefaultVeryNegativeExplanation")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -399,12 +396,6 @@ namespace WebAppForMORecSys.Migrations
                     b.Property<int>("MetricID")
                         .HasColumnType("int");
 
-                    b.Property<string>("RatherNegativeExplanation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RatherPositiveExplanation")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("VeryNegativeExplanation")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -430,16 +421,11 @@ namespace WebAppForMORecSys.Migrations
                     b.Property<int>("AnswerType")
                         .HasColumnType("int");
 
-                    b.Property<int>("QuestionSectionID")
-                        .HasColumnType("int");
-
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("QuestionSectionID");
 
                     b.ToTable("Questions");
                 });
@@ -465,23 +451,6 @@ namespace WebAppForMORecSys.Migrations
                     b.HasIndex("QuestionID");
 
                     b.ToTable("QuestionsActs");
-                });
-
-            modelBuilder.Entity("WebAppForMORecSys.Models.QuestionSection", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("QuestionSections");
                 });
 
             modelBuilder.Entity("WebAppForMORecSys.Models.Rating", b =>
@@ -754,17 +723,6 @@ namespace WebAppForMORecSys.Migrations
                     b.Navigation("Metric");
                 });
 
-            modelBuilder.Entity("WebAppForMORecSys.Models.Question", b =>
-                {
-                    b.HasOne("WebAppForMORecSys.Models.QuestionSection", "QuestionSection")
-                        .WithMany("Questions")
-                        .HasForeignKey("QuestionSectionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("QuestionSection");
-                });
-
             modelBuilder.Entity("WebAppForMORecSys.Models.QuestionAct", b =>
                 {
                     b.HasOne("WebAppForMORecSys.Models.Act", "Act")
@@ -902,11 +860,6 @@ namespace WebAppForMORecSys.Migrations
                     b.Navigation("QuestionsActs");
 
                     b.Navigation("UserAnswers");
-                });
-
-            modelBuilder.Entity("WebAppForMORecSys.Models.QuestionSection", b =>
-                {
-                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("WebAppForMORecSys.Models.RecommenderSystem", b =>

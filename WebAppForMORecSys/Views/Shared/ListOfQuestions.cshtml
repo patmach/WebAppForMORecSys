@@ -1,13 +1,23 @@
 ﻿@model List<Question>
 <br />
-@foreach (var question in Model)
+@{
+    var sections = Model.Select(q => q.QuestionSection).Distinct().ToList();
+    var sectionIDs = sections.Select(s => s.Id).Distinct().ToList();
+    var questions = Model.OrderBy(q => sectionIDs.IndexOf(q.QuestionSectionID)).ToList();
+    int lastSectionID = -1;
+}
+@foreach (var question in questions)
+{
+    if (lastSectionID != question.QuestionSectionID)
     {
-        
-        <div>
-            @await Html.PartialAsync("../Shared/Question",question)
-        </div>
-        <br />
-        <br />
-        <br />
+        lastSectionID = question.QuestionSectionID;
+        <h3>@("Section - " + sections.Where(s=> s.Id == lastSectionID).FirstOrDefault()?.Name ?? "")</h3>
     }
+    <div>
+        @await Html.PartialAsync("../Shared/Question",question)
+    </div>
+    <br />
+    <br />
+    <br />
+}
 

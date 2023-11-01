@@ -53,7 +53,8 @@
         <div class="form-floating mb-3">
             @await Html.PartialAsync("../Shared/Search")
 
-            @if (Model.UserRatings.Where(r => (r.RatingScore > 5)).Count() >= 10){
+            @if (Model.UserRatings.Where(r => (r.RatingScore > 5)).Count() >= MinimalPositiveRatings)
+            {
                 @await Html.PartialAsync("../Shared/MetricsFilter",  
                     new MetricsFilterViewModel{Metrics= Model.Metrics, User= Model.User})
             }
@@ -75,7 +76,7 @@
         <br />
         <div class="card bg-warning" id="loadmore_lbl" style="display:none">
             <div class="card-body">
-                @if (Model.UserRatings.Where(r => (r.RatingScore > 5)).Count() >= 10)
+                @if (Model.UserRatings.Where(r => (r.RatingScore > 5)).Count() >= MinimalPositiveRatings)
                 {
                     <h5>Get different recommendations by tweaking the objectives and clicking the "RECOMMEND" or "SEARCH" button on top of the page.</h5>
                 }
@@ -133,7 +134,7 @@
     });
 
     window.onscroll = function(){
-        if (@((Model.UserRatings.Where(r => (r.RatingScore > 5)).Count() >= 10) ? "true" : "false")) {
+        if (@((Model.UserRatings.Where(r => (r.RatingScore > 5)).Count() >= MinimalPositiveRatings) ? "true" : "false")) {
             SaveSeenInteractions();
         } 
     };
@@ -160,14 +161,6 @@
         }
     }
 
-    /* Checking if the whole element can be seen by user*/
-    function isElementInView(element) {
-        var pageTop = $(window).scrollTop();
-        var pageBottom = pageTop + $(window).height();
-        var elementTop = $(element).offset().top;
-        var elementBottom = elementTop + $(element).height();        
-        return ((pageTop < elementTop) && (pageBottom > elementBottom));        
-    }
 
     var loadingmore = false;
 
@@ -204,7 +197,7 @@
                         }
                         if (((IDsDisplayed.length == IDsCurrentlyDisplayed.length)
                             || (IDsDisplayed.length % @LengthOfRecommendationsList != 0))//The next call wouldn't return any new recommendations
-                            || ((@((Model.UserRatings.Where(r => (r.RatingScore > 5)).Count() >= 10) ? "true" : "false"))
+                            || ((@((Model.UserRatings.Where(r => (r.RatingScore > 5)).Count() >= MinimalPositiveRatings) ? "true" : "false"))
                                 && (((IDsDisplayed.length >= @(LengthOfRecommendationsList * 4)))))) // Recommender system is called and @(LengthOfRecommendationsList * 4) is maximum length of recommendations list used
                         {
                             $('#loadmore_btn')[0].style.display = 'none';

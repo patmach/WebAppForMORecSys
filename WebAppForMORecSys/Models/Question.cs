@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Settings;
 using static System.Net.Mime.MediaTypeNames;
@@ -24,6 +25,12 @@ namespace WebAppForMORecSys.Models
         public string Text { get; set; }
 
         /// <summary>
+        /// ID of section that question belongs to
+        /// </summary>
+        [ForeignKey("QuestionSection")]
+        public int QuestionSectionID { get; set; }
+
+        /// <summary>
         /// Type of the answer
         /// </summary>
         [Required]
@@ -43,6 +50,12 @@ namespace WebAppForMORecSys.Models
         /// Users answers on this question
         /// </summary>
         public List<UserAnswer> UserAnswers { get; set; }
+
+
+        /// <summary>
+        /// Section that question belongs to
+        /// </summary>
+        public QuestionSection QuestionSection { get; set; }
 
     }
 

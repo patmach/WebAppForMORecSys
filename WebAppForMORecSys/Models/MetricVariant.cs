@@ -40,20 +40,33 @@ namespace WebAppForMORecSys.Models
         public string Description { get; set; }
 
         /// <summary>
-        /// Explanation on why item is contributing to the metric variant
+        /// Explanation on why item is contributing very well to the metric variant
         /// </summary>
-        public string? Explanation { get; set; }
+        public string? VeryPositiveExplanation { get; set; }
+
+        /// <summary>
+        /// Explanation on why item is contributing well to the metric variant
+        /// </summary>
+        public string? RatherPositiveExplanation { get; set; }
+
+        /// <summary>
+        /// Explanation on why item is contributing well to the metric variant
+        /// </summary>
+        public string? RatherNegativeExplanation { get; set; }
 
         /// <summary>
         /// Default explanation on why item is not contributing well to the metric
         /// </summary>
-        public string NegativeExplanation { get; set; }
+        public string VeryNegativeExplanation { get; set; }
 
         /// <summary>
         /// Metric that variant belongs to
         /// </summary>
         public Metric Metric { get; set; }
 
+        /// <summary>
+        /// User setting of metric variants
+        /// </summary>
         public List<UserMetricVariants> UserMetricVariantsList { get; set; }
 
         public MetricVariant()

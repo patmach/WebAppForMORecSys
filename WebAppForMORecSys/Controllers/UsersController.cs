@@ -54,7 +54,7 @@ namespace WebAppForMORecSys.Controllers
             _context.Add(user);
             _context.SaveChanges();
             var latinSquares = LatinSquaresForNewUser.GetLatinSquaresForFirstSetting(_context);
-            user.SetRandomSettingsForNewUser(latinSquares, _context);
+            user.SetRandomSettingsForNewUser(_context);
             UserMetricVariants.SetRandomMetricVariants(user, latinSquares, _context);
             _context.Update(user);
             _context.SaveChanges();

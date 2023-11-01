@@ -92,13 +92,13 @@ namespace WebAppForMORecSys.Controllers
         {
             var user = GetCurrentUser();
             var actIDsDoneByUser = UserActCache.GetActs(user.Id.ToString(), _context);
-            var questions = _context.Questions.Include(q=> q.QuestionsActs)
+            var questions = _context.Questions.Include(q=> q.QuestionsActs).Include(q => q.QuestionSection)
                 .Where(q=> q.QuestionsActs.Select(qa=> qa.ActID).All(actid => actIDsDoneByUser.Contains(actid)));
             FormularViewModel viewModel = new FormularViewModel
             {
                 CurrentUser = user,
-                QuestionIDs = await questions.Select(q => q.Id).ToListAsync(),
-                LastQuestionID = user.GetLastQuestionID()
+                Questions = await questions.ToListAsync(),
+                LastSectionID = user.GetLastSectionID()
             };
             viewModel.IsUserStudyAllowed(user, _context);
             return View(viewModel);
@@ -108,13 +108,14 @@ namespace WebAppForMORecSys.Controllers
         /// Choose question that are should be part of the list and returns partial view with these questions
         /// </summary>
         /// <param name="onlyNotAnswered">If set only questions user can answer and haven't yet answered are displayed.</param>
-        /// <param name="specificIDs">If set only questions with these IDs user can answer are displayed.</param>
+        /// <param name="specificIDs">If set only questions with these IDs that user can answer are displayed.</param>
+        /// <param name="sectionID">If set only questions from this section that user can answer are displayed.</param>
         /// <returns>Partial view with list of questions</returns>
-        public async Task<IActionResult> ListOfQuestions(bool onlyNotAnswered, int[]? specificIDs)
+        public async Task<IActionResult> ListOfQuestions(bool onlyNotAnswered, int[]? specificIDs, int? sectionID)
         {
             var user = GetCurrentUser();
             var actIDsDoneByUser = UserActCache.GetActs(user.Id.ToString(), _context);
-            var questions = _context.Questions.Include(q => q.QuestionsActs).Include(q => q.Answers)
+            var questions = _context.Questions.Include(q => q.QuestionsActs).Include(q => q.Answers).Include(q => q.QuestionSection)
                 .Where(q => q.QuestionsActs.Select(qa => qa.ActID).All(actid => actIDsDoneByUser.Contains(actid)));
             if ((specificIDs != null) && (specificIDs.Length > 0))
             {
@@ -124,14 +125,19 @@ namespace WebAppForMORecSys.Controllers
             {
                 var answered = _context.UserAnswers.Where(ua => (ua.UserID == user.Id)).Select(ua => ua.QuestionID);
                 questions = questions.Where(q => !answered.Contains(q.Id));
+                user.SetLastSectionID(int.MaxValue);
             }
-            
+            if (sectionID.HasValue)
+            {
+                questions = questions.Where(q => q.QuestionSectionID == sectionID.Value);
+                user.SetLastSectionID(sectionID.Value);
+            }            
             var questionList = questions.ToList();
             questionList.ForEach(q => {
                 q.UserAnswers = _context.UserAnswers.Where(ua => (ua.UserID == user.Id)
                                         && (ua.QuestionID == q.Id)).ToList();
             });
-            user.SetLastQuestionID(questionList.LastOrDefault()?.Id ?? int.MaxValue);
+            
             _context.Update(user);
             _context.SaveChanges();
             return PartialView(questionList);
@@ -147,7 +153,6 @@ namespace WebAppForMORecSys.Controllers
             Question question = _context.Questions.Include(q => q.Answers).Where(q => q.Id == id).FirstOrDefault();
             question.UserAnswers = _context.UserAnswers.Where(ua => (ua.UserID == user.Id)
                                         && (ua.QuestionID == question.Id)).ToList();
-            user.SetLastQuestionID(question.Id);
             _context.Update(user);
             _context.SaveChanges();
             return PartialView(question);
@@ -165,7 +170,7 @@ namespace WebAppForMORecSys.Controllers
         public async Task<IResult> SaveAnswer(int questionID, int? answerID, int? value, string? text)
         {
             var user = GetCurrentUser();
-            UserAnswer.Save(user, questionID, answerID, value, text, _context);
+            SaveMethods.SaveUserAnswer(user, questionID, answerID, value, text, _context);
             return Results.NoContent();
         }
 
@@ -348,6 +353,7 @@ namespace WebAppForMORecSys.Controllers
             user.SetColors(metriccolor);
             _context.Update(user);
             _context.SaveChanges();
+            AddAct("ColoursChanged");
             return RedirectToAction("AppSettings");
         }
 
@@ -374,10 +380,10 @@ namespace WebAppForMORecSys.Controllers
         public IResult Rate(int id, byte score)
         {
             User user = GetCurrentUser();
-            Rating.Save(id, user.Id, score, _context);
+            SaveMethods.SaveRating(id, user.Id, score, _context);
             int ratingsCount = _context.Ratings.Where(r => (r.UserID == user.Id) && (r.RatingScore > 5)).Count();
-            if (ratingsCount == 10)
-                return Results.Redirect("/Home/Index");
+            if (ratingsCount == SystemParameters.MinimalPositiveRatings)
+                return Results.Content("MinimalPositiveRatingsDone");
             return Results.NoContent();
         }
 
@@ -389,7 +395,7 @@ namespace WebAppForMORecSys.Controllers
         public IResult Unrate(int id)
         {
             User user = GetCurrentUser();
-            Rating.Remove(id, user.Id, _context);
+            SaveMethods.RemoveRating(id, user.Id, _context);
             return Results.NoContent();
         }
 
@@ -402,11 +408,7 @@ namespace WebAppForMORecSys.Controllers
         public IResult SetInteraction(int id, TypeOfInteraction type)
         {
             User user = GetCurrentUser();
-            if (user == null)
-            {
-                return Results.Unauthorized();
-            }
-            Interaction.Save(id, user.Id, type, _context);
+            SaveMethods.SaveInteraction(id, user.Id, type, _context);
             return Results.NoContent();
         }
 
@@ -420,14 +422,11 @@ namespace WebAppForMORecSys.Controllers
             if (_context.Items.Where(m => m.Id == id).Count() == 0)
                 return Results.NoContent();
             User user = GetCurrentUser();
-            if (user == null)
-            {
-                return Results.Unauthorized();
-            }
             user.AddItemToBlackList(id);
             _context.Update(user);
             _context.SaveChanges();
             AddAct("MovieBlock");
+            user.LogBlock("id", id.ToString());
             return Results.NoContent();
         }
 
@@ -439,13 +438,10 @@ namespace WebAppForMORecSys.Controllers
         public IResult Show(int id)
         {
             User user = GetCurrentUser();
-            if (user == null)
-            {
-                return Results.Unauthorized();
-            }
             user.RemoveItemFromBlackList(id);
             _context.Update(user);
             _context.SaveChanges();
+            user.LogUnblock("id", id.ToString());
             return Results.NoContent();
         }
 

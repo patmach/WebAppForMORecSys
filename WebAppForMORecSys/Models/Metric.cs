@@ -36,12 +36,22 @@ namespace WebAppForMORecSys.Models
         /// <summary>
         /// Default explanation why item is contributing to the metric
         /// </summary>
-        public string DefaultExplanation { get; set; }
+        public string DefaultVeryPositiveExplanation { get; set; }
+
+        /// <summary>
+        /// Explanation on why item is contributing well to the metric variant
+        /// </summary>
+        public string? DefaultRatherPositiveExplanation { get; set; }
+
+        /// <summary>
+        /// Explanation on why item is contributing well to the metric variant
+        /// </summary>
+        public string? DefaultRatherNegativeExplanation { get; set; }
 
         /// <summary>
         /// Default explanation why item is not contributing well to the metric
         /// </summary>
-        public string DefaultNegativeExplanation { get; set; }
+        public string DefaultVeryNegativeExplanation { get; set; }
 
         /// <summary>
         /// Recommender system that's using the metric

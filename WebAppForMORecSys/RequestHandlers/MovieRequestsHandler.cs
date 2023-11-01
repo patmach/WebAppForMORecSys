@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IO;
 using System.Linq;
 using System.Web.Razor.Parser.SyntaxTree;
+using System.Xml.Linq;
 using WebAppForMORecSys.Cache;
 using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Helpers;
@@ -79,14 +80,14 @@ namespace WebAppForMORecSys.RequestHandlers
             IQueryable<Item> whitelist = Movie.GetPossibleItems(_context.Items, user, search, director, actor, genres, typeOfSearch, releasedateto, releasedatefrom);
             List<int> whitelistIDs = whitelist == null ? new List<int>() : await whitelist.Select(item => item.Id).ToListAsync();
             var positivelyRatedCount = viewModel.UserRatings.Where(r => r.RatingScore > 5).Count();
-            if (positivelyRatedCount < 10)  
-                viewModel.Info = $"Please rate positively atleast another {10 - positivelyRatedCount} movies you like so the recommender system can work.\n" +
+            if (positivelyRatedCount < SystemParameters.MinimalPositiveRatings)  
+                viewModel.Info = $"Please rate positively atleast another {SystemParameters.MinimalPositiveRatings - positivelyRatedCount} movies you like so the recommender system can work.\n" +
                     "More ratings make recommmendations better.\n" +
                     $"You can use search or filter for finding your favourite movies.\n\n" +
                     $"The database contains selected movies from 1990-2019.";
             if (ReturnSearched(viewModel, whitelistIDs, currentList, whitelist, out viewModel))
                 return viewModel;    
-            if (positivelyRatedCount < 10)
+            if (positivelyRatedCount < SystemParameters.MinimalPositiveRatings)
             {
                 return ReturnNonPersonalized(viewModel, whitelistIDs, whitelist, currentList.ToList(), positivelyRatedCount);
             }

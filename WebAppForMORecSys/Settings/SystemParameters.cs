@@ -21,6 +21,11 @@ namespace WebAppForMORecSys.Settings
         public static int LengthOfRecommendationsList { get; set; } = 15;
 
         /// <summary>
+        /// Minimal ratings before recommender starts working
+        /// </summary>
+        public static int MinimalPositiveRatings { get; set; } = 3;
+
+        /// <summary>
         /// Displayed name of web app
         /// </summary>
         public static string Name { get => Controller; }

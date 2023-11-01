@@ -156,6 +156,32 @@ function show_new_rating_value(newValue, itemId) {
     }
 }
 
+function rate(newValue, itemId, url) {
+    $.ajax({
+        url: url,
+        cache: false,
+        success: function (data) {
+            if (data == 'MinimalPositiveRatingsDone') {
+                let message = 'You have given the minimum required number of positive ratings.' +
+                    '\nYou will be redirected to home page to get recommendations.' +
+                    '\n\nYou will still be able to rate other movies which will lead to better recommendations.'
+                if (confirm(message) == true) {
+                    window.location.replace(window.location.origin);
+                }
+            }
+        }
+    });
+    show_new_rating_value(newValue, itemId);
+}
+
+function unrate(itemId, url) {
+    $.ajax({
+        url: url,
+        cache: false
+    });
+    show_new_rating_value(0, itemId);
+}
+
 function close_infocard(element_id) {
     var infocard = document.querySelector('#'+element_id).closest('.infocard');
     infocard.style.display = 'none';
@@ -173,6 +199,15 @@ function getRandomPreview(url) {
             },
         });
     }
+}
+
+/* Checking if the element can be seen partially by user*/
+function isElementInView(element) {
+    var pageTop = $(window).scrollTop();
+    var pageBottom = pageTop + $(window).height();
+    var elementTop = $(element).offset().top;
+    var elementBottom = elementTop + $(element).height();
+    return ((pageTop < elementTop) && ((pageBottom + ($(element).height() / 2)) > elementBottom));
 }
 
 

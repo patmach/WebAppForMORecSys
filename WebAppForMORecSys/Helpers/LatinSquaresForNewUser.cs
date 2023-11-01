@@ -18,14 +18,14 @@ namespace WebAppForMORecSys.Helpers
             if (_latinSquares == null)
             {
 
-                var lists = new List<List<object>>
-                {
+                var lists = new List<List<object>>();
+                /*{
                     Enum.GetValues(typeof(AddBlockRuleView)).Cast<object>().ToList(),
                     Enum.GetValues(typeof(ExplanationView)).Cast<object>().ToList(),
                     Enum.GetValues(typeof(MetricContributionScoreView)).Cast<object>().ToList(),
                     Enum.GetValues(typeof(PreviewExplanationView)).Cast<object>().ToList(),
                     Enum.GetValues(typeof(MetricsView)).Cast<object>().ToList()
-                };
+                };*/
                 var metricsWithVariants = context.Metrics.Include(m => m.MetricVariants)
                     .Where(m => m.MetricVariants.Count() > 0).OrderBy(m => m.Id);
                 foreach (var metric in metricsWithVariants)
@@ -44,6 +44,7 @@ namespace WebAppForMORecSys.Helpers
             return _latinSquares;
 
         }
+
         private static List<List<object>> _latinSquares;
 
         private static List<object> AddToAndReturn(this List<object> ls, object o)
