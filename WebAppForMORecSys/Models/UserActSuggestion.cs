@@ -3,37 +3,32 @@
 namespace WebAppForMORecSys.Models
 {
     /// <summary>
-    /// Act done by user
+    /// Acts suggested to user
     /// </summary>
-    public class UserAct
+    public class UserActSuggestion
     {
         /// <summary>
-        /// Unique ID of the action made by user
+        /// Unique ID of the suggestion
         /// </summary>
         public int Id { get; set; }
 
         /// <summary>
-        /// ID of type of the act 
+        /// ID of type of the act that was suggested
         /// </summary>
         [ForeignKey("Act")]
         public int ActID { get; set; }
 
         /// <summary>
-        /// ID of user who has done the action
+        /// ID of user to whom the action was suggested
         /// </summary>
         [ForeignKey("User")]
         public int UserID { get; set; }
-        
-        /// <summary>
-        /// If user has done the action
-        /// </summary>
-        public bool Done { get; set; }
 
         /// <summary>
         /// Number of times the action was suggested to the user
         /// </summary>
-        public int NumberOfSuggestion { get; set; }
-        
+        public int NumberOfSuggestions { get; set; }
+
         /// <summary>
         /// User who has done the action
         /// </summary>
@@ -43,6 +38,5 @@ namespace WebAppForMORecSys.Models
         /// Type of the act 
         /// </summary>
         public Act Act { get; set; }
-
     }
 }

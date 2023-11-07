@@ -40,6 +40,14 @@ namespace WebAppForMORecSys.Models
         /// </summary>
         public string? UserChoices { get; set; }
 
+        /// <summary>
+        /// Time when user started getting recommendation
+        /// </summary>
+        public DateTime? FirstRecommendationTime { get; set; }
+
+        /// <summary>
+        /// Set metric variants by user
+        /// </summary>
         public List<UserMetricVariants> UserMetricList { get; set; }
 
         /// <summary>
@@ -66,6 +74,11 @@ namespace WebAppForMORecSys.Models
         /// User's actions
         /// </summary>
         public List<UserAct> UserActs { get; set; }
+
+        /// <summary>
+        /// Suggestions to the user
+        /// </summary>
+        public List<UserActSuggestion> UserActSuggestions { get; set; }
 
         /// <summary>
         /// Recompute all blocked items by query to the database

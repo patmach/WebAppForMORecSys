@@ -39,5 +39,10 @@ namespace WebAppForMORecSys.Models
         /// List of actions of this type of act done by users
         /// </summary>
         public List<UserAct> UserActs { get; set; }
+
+        /// <summary>
+        /// Suggestions of this act
+        /// </summary>
+        public List<UserActSuggestion> UserActSuggestions { get; set; }
     }
 }

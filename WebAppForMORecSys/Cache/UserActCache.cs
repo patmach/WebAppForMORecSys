@@ -19,7 +19,7 @@ namespace WebAppForMORecSys.Cache
         /// <summary>
         /// Timer for saving cache contents to database
         /// </summary>
-        private static System.Timers.Timer _savetodbtimer;
+        private static System.Timers.Timer? _savetodbtimer;
 
         /// <summary>
         /// All acts that user can do
@@ -152,7 +152,7 @@ namespace WebAppForMORecSys.Cache
                 string id = userID.ToString();
                 if (_cache.Contains(id)) {
                     List<int> actIDs = (List<int>)_cache.Get(id);
-                    var useracts = actIDs.Select(actId => new UserAct { ActID = actId, UserID = userID }).ToList();
+                    var useracts = actIDs.Select(actId => new UserAct { ActID = actId, UserID = userID}).ToList();
                     foreach (var useract in useracts)
                     {
                         context.UserActs.AddIfNotExists(useract, ua=> (ua.UserID == useract.UserID) && (ua.ActID == useract.ActID));                    
@@ -160,7 +160,8 @@ namespace WebAppForMORecSys.Cache
                 }
             }
             context.SaveChanges();
-            AllActs = context.Acts.ToList();
+            if ((AllActs == null) || (AllActs.Count == 0))
+                AllActs = context.Acts.ToList();
         }
     }
 }

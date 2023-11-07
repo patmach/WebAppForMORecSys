@@ -6,54 +6,68 @@
     int? valueAnswer = userAnswered ? Model.UserAnswers[0].Value : null;
     int? optionAnswer = userAnswered ? Model.UserAnswers[0].AnswerID : null;
 }
-<h4>
-    @Model.Text
-</h4>
-    @if (Model.Text.Contains("Do you remember seeing this movie?"))
-    {
-        <span id="randompreviewofrated" >
-        </span>
-    }
-
-<div id="answer@(Model.Id)">
-    @if (Model.AnswerType == TypeOfAnswer.Text)
-    {
-        <input id="input_@Model.Id" class="form-control rounded m-3 textanswer" aria-required="true"
-               name="answer" value="@textanswer" onunload="saveTextAnswer(@Model.Id, input_@Model.Id);"
-               onfocusout="saveTextAnswer(@Model.Id, input_@Model.Id);" />
-    }
-    @if (Model.AnswerType == TypeOfAnswer.AgreeScale)
-    {
-        @foreach (AgreeScale agreeScaleOption in Enum.GetValues(typeof(AgreeScale)))
+<div class="questiondiv" id="question_@Model.Id">
+    <h4>
+        @Model.Text
+    </h4>
+        @if (Model.Text.Contains("Do you remember seeing this movie?"))
         {
-            <div  style="color: #0d6efd">
-                <input onclick="saveValueAnswer(@Model.Id, @((int)agreeScaleOption))" type="radio" name="answer" id="@(Model.Id + agreeScaleOption.ToString())"
-                       value="@((int)agreeScaleOption)" checked="@(userAnswered && ((int)agreeScaleOption == valueAnswer))">
-                <label for="@(Model.Id + agreeScaleOption.ToString())">@agreeScaleOption.ToFriendlyString()</label>
-            </div>
+            <span id="randompreviewofrated" >
+            </span>
         }
-    }
-    @if ((Model.AnswerType == TypeOfAnswer.Options) && (Model.Answers != null))
-    {
-        @foreach (Answer answer in Model.Answers)
+
+    <div id="answer@(Model.Id)">
+        @if (Model.AnswerType == TypeOfAnswer.Text)
         {
-            <div style="color: #0d6efd">
-                <input onclick="saveOptionAnswer(@Model.Id, @answer.Id)" type="radio" name="answer" id="@(Model.Id + answer.Id.ToString())"
-                       value="@answer.Id" checked="@(userAnswered &&((int)answer.Id == optionAnswer))">
-                <label for="@(Model.Id + answer.Id.ToString())">@answer.Text</label>
-            </div>
-            @if (answer.Text == "Other")
+            <input id="input_@Model.Id" class="form-control rounded m-3 textanswer" aria-required="true"
+                   name="answer_@Model.Id" value="@textanswer" onunload="saveTextAnswer(@Model.Id, input_@Model.Id);"
+                   onfocusout="saveTextAnswer(@Model.Id, input_@Model.Id);" />
+        }
+        @if (Model.AnswerType == TypeOfAnswer.AgreeScale)
+        {
+            @foreach (AgreeScale agreeScaleOption in Enum.GetValues(typeof(AgreeScale)))
             {
-                <input id="input_@Model.Id" class="form-control rounded m-3 textanswer" aria-required="true"
-                       name="answer" value="@textanswer" onunload="saveTextAnswer(@Model.Id, input_@Model.Id);"
-                       onfocusout="saveTextAnswer(@Model.Id, input_@Model.Id);" />
+                <div  style="color: #0d6efd">
+                    <input onclick="saveValueAnswer(@Model.Id, @((int)agreeScaleOption))" type="radio" 
+                        name="answer_@Model.Id" id="@(Model.Id + agreeScaleOption.ToString())"
+                        value="@((int)agreeScaleOption)" 
+                        checked="@(userAnswered && ((int)agreeScaleOption == valueAnswer))">
+                    <label for="@(Model.Id + agreeScaleOption.ToString())">@agreeScaleOption.ToFriendlyString()</label>
+                </div>
             }
         }
-    }
-
-<script>
-    $("#SomeDiv").ready( function () {
-        getRandomPreview('@Url.Action("PreviewOfRandomRated", SystemParameters.Controller, new {questionID = Model.Id})');
-    });
-</script>
+        @if ((Model.AnswerType == TypeOfAnswer.Options) && (Model.Answers != null))
+        {
+            @foreach (Answer answer in Model.Answers)
+            {
+                <div style="color: #0d6efd">
+                    <input onclick="saveOptionAnswer(@Model.Id, @answer.Id)" type="radio" name="answer_@Model.Id" id="@(Model.Id + answer.Id.ToString())"
+                    value="@answer.Id" checked="@(userAnswered &&(answer.Id == optionAnswer))">
+                    <label for="@(Model.Id + answer.Id.ToString())">@answer.Text</label>
+                @if (answer.HasImage.HasValue && answer.HasImage.Value)
+                {
+                    <br />
+                    string imageSrc = Url.Content("~/Resources/Images/" + answer.Text.ToLower().Replace(" ", "") + ".png");
+                        <img style="margin-left:10%; margin-bottom:5px; margin-top:2px;" id="@(Model.Id + answer.Id.ToString())_img" class="answer_image" src="@imageSrc">
+                }                
+                @if (answer.Text == "Other")
+                {
+                    <input id="input_@Model.Id" class="form-control rounded m-3 textanswer" aria-required="true"
+                           name="answer" value="@textanswer" onunload="saveTextAnswer(@Model.Id, input_@Model.Id);"
+                           onfocusout="saveTextAnswer(@Model.Id, input_@Model.Id);" />
+                }
+                </div>
+            }
+        }
+    </div>
+</div>
+@if (Model.Text.Contains("Do you remember seeing this movie?"))
+{
+    <script>
+        $('#randompreviewofrated').ready(function() {
+                getRandomPreview('@Url.Action("PreviewOfRandomRated", SystemParameters.Controller, new {questionID = Model.Id})');
+            });
+    </script>
+}
+   
 

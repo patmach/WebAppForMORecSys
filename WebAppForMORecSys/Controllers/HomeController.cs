@@ -384,6 +384,14 @@ namespace WebAppForMORecSys.Controllers
             int ratingsCount = _context.Ratings.Where(r => (r.UserID == user.Id) && (r.RatingScore > 5)).Count();
             if (ratingsCount == SystemParameters.MinimalPositiveRatings)
                 return Results.Content("MinimalPositiveRatingsDone");
+            if (ratingsCount == 10)
+                AddAct("RatedEnough");
+
+            //TODO DELETE
+
+            var rating1 = _context.Ratings.Where(r => r.UserID == user.Id).First();
+            var rating2 = _context.Ratings.Where(r => r.UserID == user.Id).First();
+            rating1.RatingScore = 3;
             return Results.NoContent();
         }
 

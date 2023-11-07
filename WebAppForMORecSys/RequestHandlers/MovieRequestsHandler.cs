@@ -91,6 +91,11 @@ namespace WebAppForMORecSys.RequestHandlers
             {
                 return ReturnNonPersonalized(viewModel, whitelistIDs, whitelist, currentList.ToList(), positivelyRatedCount);
             }
+            if (user.FirstRecommendationTime == null) {
+                user.FirstRecommendationTime = DateTime.Now;
+                _context.Update(user);
+                await _context.SaveChangesAsync();
+            }
             return await ReturnPersonalized(viewModel, whitelistIDs, whitelist, rs, metrics, currentList, search,
                 actor, director, releasedatefrom, releasedateto, genres);
         }

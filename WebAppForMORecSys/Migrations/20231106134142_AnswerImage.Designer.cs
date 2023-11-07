@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebAppForMORecSys.Data;
 
@@ -11,9 +12,11 @@ using WebAppForMORecSys.Data;
 namespace WebAppForMORecSys.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231106134142_AnswerImage")]
+    partial class AnswerImage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -553,9 +556,6 @@ namespace WebAppForMORecSys.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("FirstRecommendationTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("JSONBlockRules")
                         .HasColumnType("nvarchar(max)");
 
@@ -585,12 +585,6 @@ namespace WebAppForMORecSys.Migrations
                     b.Property<int>("ActID")
                         .HasColumnType("int");
 
-                    b.Property<bool>("Done")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("NumberOfSuggestion")
-                        .HasColumnType("int");
-
                     b.Property<int>("UserID")
                         .HasColumnType("int");
 
@@ -601,32 +595,6 @@ namespace WebAppForMORecSys.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("UserActs");
-                });
-
-            modelBuilder.Entity("WebAppForMORecSys.Models.UserActSuggestion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ActID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NumberOfSuggestion")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("UserActSuggestion");
                 });
 
             modelBuilder.Entity("WebAppForMORecSys.Models.UserAnswer", b =>
@@ -860,25 +828,6 @@ namespace WebAppForMORecSys.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebAppForMORecSys.Models.UserActSuggestion", b =>
-                {
-                    b.HasOne("WebAppForMORecSys.Models.Act", "Act")
-                        .WithMany("UserActSuggestions")
-                        .HasForeignKey("ActID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebAppForMORecSys.Models.User", "User")
-                        .WithMany("UserActSuggestions")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Act");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("WebAppForMORecSys.Models.UserAnswer", b =>
                 {
                     b.HasOne("WebAppForMORecSys.Models.Answer", "Answer")
@@ -926,8 +875,6 @@ namespace WebAppForMORecSys.Migrations
             modelBuilder.Entity("WebAppForMORecSys.Models.Act", b =>
                 {
                     b.Navigation("QuestionsActs");
-
-                    b.Navigation("UserActSuggestions");
 
                     b.Navigation("UserActs");
                 });
@@ -978,8 +925,6 @@ namespace WebAppForMORecSys.Migrations
                     b.Navigation("Interactions");
 
                     b.Navigation("Ratings");
-
-                    b.Navigation("UserActSuggestions");
 
                     b.Navigation("UserActs");
 

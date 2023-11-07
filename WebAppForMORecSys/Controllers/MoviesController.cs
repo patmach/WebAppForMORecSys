@@ -90,7 +90,7 @@ namespace WebAppForMORecSys.Controllers
                 TempData["msg"] = viewModel.Message;
             AddUserActsFromMainViewModel(viewModel, typeOfSearch, _context);
             if (viewModel.Info.IsNullOrEmpty())
-                viewModel.Info = FindUserActsTips(user.Id, _context, Request);
+                viewModel.Info = FindUserActTip(user.Id, _context, Request);
             return View(viewModel);
         }
 

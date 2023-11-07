@@ -122,5 +122,34 @@ namespace WebAppForMORecSys.Helpers
                 context.SaveChanges();
             }
         }
+
+        /// <summary>
+        /// Saves new rating or updates the existing one
+        /// </summary>
+        /// <param name="itemID">ID of rated item </param>
+        /// <param name="userID">ID of user that rated with item</param>
+        /// <param name="score">Score of the rating</param>
+        /// <param name="context">Database context</param>
+        public static void SaveUserActSuggestion(int actId, int userID, ApplicationDbContext context)
+        {
+            var suggestion = context.UserActSuggestions.Where(r => r.ActID == actId && r.UserID == userID).FirstOrDefault();
+            if (suggestion == null)
+            {
+                suggestion = new UserActSuggestion
+                {
+                    UserID = userID,
+                    ActID = actId,
+                    NumberOfSuggestions = 1
+                };
+                context.Add(suggestion);
+            }
+            else
+            {
+                suggestion.NumberOfSuggestions++;
+                context.Update(suggestion);
+            }
+            context.SaveChanges();
+            suggestion.Log();
+        }
     }
 }

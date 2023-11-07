@@ -26,6 +26,11 @@ namespace WebAppForMORecSys.Models
         public int QuestionID { get; set; }
 
         /// <summary>
+        /// Check if answer contains image for better understanding
+        /// </summary>
+        public bool? HasImage { get; set; }
+
+        /// <summary>
         /// Question that can be answered with this answer
         /// </summary>
         public Question Question { get; set; }

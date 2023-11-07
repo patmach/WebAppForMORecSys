@@ -11,5 +11,6 @@ namespace WebAppForMORecSys.Data
             var exists = predicate != null ? dbSet.Any(predicate) : dbSet.Any();
             return !exists ? dbSet.Add(entity) : null;
         }
+        
     }
 }

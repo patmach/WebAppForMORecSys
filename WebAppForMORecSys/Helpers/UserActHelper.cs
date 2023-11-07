@@ -46,17 +46,22 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="context">Database context</param>
         /// <param name="Request">HTTP Request (to get base address if it's the first call)</param>
         /// <returns>Suggestion of one of the not done acts</returns>
-        public static string FindUserActsTips(int userID, ApplicationDbContext context, HttpRequest Request)
+        public static string FindUserActTip(int userID, ApplicationDbContext context, HttpRequest Request)
         {
             UserActCache.SetSaveToDbTimer(context, Request);
             List<Act> actsNotDoneByUser = new List<Act>();
             List<int> actsDoneByUser = UserActCache.GetActs(userID.ToString(), context);
+            List<UserActSuggestion> userActSuggestions = context.UserActSuggestions.Where(uas => uas.UserID == userID)
+                .ToList();
             int maxPriority = UserActCache.AllActs.Select(a => a.Priority).Max() + 1;
             foreach (var act in UserActCache.AllActs)
             {
                 if (!actsDoneByUser.Contains(act.Id))
                 {
-                    for (int i = 0; i <= (maxPriority - act.Priority) * 2; i++)
+                    int numberOfSuggestions = userActSuggestions.Where(uas => uas.ActID == act.Id).FirstOrDefault()?.
+                        NumberOfSuggestions ?? 0;
+                    int numberOfInsertion = maxPriority - (act.Priority + numberOfSuggestions);
+                    for (int i = 0; i <= numberOfInsertion; i++)
                     {
                         actsNotDoneByUser.Add(act);
                     }
@@ -64,7 +69,9 @@ namespace WebAppForMORecSys.Helpers
             }
             if (actsNotDoneByUser.Count == 0)
                 return "";
-            return actsNotDoneByUser[rnd.Next(actsNotDoneByUser.Count)].SuggestionText;
+            var selected = actsNotDoneByUser[rnd.Next(actsNotDoneByUser.Count)];
+            SaveMethods.SaveUserActSuggestion(selected.Id, userID, context);
+            return selected.SuggestionText;
         }
     }
 }

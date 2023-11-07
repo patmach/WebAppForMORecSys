@@ -57,6 +57,24 @@ namespace WebAppForMORecSys.Helpers
         }
     }
 
+    public static class UserActSuggestionLogExtension
+    {
+
+        /// <summary>
+        /// For logging of every rating to file
+        /// </summary>
+        private static MyFileLogger logger = new MyFileLogger("Logs/UserActSuggestions.txt");
+
+        /// <summary>
+        /// Log rating
+        /// </summary>
+        public static void Log(this UserActSuggestion userActSuggestion)
+        {
+            logger.Log($"{userActSuggestion.UserID};{userActSuggestion.ActID};{userActSuggestion.NumberOfSuggestions};" +
+                $"{DateTime.Now.ToString(logger.format)}");
+        }
+    }
+
 
     public static class UserLogExtension
     {

@@ -62,7 +62,7 @@ namespace WebAppForMORecSys.Controllers
                 return LocalRedirect(returnUrl);//TODO CHANGE TO MANUAL
             return Ok();
         }
-        /*
+        
         private User GetCurrentUser()
         {
             //TODO DELETE
@@ -75,7 +75,18 @@ namespace WebAppForMORecSys.Controllers
             return user;
         }
 
+        /// <summary>
+        /// </summary>
+        /// <returns>ID of all questions user hasn't answered</returns>
+        public IActionResult GetNotAnsweredQuestions()
+        {
+            var user = GetCurrentUser();            
+            var answered = _context.UserAnswers.Where(ua => ua.User.Id == user.Id).Select(ua => ua.QuestionID).ToList();
+            var notAnswered = _context.Questions.Where(q => !answered.Contains(q.Id)).Select(q=> q.Id).ToList();
+            return Json(notAnswered);
+        }
 
+        /*
         public IActionResult Debug()
         {
             //TODO DELETE

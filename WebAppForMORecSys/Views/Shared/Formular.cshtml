@@ -1,4 +1,5 @@
 ﻿@model WebAppForMORecSys.Models.ViewModels.FormularViewModel
+@using WebAppForMORecSys.Settings
 @{
     var QuestionIDs = Model.Questions.Select(q => q.Id).ToList();
     var SectionIDs = Model.Questions.Select(q => q.QuestionSectionID).Distinct().Order().ToList();
@@ -33,22 +34,19 @@ else
         You can start answering user study question by clicking on the 'Go to first question' button.
         <br>
         <br>
-        <button type="button" onclick="changeSection(0)" style="float:right" class="btn btn-primary">Go to first question</button>
+        <button type="button" onclick="checkAnswersAndChangeSection(0)" style="float:right" class="btn btn-primary">Go to first question</button>
     </div>
 
     <div id="userstudyfinished" style="@((Model.LastSectionID == int.MaxValue) ? "display:none" : "")">
-        bla bla
-        <br>
-        <br>
         <div id="questionslist">            
         </div>
-        Thank you for participating in this user study!
+        <h3>Thank you for participating in this user study!</h3>
         <br>
         <br>
-        <button type="button" onclick="changeSection(@(QuestionIDs.Count - 1))" style="" class="btn btn-primary">Previous question</button>
+        <button type="button" onclick="checkAnswersAndChangeSection(@(QuestionIDs.Count - 1))" style="" class="btn btn-primary">Previous question</button>
         <br>
         <br>
-        <button type="button" onclick="changeSection(0)" style="float:left" class="btn btn-warning">Go to first question</button>
+        <button type="button" onclick="checkAnswersAndChangeSection(0)" style="float:left" class="btn btn-warning">Go to first question</button>
     </div>
 
     <div id="userstudy" 
@@ -69,6 +67,7 @@ else
         <br>
         <br>
         <button type="button" onclick="changeSection(0)" style="float:left" class="btn btn-warning">Go to first section</button>
+
     </div>
     
 }
@@ -81,6 +80,7 @@ else
         : Model.LastSectionID);
 
     changeSection(currentIndex);
+
     function changeSection(index) {
         if (index < 0) {
             $('#userstudy')[0].style.display = 'none';
@@ -102,6 +102,7 @@ else
                     $('#questionslist').html(data);
                     currentIndex = @int.MaxValue;
                     window.scrollTo(0, 0);
+                    setImgTooltips();
                 }
             });
         }
@@ -117,6 +118,7 @@ else
                     $('#sectionnumber').html('<p>You are in section ' + (index + 1) + '</p>')
                     currentIndex = index;
                     window.scrollTo(0, 0);
+                    setImgTooltips();
                 }
             });
         }        
@@ -124,22 +126,61 @@ else
    
 
     function nextSection() {
-        changeSection(currentIndex+1)
+        checkAnswersAndChangeSection(currentIndex + 1)
     }
 
     function previousSection() {
         changeSection(currentIndex - 1)
     }
 
-    
-    function saveTextAnswer(qid, textboxId) {
-        text = $(textboxId)[0].value;
+    function checkAnswersAndChangeSection(index) {
+        let displayedQuestions = $('#sectiondiv .questiondiv');
+        let displayedQuestionIDs = [];
+        for (let i = 0; i < displayedQuestions.length; i++) {
+            displayedQuestionIDs.push(getQuestionIdFromQuestionDiv(displayedQuestions[i]));
+        }
         $.ajax({
-                url: '@Url.Action("SaveAnswer","Home")/' + '?questionID=' + qid + '&text=' + encodeURIComponent(text),
+            url: '@Url.Action("GetNotAnsweredQuestions","Users")',
             cache: false,
             success: function (data) {
+                let notAnswered = data;
+                let allAnswered = true;
+                for (let i = 0; i < displayedQuestionIDs.length; i++) {
+                    if (notAnswered.includes(displayedQuestionIDs[i])) {
+                        allAnswered = false;
+                        displayedQuestions[i].style.color = 'red';
+                        var debug = false;
+                    }
+                    else 
+                    {
+                        displayedQuestions[i].style.color = '';
+                    }
+                }
+                if (allAnswered) {
+                    changeSection(index);
+                }
+                else {
+                    alert('You need to answer all questions!');
+                }
             }
         });
+
+    }
+    
+    function getQuestionIdFromQuestionDiv(element) {
+        return parseInt(element.id.replace("question_", ""));
+    }
+
+    function saveTextAnswer(qid, textboxId) {
+        text = $(textboxId)[0].value;
+        if (text != '') {
+            $.ajax({
+                url: '@Url.Action("SaveAnswer","Home")/' + '?questionID=' + qid + '&text=' + encodeURIComponent(text),
+                cache: false,
+                success: function (data) {
+                }
+            });
+        }
     }
     function saveValueAnswer(qid, value) {
         $.ajax({
@@ -157,4 +198,15 @@ else
             }
         });
     }
+        
+    function setImgTooltips() {
+
+        var tooltips = $(".tooltip-with-img");
+        for (let i = 0; i < tooltips.length; i++) {
+            let img_id = tooltips[i].id.slice(0,-1) + 'img';
+            let content = $('#' + img_id)[0].outerHTML;
+            $('#' + tooltips[i].id).tooltip({ content: content });
+        }
+    }
+
 </script>

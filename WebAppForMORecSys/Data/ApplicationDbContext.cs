@@ -36,5 +36,6 @@ namespace WebAppForMORecSys.Data
         public DbSet<QuestionAct> QuestionsActs { get; set; }
         public DbSet<UserAct> UserActs { get; set; }
         public DbSet<QuestionSection> QuestionSections { get; set; }
+        public DbSet<UserActSuggestion> UserActSuggestions { get; set; }
     }
 }

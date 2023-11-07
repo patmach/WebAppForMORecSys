@@ -13,9 +13,9 @@
         lastSectionID = question.QuestionSectionID;
         <h3>@("Section - " + sections.Where(s=> s.Id == lastSectionID).FirstOrDefault()?.Name ?? "")</h3>
     }
-    <div>
+    
         @await Html.PartialAsync("../Shared/Question",question)
-    </div>
+    
     <br />
     <br />
     <br />
