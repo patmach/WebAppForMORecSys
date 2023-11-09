@@ -19,36 +19,61 @@
         metricsimportance = Model.FilterValues["MetricsImportance"].Split(',') ?? new string[0]
     };
     var loadMoreURL = Url.Action("Recommendations", controller, loadMoreURLArguments);
+}
 
-}
-@if (!string.IsNullOrEmpty(Model.Info))
-{
-    <div class="card bg-warning infocard ">
-        <div class="card-header">
-            Tip
-            <button type="button" class="close bg-dark" aria-label="Close" style="float:right" title="Close tip" id="close_infocard_btn"
+<div id="gotoformcard" style="display:none" class="card bg-danger infocard ">
+    <div class="card-header">
+        Answer user study questions
+        <button type="button" class="close bg-dark" aria-label="Close" style="float:right" title="Close tip" id="close_formcard_btn"
                 onclick="close_infocard(this.id)">
-                <span style="color: orange" aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="card-body" >
-            @foreach (var part in @Model.Info.Replace("\\n","\n").Split('\n'))
-            {
-               @Html.Raw(part)<br/>
-            }
-            
-        </div>
+            <span style="color: darkred" aria-hidden="true">&times;</span>
+        </button>
     </div>
-}
+    <div class="card-body">
+        @Html.Raw("You have performed minimum of required actions.\n"+
+            "Please start answer questions in the <a href=\"/Home/Formular\">User study form page</a>.\n\n" +
+            "You can still follow tips below to be able to answer more questions and help us more. THANK YOU!")
+    </div>
+</div>
+<br />
+
+
 <div id="mySidebar" class="sidebar">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     @await Html.PartialAsync("../"+controller+"/Filter")
 </div>
 
 <div id="main">
-    
-    <div id="openfilterbtn"><button id="openfilterbtn " class="openbtn btn" onclick="openNav()">&#9776; Open Filter</button></div>
-    <div id="closefilterbtn" style="display:none"> <button class="openbtn btn" onclick="closeNav()">&#9776; Close Filter</button></div>
+    @if (!string.IsNullOrEmpty(Model.Info))
+    {
+        <div id="tipcard" class="card bg-warning infocard ">
+            <div class="card-header">
+                Tip
+                <button type="button" class="close bg-dark" aria-label="Close" style="float:right" title="Close tip" id="close_infocard_btn"
+                        onclick="close_infocard(this.id)">
+                    <span style="color: orange" aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="card-body">
+                @foreach (var part in @Model.Info.Replace("\\n", "\n").Split('\n'))
+                {
+                    @Html.Raw(part)
+
+                    <br />
+                }
+
+            </div>
+        </div>
+        <br/>
+        
+    }
+    <div>
+    <button id="openfilterbtn " class="openbtn btn" onclick="openNav()">&#9776; Open Filter</button>
+    <button id="closefilterbtn" style="display:none"  class="openbtn btn" onclick="closeNav()">&#9776; Close Filter</button>
+    <a style="float:right" href="/Home/Manual" class="btn btn-warning">HELP</a>
+    </div>
+   
+
     <form asp-controller="Movies" asp-action="Index" method="get">
         <div class="form-floating mb-3">
             @await Html.PartialAsync("../Shared/Search")
@@ -91,20 +116,7 @@
 
 <script>
 
-    function setPopover() {
-        popoverExplanationOptions = {
-            content: function () {
-                var classname = '.popover-content' + this.id;
-                return $(this).siblings(classname).html();
-            },
-            trigger: 'hover',
-            animation: true,
-            placement: 'top',
-            html: true,
-            title: 'Why is this item recommended?'
-        };
-        $('.ItemPreview').popover(popoverExplanationOptions)
-    }
+    
     var seen = [];
     var controller = '@controller';
     $(document).ready(function () {
@@ -118,11 +130,13 @@
             return false;
         });
 
+        checkIfUserStudyIsAllowed();
         
         /*sets popover for item previews*/
         $.fn.tooltip.Constructor.Default.allowList['*'].push('style')
-
-        setPopover();
+        if (@((Model.ItemsToMetricContributionScore == null) ? "false" : "true")) {
+            setItemPreviewPopover();
+        }
 
         let IDsDisplayedOnLoaded = $('.itemIDhidden');
         if ((IDsDisplayedOnLoaded.length == 0)
@@ -133,33 +147,13 @@
         
     });
 
+    /* if scrolled check if user seen some whole preview of item that he hasn't seen before (on this loading of page)*/
     window.onscroll = function(){
         if (@((Model.UserRatings.Where(r => (r.RatingScore > 5)).Count() >= MinimalPositiveRatings) ? "true" : "false")) {
-            SaveSeenInteractions();
+            SaveItemPreviewSeenInteractions();
         } 
     };
-    /* if scrolled check if user seen some whole preview of item that he hasn't seen before (on this loading of page)*/
 
-    function SaveSeenInteractions() {
-        var itempreviews = $('.ItemPreview')
-        for (let i = 0; i < itempreviews.length; i++) {
-            if (seen[i]) continue;
-            var itempreviews_top = itempreviews[i].getBoundingClientRect().top;
-            var itempreviews_bottom = itempreviews[i].getBoundingClientRect().bottom;
-            if (isElementInView(itempreviews[i])) {
-                seen[i] = true;
-                var id = itempreviews[i].id.replace('preview_', '');
-                $.ajax(
-                    {
-                        url: "Home/SetInteraction",
-                        type: "POST",
-                        dataType: "json",
-                        data: { id: id, type: @((int)TypeOfInteraction.Seen) },
-                    }
-                )
-            }
-        }
-    }
 
 
     var loadingmore = false;
@@ -189,7 +183,9 @@
                     success: function (data) {
                         $('#Previews').html($('#Previews')[0].innerHTML + data);
                         setPreviewClick();
-                        setPopover();         
+                        if (@((Model.ItemsToMetricContributionScore == null) ? "false" : "true")) {
+                            setItemPreviewPopover();
+                        }
                         let IDsDisplayed = $('.itemIDhidden');
                         if (IDsDisplayed.length >= @(LengthOfRecommendationsList * 2))
                         {
@@ -215,6 +211,8 @@
             
         }
     }
+
+    
     
 </script>
 

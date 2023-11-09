@@ -83,7 +83,7 @@ namespace WebAppForMORecSys.Models
                 Save(user.Id, mv, context);
                 selectedVariantsCodes.Add(mv.Code);
             }
-            UserActCache.AddActs(user.Id.ToString(), selectedVariantsCodes, context);
+            //UserActCache.AddActs(user.Id.ToString(), selectedVariantsCodes, context);
         }
     }
 }

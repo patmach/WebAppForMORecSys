@@ -96,6 +96,9 @@ namespace WebAppForMORecSys.RequestHandlers
                 _context.Update(user);
                 await _context.SaveChangesAsync();
             }
+            UserActCache.AddActs(viewModel.User.Id.ToString(),
+                viewModel.User.GetMetricVariantCodes(_context, metrics.Select(m => m.Id).ToList()).ToList(),
+                _context);
             return await ReturnPersonalized(viewModel, whitelistIDs, whitelist, rs, metrics, currentList, search,
                 actor, director, releasedatefrom, releasedateto, genres);
         }

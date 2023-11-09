@@ -29,7 +29,14 @@ namespace WebAppForMORecSys.Models
         /// </summary>
         [Required]
         public string SuggestionText { get; set; }
+        
+        /// <summary>
+        /// Type of act - used to group acts that lead to same questions
+        /// </summary>
+        [Required]
+        public string TypeOfAct { get; set; } = "";
 
+        
         /// <summary>
         /// List of questions that depends on this act
         /// </summary>

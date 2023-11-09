@@ -42,7 +42,34 @@ namespace WebAppForMORecSys.Controllers
         
             _context = context;
             _userManager = userManager;
-            //MovielensLoader.LoadMovielensData(context);
+            /*
+            var questions = _context.Questions;
+            var answers = _context.Answers;
+            using(var sw  = new StreamWriter("Questions.txt"))
+            {
+                foreach (var question in questions)
+                {
+                    sw.WriteLine(question.Text);
+                    if(question.AnswerType == TypeOfAnswer.AgreeScale)
+                    {
+                        sw.WriteLine("\tStrongly agree......Strongly disagree");
+                    }
+                    else if(question.AnswerType == TypeOfAnswer.Options)
+                    {
+                        var currentAnswers = answers.Where(a => a.QuestionID == question.Id);
+                        foreach (var answer in currentAnswers)
+                        {
+                            sw.WriteLine("\t" + answer.Text);
+                        }
+                    }
+                    else
+                    {
+                        sw.WriteLine("\tText");
+                    }
+                    sw.WriteLine();
+                    sw.WriteLine();
+                }
+            }*/
         }
 
        
@@ -103,6 +130,24 @@ namespace WebAppForMORecSys.Controllers
             viewModel.IsUserStudyAllowed(user, _context);
             return View(viewModel);
         }
+
+        /// <summary>
+        /// </summary>
+        /// <returns>Page with manual how to participate in the user study</returns>
+        public async Task<IActionResult> Manual()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <returns>Partial view with informed consent and aims and targets of the study</returns>
+        public async Task<IActionResult> Consent()
+        {
+            return PartialView();
+        }
+
+        
 
         /// <summary>
         /// Choose question that are should be part of the list and returns partial view with these questions
@@ -233,7 +278,7 @@ namespace WebAppForMORecSys.Controllers
                 return Results.Unauthorized();
             }
             UserMetricVariants.Save(user.Id, metricVariant, _context);
-            AddAct(metricVariant.Code);
+            //AddAct(metricVariant.Code);
             return Results.NoContent();
         }
 
@@ -470,6 +515,15 @@ namespace WebAppForMORecSys.Controllers
             User user = GetCurrentUser();
             UserActCache.AddAct(user.Id.ToString(), code, _context);
             return Results.NoContent();
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <returns>Information if user can start answering questions in user study.</returns>
+        public bool CheckIfUserStudyAllowed()
+        {
+            var user = GetCurrentUser();
+            return new FormularViewModel().IsUserStudyAllowed(user, _context);
         }
 
 

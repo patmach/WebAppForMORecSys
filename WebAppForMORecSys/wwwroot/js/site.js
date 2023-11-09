@@ -163,8 +163,9 @@ function rate(newValue, itemId, url) {
         success: function (data) {
             if (data == 'MinimalPositiveRatingsDone') {
                 let message = 'You have given the minimum required number of positive ratings.' +
-                    '\nYou will be redirected to home page to get recommendations.' +
-                    '\n\nYou will still be able to rate other movies which will lead to better recommendations.'
+                    '\nIf you press "OK", you will be redirected to home page to get recommendations.' +
+                    '\nYou will still be able to rate other movies which will lead to better recommendations.' +
+                    '\n\nIf you press "Cancel", you will stay on this page. You can start getting recommendations later by realoading this page.'
                 if (confirm(message) == true) {
                     window.location.replace(window.location.origin);
                 }
@@ -211,3 +212,58 @@ function isElementInView(element) {
 }
 
 
+function SaveItemPreviewSeenInteractions() {
+    var itempreviews = $('.ItemPreview')
+    for (let i = 0; i < itempreviews.length; i++) {
+        if (seen[i]) continue;
+        var itempreviews_top = itempreviews[i].getBoundingClientRect().top;
+        var itempreviews_bottom = itempreviews[i].getBoundingClientRect().bottom;
+        if (isElementInView(itempreviews[i])) {
+            seen[i] = true;
+            var id = itempreviews[i].id.replace('preview_', '');
+            $.ajax(
+                {
+                    url: "Home/SetInteraction",
+                    type: "POST",
+                    dataType: "json",
+                    data: { id: id, type: 1 }
+                }
+                );
+        }      
+    }
+}
+
+function setItemPreviewPopover() {
+    popoverExplanationOptions = {
+        content: function () {
+            var classname = '.popover-content' + this.id;
+            return $(this).siblings(classname).html();
+        },
+        trigger: 'hover',
+        animation: true,
+        placement: 'top',
+        html: true,
+        title: 'Why is this item recommended?'
+    };
+    $('.ItemPreview').popover(popoverExplanationOptions)
+}
+
+function checkIfUserStudyIsAllowed() {
+    $.ajax({
+        url: "Home/CheckIfUserStudyAllowed",
+        cache: false,
+        success: function (data) {
+            if (data == true) {
+                $('#gotoformcard')[0].style.display = '';
+                $('#gotoformcard')[0].style.zIndex = '200';
+                $('#tipcard')[0].style.position = 'relative';
+            }
+            else {
+                $('#gotoformcard')[0].style.display = 'none';
+            }
+        },
+        error: function (data) {
+            $('#gotoformcard')[0].style.display = 'none';
+        }
+    });
+}

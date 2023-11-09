@@ -1,0 +1,243 @@
+Age group
+	Under 18
+	18 - 25
+	26 - 35
+	35 - 50
+	50+
+	Do not want to answer
+
+
+Gender
+	Male
+	Female
+	Other / Do not want to answer
+
+
+I know what is a recommender system.
+	Strongly agree......Strongly disagree
+
+
+I am familiar with the basics of recommender systems and machine learning.
+	Strongly agree......Strongly disagree
+
+
+The information provided from the preview of the recommended movies (poster, first lines of description, director) was sufficient to judge whether I gonna like the movie.
+	Strongly agree......Strongly disagree
+
+
+The information provided when clicking the details of the recommended movies (poster, description, genres, trailer, director, actors) was sufficient to judge whether I gonna like the movie.
+	Strongly agree......Strongly disagree
+
+
+What type of explanation on metrics share in preview of the movie was most helpful?
+	Coloured full border
+	Coloured left side of the border
+	Title in the colour of best scoring metric
+	Don't know / No preference
+
+
+What type of explanation on scores of movie with regards to objectives was most helpful?
+	Percentage share
+	Raw score
+	Rounded score
+	Bars with metrics colours
+	Don't know / No preference
+
+
+What type of explanation on contribution of metrics was most helpful?
+	Contribution of all metrics
+	Contribution of best scoring metric(s)
+	Contribution of metric(s) with above average score
+	Don't know / No preference
+
+
+Overall, the explanations on why the item was recommended was sufficient.
+	Strongly agree......Strongly disagree
+
+
+The description of relevance was clear and sufficient.
+	Strongly agree......Strongly disagree
+
+
+I was able to get more (or less) relevant items by tweaking the value of relevance.
+	Strongly agree......Strongly disagree
+
+
+What was my understanding of relevance of a movie before participating in this study?
+	Movies are relevant if they are similar as movies that I like
+	Movies are relevant if they are similar as movies that I like and different than movies that I don't like
+	Other
+
+
+What type of relevance behaved closest to what I expect from relevance?
+	Movies are relevant if they are similar as movies that I like
+	Movies are relevant if they are similar as movies that I like and different than movies that I don't like
+	Don't know / Haven't noticed any difference
+
+
+Relevance was the third used objective. Answer to this question has to be "Strongly disagree".
+	Strongly agree......Strongly disagree
+
+
+The description of popularity was clear and sufficient.
+	Strongly agree......Strongly disagree
+
+
+I was able to get more (or less) popular items by tweaking the value of popularity.
+	Strongly agree......Strongly disagree
+
+
+What was my understanding of popularity of movie before participating in this study?
+	Most known by users
+	Best rated by users
+	Other
+
+
+What type of popularity behaved closest to what I expect from popularity?
+	Most known by users
+	Best rated by users
+	Don't know / Haven't noticed any difference
+
+
+The description of calibration was clear and sufficient.
+	Strongly agree......Strongly disagree
+
+
+I was able to get more (or less) items of my favourite genres by tweaking the value of calibration.
+	Strongly agree......Strongly disagree
+
+
+The description of diversity was clear and sufficient.
+	Strongly agree......Strongly disagree
+
+
+I was able to get more (or less) diverse items by tweaking the value of diversity.
+	Strongly agree......Strongly disagree
+
+
+What was my understanding of diversity of movie before participating in this study?
+	Movies with different movie genres are diverse
+	Movies that are rated by different users are diverse
+	Movies that are different than the movies I rated are diverse
+	Other
+
+
+What type of diversity behaved closest to what I expect from diversity?
+	Diversity based on coverage and minimal repetition of movie genres
+	Minimal similarity with any of previous items in list of recommendations
+	Average dissimilarity with previous items in list of recommendations
+	Don't know / Haven't noticed any difference
+
+
+The description of novelty was clear and sufficient.
+	Strongly agree......Strongly disagree
+
+
+I was able to get more (or less) novel items by tweaking the value of diversity.
+	Strongly agree......Strongly disagree
+
+
+Do you remember seeing this movie?
+	Yes, I have rated this movie
+	Yes, this movie was recommended to me, but I haven't rated this movie
+	No, I don't remember seeing this movie
+
+
+What was my understanding of novelty of movie before participating in this study?
+	Movies that are different than the movies I rated are novel
+	Movies that were more recently published are novel
+	Movies least known by users are novel
+	Movies that are rated by different users are novel
+	Other
+
+
+What type of novelty behaved closest to what I expect from novelty?
+	Least known among all users
+	Minimal similiarity with any of movies I rated
+	Average dissimiliarity with movies I rated
+	Don't know / Haven't noticed any difference
+
+
+Being able to change the relevance, diversity, novelty, popularity and calibration ratios were useful for me.
+	Strongly agree......Strongly disagree
+
+
+Overall, the effect of tweaking relevance, diversity, novelty, popularity and calibration fulfilled my expectations.
+	Strongly agree......Strongly disagree
+
+
+Overall, recommendations improved after modifying the relevance, diversity, novelty, popularity and calibration ratios.
+	Strongly agree......Strongly disagree
+
+
+Which mechanism provided me with the most sufficient control over recommendations?
+	Sliders
+	Textboxes
+	Drag and drop
+	PLUS and MINUS buttons
+
+
+I have set the relevance value to 49. Answer to this question has to be "Agree".
+	Strongly agree......Strongly disagree
+
+
+Which mechanism was the most sufficient to tell the system what recommendations I want?
+	Sliders
+	Textboxes
+	Drag and drop
+	PLUS and MINUS buttons
+
+
+Which mechanism was the most understandable and intuitive?
+	Sliders
+	Textboxes
+	Drag and drop
+	PLUS and MINUS buttons
+
+
+The objectives ratios were easiest to set with:
+	Sliders
+	Textboxes
+	Drag and drop
+	PLUS and MINUS buttons
+
+
+Overall, the mechanism that I find as best for tweaking the objectives is:
+	Sliders
+	Textboxes
+	Drag and drop
+	PLUS and MINUS buttons
+
+
+Overall, I am satisfied with the recommender.
+	Strongly agree......Strongly disagree
+
+
+Overall, I find the ability to tweak the objectives useful for getting better recommendations.
+	Strongly agree......Strongly disagree
+
+
+I prefer getting recommendations without stating my preferences. (In other words I prefer the system recommending automatically without the need of setting the objectives.)
+	Strongly agree......Strongly disagree
+
+
+I find the text-search on movie title helpful.
+	Strongly agree......Strongly disagree
+
+
+I find the movie filter on genres, directors, actors and release date helpful.
+	Strongly agree......Strongly disagree
+
+
+I find the ability to block movies directly ("Don't recommend this movie") helpful.
+	Strongly agree......Strongly disagree
+
+
+I find the ability to block movies on genre, director or actor helpful.
+	Strongly agree......Strongly disagree
+
+
+I appreciate the possibility of changing colours of the objectives.
+	Strongly agree......Strongly disagree
+
+

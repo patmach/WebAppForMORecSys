@@ -2,7 +2,7 @@
 
 ### You can return to this manual by clicking on the ICON in the top menu.
 
-### 1. Go to the home page and rate positively atleast 10 movies you like so the recommender system can work properly.
+### 1. Go to the home page and rate positively atleast 3 movies you like so the recommender system can work properly.
 
 You can use search bar to find movies by their names or you can search for movies in more detail by using the movie filter.
 

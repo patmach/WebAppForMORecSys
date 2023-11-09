@@ -1,6 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.MinimalApi;
+using NuGet.Packaging;
+using System.Text;
 using WebAppForMORecSys.Cache;
 using WebAppForMORecSys.Data;
+using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Models.ViewModels
 {
@@ -22,12 +26,27 @@ namespace WebAppForMORecSys.Models.ViewModels
         /// <summary>
         /// True if user has done all acts that are needed for participating in user study
         /// </summary>
-        public bool UserDoneAllNeededActs { get; set; }
+        public bool UserStudyAllowed { get; set; }
 
         /// <summary>
         /// Suggestions of all acts required for formular allowance
         /// </summary>
-        public List<string> NotDoneRequiredActsSuggestions { get; set; }
+        public List<string> NotDoneRequiredActsSuggestions { get; set; } = new List<string>();
+
+        /// <summary>
+        /// Information about the number of required acts completed
+        /// </summary>
+        public string RequiredInformation { get; set; } = "";
+
+        /// <summary>
+        /// Suggestions of all acts required for formular allowance
+        /// </summary>
+        public List<string> NotDoneNeededActsSuggestions { get; set; } = new List<string>();
+
+        /// <summary>
+        /// Information about the number of needed acts completed
+        /// </summary>
+        public string NeededInformation { get; set; } = "";
 
         /// <summary>
         /// True if user has done all acts that are needed for participating in user study
@@ -49,14 +68,100 @@ namespace WebAppForMORecSys.Models.ViewModels
         public bool IsUserStudyAllowed(User user, ApplicationDbContext context)
         {
             var actIDsDoneByUser = UserActCache.GetActs(user.Id.ToString(), context);
-            var neededActs = UserActCache.AllActs.Where(a => a.Priority == 1);
-            UserDoneAllNeededActs = neededActs.All(na=> actIDsDoneByUser.Contains(na.Id));
-            if (!UserDoneAllNeededActs)
+            bool required = DoneAllRequiredActs(user, actIDsDoneByUser, context);
+            bool minimal = DoneMinimumNumberOfActs(user, actIDsDoneByUser, context);
+            UserStudyAllowed = required && minimal;
+            return UserStudyAllowed;
+        }
+
+        /// <summary>
+        /// Checks if user done all required acts, sets informational messages
+        /// </summary>
+        /// <param name="user">User that went to formular page</param>
+        /// <param name="actIDsDoneByUser">IDs of all acts already performed by the user</param>
+        /// <param name="context">Database context</param>
+        /// <returns>user done all required acts</returns>
+        private bool DoneAllRequiredActs(User user, List<int> actIDsDoneByUser, ApplicationDbContext context)
+        {
+            var requiredActs = UserActCache.AllActs.Where(a => a.Priority == 1);
+            bool required = requiredActs.All(na => actIDsDoneByUser.Contains(na.Id));
+            if (!required)
             {
-                NotDoneRequiredActsSuggestions = neededActs.Where(na => !actIDsDoneByUser.Contains(na.Id))
-                    .Select(na => na.SuggestionText).ToList();
+                NotDoneRequiredActsSuggestions.AddRange(requiredActs.Where(na => !actIDsDoneByUser.Contains(na.Id))
+                    .Select(na => na.SuggestionText));
+                RequiredInformation = $"You have completed {requiredActs.Where(na => actIDsDoneByUser.Contains(na.Id)).Count()}" +
+                    $" / ${requiredActs.Count()} required actions."; 
+
+
             }
-            return UserDoneAllNeededActs;
+            return required;
+        }
+
+        /// <summary>
+        /// Checks if user done minimum numbers of not required acts, sets informational messages
+        /// </summary>
+        /// <param name="user">User that went to formular page</param>
+        /// <param name="actIDsDoneByUser">IDs of all acts already performed by the user</param>
+        /// <param name="context">Database context</param>
+        /// <returns>user done minimum numbers of not required acts</returns>
+        private bool DoneMinimumNumberOfActs(User user, List<int> actIDsDoneByUser, ApplicationDbContext context)
+        {
+            if (user.FirstRecommendationTime == null)
+            {
+                NeededInformation = $"You'll be able to perform the actions after you'll rate " +
+                    $"positively atleast {SystemParameters.MinimalPositiveRatings} movies and get first recommendations.";
+                return false;
+            }
+            var userTime = DateTime.Now - user.FirstRecommendationTime;            
+            double minimumForSecondPriority = userTime < TimeSpan.FromMinutes(15) ? 1 :
+                 userTime < TimeSpan.FromMinutes(30) ? 2d / 3 : 1d / 3;
+            double minimumForThirdPriority = userTime < TimeSpan.FromMinutes(15) ? 2d / 3 :
+                 userTime < TimeSpan.FromMinutes(30) ? 1d / 2 : 1d / 5;
+            var secondPriorityActs = UserActCache.AllActs.Where(a => a.Priority == 2).GroupBy(a=> a.TypeOfAct);
+            var thirdPriorityActs = UserActCache.AllActs.Where(a => a.Priority == 3).GroupBy(a => a.TypeOfAct);
+            double secondPriorityDone = 0.0;
+            double thirdPriorityDone = 0.0;
+            StringBuilder neededInfromationSB = new StringBuilder();
+            string s;
+            foreach (var group in secondPriorityActs)
+            {
+                secondPriorityDone += checkGroup(group, actIDsDoneByUser, out s) ? 1 : 0;
+                neededInfromationSB.AppendLine(s);
+            }
+            foreach (var group in thirdPriorityActs)
+            {
+                thirdPriorityDone += checkGroup(group, actIDsDoneByUser, out s) ? 1 : 0;
+                neededInfromationSB.AppendLine(s);
+            }
+            secondPriorityDone /= secondPriorityActs.Count();
+            thirdPriorityDone /= thirdPriorityActs.Count();
+            bool minimal = (secondPriorityDone >= minimumForSecondPriority) 
+                && (thirdPriorityDone >= minimumForThirdPriority);
+            if (!minimal)
+            {
+                var allNeededActs = secondPriorityActs.SelectMany(group => group)
+                    .Where(a=> !actIDsDoneByUser.Contains(a.Id)).ToList();
+                allNeededActs.AddRange(thirdPriorityActs.SelectMany(group => group)
+                    .Where(a => !actIDsDoneByUser.Contains(a.Id)));
+                NotDoneNeededActsSuggestions.AddRange(allNeededActs.OrderBy(a => a.Priority)
+                    .Select(a => a.SuggestionText + "\n(Group of actions: " + a.TypeOfAct + ")"));
+            }
+            NeededInformation = neededInfromationSB.ToString();
+            return minimal;
+        }
+
+        private bool checkGroup(IGrouping<string, Act> group, List<int> actIDsDoneByUser, out string neededInfromation)
+        {
+            bool allDone = group.All(a => actIDsDoneByUser.Contains(a.Id));
+            var neededInfromationSB = new StringBuilder();
+            if (!allDone)
+            {
+                neededInfromationSB.Append("You have completed ");
+                neededInfromationSB.Append(group.Where(a => actIDsDoneByUser.Contains(a.Id)).Count());
+                neededInfromationSB.Append($" / {group.Count()} actions from group of actions {group.Key}.");
+            }
+            neededInfromation = neededInfromationSB.ToString();
+            return allDone;
         }
     }
 }

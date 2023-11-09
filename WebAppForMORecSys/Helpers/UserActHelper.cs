@@ -46,32 +46,47 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="context">Database context</param>
         /// <param name="Request">HTTP Request (to get base address if it's the first call)</param>
         /// <returns>Suggestion of one of the not done acts</returns>
-        public static string FindUserActTip(int userID, ApplicationDbContext context, HttpRequest Request)
+        public static string FindUserActTip(int userID, ApplicationDbContext context, HttpRequest Request,
+            int ratingsCount = 0)
         {
             UserActCache.SetSaveToDbTimer(context, Request);
-            List<Act> actsNotDoneByUser = new List<Act>();
+            List<double> weights = new List<double>();
             List<int> actsDoneByUser = UserActCache.GetActs(userID.ToString(), context);
             List<UserActSuggestion> userActSuggestions = context.UserActSuggestions.Where(uas => uas.UserID == userID)
                 .ToList();
             int maxPriority = UserActCache.AllActs.Select(a => a.Priority).Max() + 1;
             foreach (var act in UserActCache.AllActs)
             {
-                if (!actsDoneByUser.Contains(act.Id))
+                if (actsDoneByUser.Contains(act.Id))
+                    weights.Add(0);
+                else if ((act.Code == "RatedEnough") && (ratingsCount > 0))
                 {
                     int numberOfSuggestions = userActSuggestions.Where(uas => uas.ActID == act.Id).FirstOrDefault()?.
-                        NumberOfSuggestions ?? 0;
-                    int numberOfInsertion = maxPriority - (act.Priority + numberOfSuggestions);
-                    for (int i = 0; i <= numberOfInsertion; i++)
-                    {
-                        actsNotDoneByUser.Add(act);
-                    }
+                            NumberOfSuggestions ?? 0;
+                    weights.Add(30d / ratingsCount / (double)Math.Pow(2, numberOfSuggestions)); 
+                }
+                else
+                {
+                    int numberOfSuggestions = userActSuggestions.Where(uas => uas.ActID == act.Id).FirstOrDefault()?.
+                            NumberOfSuggestions ?? 0;
+                    weights.Add((maxPriority - act.Priority) / (double)Math.Pow(2, numberOfSuggestions));
                 }
             }
-            if (actsNotDoneByUser.Count == 0)
-                return "";
-            var selected = actsNotDoneByUser[rnd.Next(actsNotDoneByUser.Count)];
-            SaveMethods.SaveUserActSuggestion(selected.Id, userID, context);
-            return selected.SuggestionText;
+            double sum = weights.Sum();
+            if (sum == 0)
+                return "You have performed all actions.\nPlease start answer questions in the " +
+                    "<a href=\"/Home/Formular\">User study form page</a>.";
+            var randomValue = rnd.NextDouble() * sum;
+            double partSum = 0;
+            int count = 0;
+            while (randomValue >= partSum)
+            {
+                partSum += weights[count];
+                count++;
+            }
+            Act selectedAct = UserActCache.AllActs[count - 1];
+            SaveMethods.SaveUserActSuggestion(selectedAct.Id, userID, context);
+            return selectedAct.SuggestionText;
         }
     }
 }

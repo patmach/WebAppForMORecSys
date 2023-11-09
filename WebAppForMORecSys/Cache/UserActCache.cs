@@ -160,8 +160,7 @@ namespace WebAppForMORecSys.Cache
                 }
             }
             context.SaveChanges();
-            if ((AllActs == null) || (AllActs.Count == 0))
-                AllActs = context.Acts.ToList();
+            AllActs = context.Acts.ToList();
         }
     }
 }

@@ -335,8 +335,16 @@ a.disabled {
 
 /* Stays on top even when scrolling */
 .infocard {
-    position: sticky !important;
+    position: sticky;
     top: 3px;
     z-index: 100;
     text-align: center;
+}
+
+#Manual img {
+    max-width: 90%;
+}
+
+#Manual {
+    color:orange;
 }
