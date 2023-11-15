@@ -58,9 +58,7 @@ namespace WebAppForMORecSys.Controllers
             UserMetricVariants.SetRandomMetricVariants(user, latinSquares, _context);
             _context.Update(user);
             _context.SaveChanges();
-            if (returnUrl != null) 
-                return LocalRedirect(returnUrl);//TODO CHANGE TO MANUAL
-            return Ok();
+            return RedirectToAction("Manual", "Home");
         }
         
         private User GetCurrentUser()

@@ -677,8 +677,6 @@ namespace WebAppForMORecSys.Helpers
             user.SetPreviewExplanationView(previewExplanationView);
             int metricsView = rnd.Next(Enum.GetValues(typeof(MetricsView)).Length);
             user.SetMetricsView(metricsView);
-            context.Add(user);
-            context.SaveChanges();
             UserActCache.AddActs(user.Id.ToString(),
                 new List<string>
                 {

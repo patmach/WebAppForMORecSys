@@ -144,7 +144,7 @@ namespace WebAppForMORecSys.Areas.Identity.Pages.Account
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
                     */
                     await _signInManager.SignInAsync(account, isPersistent: false);
-                    return RedirectToAction("Create", "Users", new { account.UserName, ReturnUrl = returnUrl });
+                    return RedirectToAction("Create", "Users", new { account.UserName});
                     
                     
                     

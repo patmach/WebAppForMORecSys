@@ -16,6 +16,7 @@ using System.Drawing;
 using System;
 using Newtonsoft.Json.Linq;
 using Microsoft.IdentityModel.Tokens;
+using System.IO;
 
 namespace WebAppForMORecSys.Controllers
 {
@@ -108,6 +109,7 @@ namespace WebAppForMORecSys.Controllers
                                                   select rating).ToListAsync();
             viewModel.Items = await _context.Items.Where(item=> !blockedItems.Contains(item.Id)).Take(5).ToListAsync();
             viewModel.SetMetricImportance(viewModel.User, metrics, new string[0], _context);
+            viewModel.UsedVariants = viewModel.User.GetMetricVariants(_context, metrics.Select(m => m.Id).ToList());
             return View(viewModel);
         }
 
@@ -427,16 +429,8 @@ namespace WebAppForMORecSys.Controllers
             User user = GetCurrentUser();
             SaveMethods.SaveRating(id, user.Id, score, _context);
             int ratingsCount = _context.Ratings.Where(r => (r.UserID == user.Id) && (r.RatingScore > 5)).Count();
-            if (ratingsCount == SystemParameters.MinimalPositiveRatings)
+            if ((score > 5) && (ratingsCount == SystemParameters.MinimalPositiveRatings))
                 return Results.Content("MinimalPositiveRatingsDone");
-            if (ratingsCount == 10)
-                AddAct("RatedEnough");
-
-            //TODO DELETE
-
-            var rating1 = _context.Ratings.Where(r => r.UserID == user.Id).First();
-            var rating2 = _context.Ratings.Where(r => r.UserID == user.Id).First();
-            rating1.RatingScore = 3;
             return Results.NoContent();
         }
 
@@ -524,6 +518,24 @@ namespace WebAppForMORecSys.Controllers
         {
             var user = GetCurrentUser();
             return new FormularViewModel().IsUserStudyAllowed(user, _context);
+        }
+
+        /// <summary>
+        /// Easy access to log files
+        /// </summary>
+        /// <param name="filename">name of the log file</param>
+        /// <returns>Text file with logs</returns>
+        public IActionResult GetLogsOfWebAppForMORecSys(string filename)
+        {
+            User user = GetCurrentUser();
+            if(user.UserName != "log_master")
+            {
+                return Content("Wrong username");
+            }
+            if (!System.IO.File.Exists("Logs/" + filename)) 
+                return Content("No content exists");
+            return File(System.IO.File.ReadAllBytes("Logs/" + filename), "application/CSV", System.IO.Path.GetFileName("Logs/" 
+                + DateTime.Now.ToString("yyyy_MM_dd__HH__mm__ss") + filename));
         }
 
 

@@ -90,7 +90,7 @@ namespace WebAppForMORecSys.Models.ViewModels
                 NotDoneRequiredActsSuggestions.AddRange(requiredActs.Where(na => !actIDsDoneByUser.Contains(na.Id))
                     .Select(na => na.SuggestionText));
                 RequiredInformation = $"You have completed {requiredActs.Where(na => actIDsDoneByUser.Contains(na.Id)).Count()}" +
-                    $" / ${requiredActs.Count()} required actions."; 
+                    $" / {requiredActs.Count()} required actions."; 
 
 
             }
@@ -112,11 +112,8 @@ namespace WebAppForMORecSys.Models.ViewModels
                     $"positively atleast {SystemParameters.MinimalPositiveRatings} movies and get first recommendations.";
                 return false;
             }
-            var userTime = DateTime.Now - user.FirstRecommendationTime;            
-            double minimumForSecondPriority = userTime < TimeSpan.FromMinutes(15) ? 1 :
-                 userTime < TimeSpan.FromMinutes(30) ? 2d / 3 : 1d / 3;
-            double minimumForThirdPriority = userTime < TimeSpan.FromMinutes(15) ? 2d / 3 :
-                 userTime < TimeSpan.FromMinutes(30) ? 1d / 2 : 1d / 5;
+            var userTime = DateTime.Now - user.FirstRecommendationTime;      
+            var timeNormalized = userTime.HasValue ? Math.Min(userTime.Value.TotalMinutes, 30) / 30d : 0;
             var secondPriorityActs = UserActCache.AllActs.Where(a => a.Priority == 2).GroupBy(a=> a.TypeOfAct);
             var thirdPriorityActs = UserActCache.AllActs.Where(a => a.Priority == 3).GroupBy(a => a.TypeOfAct);
             double secondPriorityDone = 0.0;
@@ -135,9 +132,9 @@ namespace WebAppForMORecSys.Models.ViewModels
             }
             secondPriorityDone /= secondPriorityActs.Count();
             thirdPriorityDone /= thirdPriorityActs.Count();
-            bool minimal = (secondPriorityDone >= minimumForSecondPriority) 
-                && (thirdPriorityDone >= minimumForThirdPriority);
-            if (!minimal)
+            bool allowed = Math.Max(Math.Max(timeNormalized + 1.2 * secondPriorityDone - 1 , 0) 
+                + 0.8 * thirdPriorityDone - 1, 0) > 0; //Modified Łukasiewicz norm
+            if (!allowed)
             {
                 var allNeededActs = secondPriorityActs.SelectMany(group => group)
                     .Where(a=> !actIDsDoneByUser.Contains(a.Id)).ToList();
@@ -147,7 +144,7 @@ namespace WebAppForMORecSys.Models.ViewModels
                     .Select(a => a.SuggestionText + "\n(Group of actions: " + a.TypeOfAct + ")"));
             }
             NeededInformation = neededInfromationSB.ToString();
-            return minimal;
+            return allowed;
         }
 
         private bool checkGroup(IGrouping<string, Act> group, List<int> actIDsDoneByUser, out string neededInfromation)

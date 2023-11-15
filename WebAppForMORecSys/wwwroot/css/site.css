@@ -342,9 +342,9 @@ a.disabled {
 }
 
 #Manual img {
-    max-width: 90%;
+    max-width: 100%;
 }
 
 #Manual {
-    color:orange;
+    background-color: #F0F8FF;
 }

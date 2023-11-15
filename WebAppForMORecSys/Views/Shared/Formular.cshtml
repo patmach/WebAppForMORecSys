@@ -8,7 +8,7 @@
     string partString(string s)
     {
         StringBuilder sb = new StringBuilder();
-        foreach (var part in s.Replace("\\n", "\n").Split('\n'))
+        foreach (var part in s.Replace("\\n", "\n").Replace("\r","").Split('\n'))
         {
             sb.Append(part);
             sb.Append("<br />");
@@ -31,7 +31,7 @@
                 <br />
                 <h5>All required acts you haven't done yet:</h5>
                 <h6>
-                    @Html.Raw(partString(Model.RequiredInformation));
+                    @Html.Raw(partString(Model.RequiredInformation))
                 </h6>
                 <ul>
                     @foreach (var suggestion in Model.NotDoneRequiredActsSuggestions)

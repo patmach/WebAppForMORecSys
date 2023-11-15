@@ -54,13 +54,18 @@ namespace WebAppForMORecSys.Helpers
             List<int> actsDoneByUser = UserActCache.GetActs(userID.ToString(), context);
             List<UserActSuggestion> userActSuggestions = context.UserActSuggestions.Where(uas => uas.UserID == userID)
                 .ToList();
-            int maxPriority = UserActCache.AllActs.Select(a => a.Priority).Max() + 1;
+            int maxPriority = UserActCache.AllActs.Select(a => a.Priority).Max() + 1;            
             foreach (var act in UserActCache.AllActs)
             {
                 if (actsDoneByUser.Contains(act.Id))
                     weights.Add(0);
                 else if ((act.Code == "RatedEnough") && (ratingsCount > 0))
                 {
+                    if (UserActCache.AllActs.Count - actsDoneByUser.Count == 1)
+                    {
+                        weights.Add(0); //If all other actions performed
+                        break;
+                    }
                     int numberOfSuggestions = userActSuggestions.Where(uas => uas.ActID == act.Id).FirstOrDefault()?.
                             NumberOfSuggestions ?? 0;
                     weights.Add(30d / ratingsCount / (double)Math.Pow(2, numberOfSuggestions)); 
@@ -73,7 +78,7 @@ namespace WebAppForMORecSys.Helpers
                 }
             }
             double sum = weights.Sum();
-            if (sum == 0)
+            if ((sum == 0))
                 return "You have performed all actions.\nPlease start answer questions in the " +
                     "<a href=\"/Home/Formular\">User study form page</a>.";
             var randomValue = rnd.NextDouble() * sum;

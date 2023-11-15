@@ -98,7 +98,7 @@
             }
 
             @await Html.PartialAsync("../"+ SystemParameters.Controller + "/Preview", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution))
-            @await Html.PartialAsync("../Shared/Explanations", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution))
+            @await Html.PartialAsync("../Shared/Explanations", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution, variants: Model.UsedVariants))
 
             index++;
         }

@@ -26,7 +26,7 @@ namespace WebAppForMORecSys.Models
 
         }
 
-        public static void Save(int userID, MetricVariant mv, ApplicationDbContext context)
+        public static void Save(int userID, MetricVariant mv, ApplicationDbContext context, bool saveChanges = true)
         {
             List<UserMetricVariants> umvs = context.UserMetricVariants.Include(umv => umv.MetricVariant)
                 .Where(umv => (umv.UserID == userID) && (umv.MetricVariant.MetricID == mv.MetricID)).ToList();
@@ -58,7 +58,8 @@ namespace WebAppForMORecSys.Models
                 umv.MetricVariantID = mv.Id;
                 context.Update(umv);
             }
-            context.SaveChanges();
+            if (saveChanges)
+                context.SaveChanges();
         }
 
         
@@ -80,9 +81,10 @@ namespace WebAppForMORecSys.Models
                 count++;
                 var code = (string)selectedRow[count];
                 MetricVariant mv = metric.MetricVariants.Where(mv => mv.Code == code).First();
-                Save(user.Id, mv, context);
+                Save(user.Id, mv, context, false);
                 selectedVariantsCodes.Add(mv.Code);
             }
+            context.SaveChanges();
             //UserActCache.AddActs(user.Id.ToString(), selectedVariantsCodes, context);
         }
     }
