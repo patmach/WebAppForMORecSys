@@ -165,7 +165,7 @@ function rate(newValue, itemId, url) {
                 let message = 'You have given the minimum required number of positive ratings.' +
                     '\nIf you press "OK", you will be redirected to home page to get recommendations.' +
                     '\nYou will still be able to rate other movies which will lead to better recommendations.' +
-                    '\n\nIf you press "Cancel", you will stay on this page. You can start getting recommendations later by realoading this page.'
+                    '\n\nIf you press "Cancel", you will stay on this page. You can start getting recommendations later by navigating to the home page.'
                 if (confirm(message) == true) {
                     window.location.replace(window.location.origin);
                 }

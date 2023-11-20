@@ -22,17 +22,7 @@ namespace WebAppForMORecSys.Models
         /// ID of user who has done the action
         /// </summary>
         [ForeignKey("User")]
-        public int UserID { get; set; }
-        
-        /// <summary>
-        /// If user has done the action
-        /// </summary>
-        public bool Done { get; set; }
-
-        /// <summary>
-        /// Number of times the action was suggested to the user
-        /// </summary>
-        public int NumberOfSuggestion { get; set; }
+        public int UserID { get; set; }        
         
         /// <summary>
         /// User who has done the action

@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Identity.Client;
 using WebAppForMORecSys.Data;
+using WebAppForMORecSys.Loggers;
 using WebAppForMORecSys.Models;
 
 namespace WebAppForMORecSys.Settings
@@ -33,8 +34,18 @@ namespace WebAppForMORecSys.Settings
         /// <summary>
         /// Default type of metrics filter
         /// </summary>
-        public static MetricsView MetricsView { get; set; } = MetricsView.PlusMinusButtons;
-
+        public static MetricsView MetricsView { get; set; } = MetricsView.Sliders;
+#if DEBUG
+        /// <summary>
+        /// Base address where the app is run
+        /// </summary>
+        public static string BaseAddress { get; } = "https://localhost:44397/";
+#else
+        /// <summary>
+        /// Base address where the app is run
+        /// </summary>
+        public static string BaseAddress { get; } = "http://webapp:80/";
+#endif
         /// <summary>
         /// Get used recommender system
         /// </summary>
@@ -47,6 +58,11 @@ namespace WebAppForMORecSys.Settings
             }
             return _recommenderSystem;           
         }
+
+        /// <summary>
+        /// Main file logger for debugging purpose
+        /// </summary>
+        public static MyFileLogger MainDebugLogger { get; } = new MyFileLogger("Logs/MainLog.txt");
 
         /// <summary>
         /// Name of used recommender system

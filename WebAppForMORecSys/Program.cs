@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 using WebAppForMORecSys.Areas.Identity.Data;
 using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Settings;
@@ -21,6 +22,13 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<Account>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+builder.Services.AddLogging(b =>
+                b
+                    .AddDebug()
+                    .AddConsole()
+                    .AddConfiguration(builder.Configuration.GetSection("Logging"))
+                    .SetMinimumLevel(LogLevel.Information)
+            );
 builder.Services.Configure<IdentityOptions>(options =>
 {
     // Password settings.

@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using WebAppForMORecSys.Areas.Identity.Data;
 using WebAppForMORecSys.Cache;
 using WebAppForMORecSys.Data;
+using WebAppForMORecSys.Loggers;
+using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Controllers
 {

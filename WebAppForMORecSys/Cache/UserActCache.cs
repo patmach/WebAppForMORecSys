@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System;
@@ -10,12 +11,19 @@ using System.Web.Mvc;
 using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Loggers;
 using WebAppForMORecSys.Models;
+using WebAppForMORecSys.Settings;
 using static System.Net.WebRequestMethods;
 
 namespace WebAppForMORecSys.Cache
 {
     public static class UserActCache
     {
+
+        static UserActCache()
+        {
+            SetSaveToDbTimer();
+        }
+
         /// <summary>
         /// Timer for saving cache contents to database
         /// </summary>
@@ -111,33 +119,42 @@ namespace WebAppForMORecSys.Cache
             _cache.Set(userId, list, new CacheItemPolicy { SlidingExpiration = _expiration });
             logger.Log($"{userId};{actID};{DateTime.Now.ToString(logger.format)}");
         }
+        
 
         /// <summary>
         /// Sets timer for repeatedly calling function that saves cache contents to database
         /// </summary>
         /// <param name="context">Database context</param>
-        public static void SetSaveToDbTimer(ApplicationDbContext context, HttpRequest Request)
+        public static void SetSaveToDbTimer()
         {
-            if (_savetodbtimer == null)
-            {
-                string baseAddress = $"{Request.Scheme}://{Request.Host}/";
-                SaveUserActsToDb(context);
-                _savetodbtimer = new System.Timers.Timer(5 * 60 * 1000/*_expiration.TotalMilliseconds / 1.5*/);
-                _savetodbtimer.Elapsed += new ElapsedEventHandler((sender, e) =>
-                {
-                    
-                    var response = _client.GetAsync($"{baseAddress}UserAct/SaveContentsOfTheCache").Result;
-                }
-                );
-                _savetodbtimer.Start();
-            }
-            
+            if (_savetodbtimer != null)
+                return;
+            string baseAddress = SystemParameters.BaseAddress;
+            CallSave();
+            _savetodbtimer = new System.Timers.Timer(5 * 60 * 1000);
+            _savetodbtimer.Elapsed += new ElapsedEventHandler((sender, e) => CallSave()
+            );
+            _savetodbtimer.Start();
+                   
         }
 
         /// <summary>
         /// Http client used for sending requests
         /// </summary>
         private static HttpClient _client = new HttpClient();
+
+
+        private static async void CallSave()
+        {
+            try
+            {
+                string baseAddress = SystemParameters.BaseAddress;
+                var response = await _client.GetAsync($"{baseAddress}UserAct/SaveContentsOfTheCache");
+            }
+            catch (Exception ex) {
+                SystemParameters.MainDebugLogger.Log("CallSave: Exception " + ex.ToString() + ex.StackTrace);
+            }
+        }
 
         /// <summary>
         /// Saves cache contents to database

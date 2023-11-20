@@ -32,4 +32,12 @@
     <None Include="wwwroot\Resources\Images\home.png" />
   </ItemGroup>
 
+ <ItemGroup>
+    <Folder Include="Loggers\" />
+  </ItemGroup>
+
+
+
+
+
 </Project>

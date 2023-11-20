@@ -46,10 +46,8 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="context">Database context</param>
         /// <param name="Request">HTTP Request (to get base address if it's the first call)</param>
         /// <returns>Suggestion of one of the not done acts</returns>
-        public static string FindUserActTip(int userID, ApplicationDbContext context, HttpRequest Request,
-            int ratingsCount = 0)
+        public static string FindUserActTip(int userID, ApplicationDbContext context, int ratingsCount = 0)
         {
-            UserActCache.SetSaveToDbTimer(context, Request);
             List<double> weights = new List<double>();
             List<int> actsDoneByUser = UserActCache.GetActs(userID.ToString(), context);
             List<UserActSuggestion> userActSuggestions = context.UserActSuggestions.Where(uas => uas.UserID == userID)

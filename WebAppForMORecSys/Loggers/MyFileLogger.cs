@@ -1,4 +1,7 @@
-﻿namespace WebAppForMORecSys.Loggers
+﻿using System.Diagnostics;
+using System.IO;
+
+namespace WebAppForMORecSys.Loggers
 {
     public class MyFileLogger
     {
@@ -20,6 +23,7 @@
                     {
                         sw.WriteLine(message);
                     }
+
                 }
             });
         }
