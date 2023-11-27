@@ -313,6 +313,10 @@
                 dragSrcEl.style.backgroundColor = this.style.backgroundColor;
                 this.style.backgroundColor = tempColor;
                 this.innerHTML = e.dataTransfer.getData('text/html');
+                $.ajax({
+                    url: '@Url.Action("AddAct","Home", new { code = "MetricsFilterUsage" })',
+                    cache: false
+                });
             }
             set_input_hidden_values()
             dragboxes.forEach(function (dragbox) {

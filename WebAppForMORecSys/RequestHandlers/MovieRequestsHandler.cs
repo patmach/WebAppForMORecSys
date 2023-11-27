@@ -192,11 +192,12 @@ namespace WebAppForMORecSys.RequestHandlers
         /// <param name="method">HTTP method that was used</param>
         /// <returns>View model for block management page</returns>
         public async Task<UserBlockRuleViewModel> ProcessBlockSettings(User user, string search, string block, 
-            string director, string actor, string[] genres, string method)
+            string director, string actor, string[] genres, string method, ApplicationDbContext context)
         {
             string message = "";
             if (method == "POST")
             {
+                UserActCache.AddAct(user.Id.ToString(), "PropertyBlock", context);
                 AddBlockRule(user, block, director, actor, genres, out message);
             }
             var BlackListItemIDs = user.GetItemsInBlackList();

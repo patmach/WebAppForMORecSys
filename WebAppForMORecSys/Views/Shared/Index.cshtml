@@ -184,6 +184,7 @@
                     url: url,
                     cache: false,
                     success: function (data) {
+                        $('.ItemPreview').popover('hide');
                         $('#Previews').html($('#Previews')[0].innerHTML + data);
                         setPreviewClick();
                         if (@((Model.ItemsToMetricContributionScore == null) ? "false" : "true")) {

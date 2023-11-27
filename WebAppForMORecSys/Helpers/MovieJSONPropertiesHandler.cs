@@ -10,7 +10,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 using WebAppForMORecSys.Settings;
-
+using WebAppForMORecSys.Cache;
 
 namespace WebAppForMORecSys.Helpers
 {
@@ -306,7 +306,6 @@ namespace WebAppForMORecSys.Helpers
                         user.AddGenreToBlackList(genre);
                 }
             }
-
             return message.ToString();
         }
     }

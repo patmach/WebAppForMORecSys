@@ -132,7 +132,8 @@ namespace WebAppForMORecSys.Controllers
         {
             User user = GetCurrentUser();
             string method = HttpContext.Request.Method;
-            var viewModel = _requestsHandler.ProcessBlockSettings(user, search, block, director, actor, genres, method).Result;
+            var viewModel = _requestsHandler.ProcessBlockSettings(user, search, block, director, actor, genres, method, _context)
+                .Result;
             if (!viewModel.Message.IsNullOrEmpty())
                 TempData["msg"] = "<script>alert('" + viewModel.Message + "');</script>";
             return View(viewModel);

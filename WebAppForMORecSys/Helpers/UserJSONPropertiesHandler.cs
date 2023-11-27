@@ -10,6 +10,7 @@ using WebAppForMORecSys.Data;
 using Humanizer;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using WebAppForMORecSys.Loggers;
 
 namespace WebAppForMORecSys.Helpers
 {
@@ -567,18 +568,25 @@ namespace WebAppForMORecSys.Helpers
         /// Saves metrics importance value to JSONFilter property
         /// </summary>
         /// <param name="user">User for which the values should be saved</param>
-        /// <param name="value">Values to be saved</param>
-        public static void SetMetricsImportance(this User user, string[] value)
+        /// <param name="values">Values to be saved</param>
+        public static void SetMetricsImportance(this User user, string[] values)
         {
             foreach (var metricImportance in GetStringValuesInJSONFilter(user, "metricsImportance"))
             {
                 RemoveStringValueFromJSONFilter(user, "metricsImportance", metricImportance);
             }
-            foreach (var metricImportance in value)
+            foreach (var metricImportance in values)
             {
                 AddStringValueToJSONFilter(user, "metricsImportance", metricImportance, false);
             }
+            MetricsImportanceLogger.Log(user.Id + ";" + string.Join(';', values) + ';'
+                + DateTime.Now.ToString(MetricsImportanceLogger.format));
         }
+
+        /// <summary>
+        /// File Logger for logging user setting of metrics importance
+        /// </summary>
+        private static MyFileLogger MetricsImportanceLogger = new MyFileLogger("Logs/MetricsImportanceSettings.txt");
 
         /// <summary>
         /// </summary>
