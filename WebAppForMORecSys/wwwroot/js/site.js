@@ -5,18 +5,24 @@
 
 /* For showing and closing sidebar filter*/
 function openNav() {
-    document.getElementById("mySidebar").style.width = "25%";
-    document.getElementById("main").style.marginLeft = "25%";
-    document.getElementById("openfilterbtn").style.display = "none";
-    document.getElementById("closefilterbtn").style.display = "";
+    var sidebar_width = "25%";
+    if (window.innerWidth < 768) {
+        sidebar_width = "50%"
+    }
+    $("#mySidebar")[0].style.width = sidebar_width;
+    $("#main")[0].style.marginLeft = sidebar_width;
+    $("#mySidebar")[0].style.display = "";
+    $("#openfilterbtn")[0].style.display = "none";
+    $("#closefilterbtn")[0].style.display = "";
 
 }
 
 function closeNav() {
-    document.getElementById("mySidebar").style.width = "0";
-    document.getElementById("main").style.marginLeft = "0";
-    document.getElementById("closefilterbtn").style.display = "none";
-    document.getElementById("openfilterbtn").style.display = "";
+    $("#mySidebar")[0].style.width = "0";
+    $("#mySidebar")[0].style.display = "none";
+    $("#main")[0].style.marginLeft = "0";
+    $("#closefilterbtn")[0].style.display = "none";
+    $("#openfilterbtn")[0].style.display = "";
 }
 
 function SetAutoComplete(textbox, url)

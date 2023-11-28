@@ -8,7 +8,7 @@ You can use search bar to find movies by their names or you can search for movie
 
 OBRÁZEK
 
-### 2. Now you can get recommendations from the multi-objective recommender system by reloading the home page or clicking on the button recommend. 
+### 2. Now you can get recommendations from the multi-objective recommender system by clicking the button "Recommend". 
 
 OBRÁZEK
 

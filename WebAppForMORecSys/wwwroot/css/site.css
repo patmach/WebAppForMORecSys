@@ -2,211 +2,241 @@ html {
   font-size: 14px;
 }
 
+footer {
+    position: relative !important;
+}
+
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
-footer{
-    position:relative !important;
+@media (max-width: 768px) {
+    @media (max-width: 400px) {
+
+        input, .filter-option, .btn, #input-metrics-group {
+            font-size: 2.5vw !important;
+        }
+
+        .modal-text {
+            font-size: 2.4vw !important;
+        }
+    }
+    @media (min-width: 400px) {
+        input, .filter-option, .btn, #input-metrics-group {
+            font-size: 1.8vw !important;
+        }
+
+        .modal-text {
+            font-size: 1.7vw !important;
+        }
+    }
 }
 
-input, .filter-option,.btn{
-    font-size:1.3vw !important;
-}
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
 
-.input-group{
-    gap: 10px;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-#logo-holder {
-    position: relative;
-  /*  height:fit-content;*/
-}
-
-    #logo-holder .image,
-    #logo-holder .text {
-        transition: opacity 0.5s ease-in-out;
+@media (min-width: 768px) {
+    input, .filter-option, .btn, #input-metrics-group {
+        font-size: 1.3vw !important;
     }
 
-    #logo-holder .text {
+    .modal-text {
+        font-size: 1.2vw !important;
+    }
+}
+
+
+    .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+        box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    }
+
+    .input-group {
+        gap: 10px;
+    }
+
+    html {
+        position: relative;
+        min-height: 100%;
+    }
+
+    #logo-holder {
+        position: relative;
+        /*  height:fit-content;*/
+    }
+
+        #logo-holder .image,
+        #logo-holder .text {
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        #logo-holder .text {
+            position: absolute;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            background-color: #0d6efd;
+            color: black;
+        }
+
+        #logo-holder:hover .image {
+            opacity: 0;
+        }
+
+        #logo-holder:hover .text {
+            opacity: 1;
+        }
+
+    body {
+        margin-bottom: 60px;
+    }
+
+    .range-wrap {
+        position: relative;
+        margin: 0 auto 3rem;
+    }
+
+    .range {
+        width: 100%;
+    }
+
+    .input-metrics-group {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .bubble {
+        background: #0d6efd;
+        color: white;
+        padding: 4px 12px;
+        margin-top: 22px;
         position: absolute;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        top: 0;
-        left: 0;
-        opacity: 0;
-        background-color: #0d6efd;
-        color: black;
+        border-radius: 4px;
+        left: 50%;
+        transform: translateX(-50%);
     }
 
-    #logo-holder:hover .image {
-        opacity: 0;
-    }
+        .bubble::after {
+            content: "";
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #0d6efd;
+            top: -1px;
+            left: 50%;
+        }
 
-    #logo-holder:hover .text {
-        opacity: 1;
-    }
-
-body {
-  margin-bottom: 60px;
-}
-
-.range-wrap {
-    position: relative;
-    margin: 0 auto 3rem;
-}
-
-.range {
-    width: 100%;
-}
-
-.input-metrics-group {
-    text-align: center;
-    margin-top: 10px;
-}
-
-.bubble {
-    background: #0d6efd;
-    color: white;
-    padding: 4px 12px;
-    margin-top: 22px;
-    position: absolute;
-    border-radius: 4px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.bubble::after {
-    content: "";
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: #0d6efd;
-    top: -1px;
-    left: 50%;
-}
-
-body {
-    margin: 2rem;
-}
-
-.progressbox {
-    height: 50px;
-    display: inline-block;
-    margin-auto;
-    width: 84%;
-    border-radius: 0.5rem;
-    text-align: center
-}
-
-
-.progressbutton {
-    height: 40px;
-    width: 5%;
-    border-radius: 0.5rem;
-}
-
-.ItemPreview {
-    margin: 3px;
-    aspect-ratio: 1 / 2;
-    text-overflow: ellipsis;
-    width: 19%;
-    /*border: 3px solid;
-    padding: 3px;*/
-}
-.ImageInDetail {
-    max-width:48%;
-    max-height:90%; 
-    float:right;
-
-}
-
-.InfoInDetail {
-    max-width: 48%;
-    display: grid;
-}
-
-@media screen and (max-width: 1000px) {
-
-    .ImageInDetail {
-        float: none;
-        margin: auto;
-    }
-
-    .InfoInDetail {
-        max-width: 90%;
+    body {
+        margin: 2rem;
     }
 
     .progressbox {
-        width: 70%;
+        height: 50px;
+        display: inline-block;
+        margin-auto;
+        width: 84%;
+        border-radius: 0.5rem;
+        text-align: center
     }
 
 
     .progressbutton {
-        width: 12%;
+        height: 40px;
+        width: 5%;
+        border-radius: 0.5rem;
     }
-}
 
-@media screen and (max-width: 700px) {
     .ItemPreview {
-        width: 45%;
-    }
-}
-
-
-@media screen and (max-width: 1000px) and (min-width:700px) {
-    .ItemPreview {
-        width: 30%;
+        margin: 3px;
+        aspect-ratio: 1 / 2;
+        text-overflow: ellipsis;
+        width: 19%;
+        /*border: 3px solid;
+padding: 3px;*/
     }
 
-}
+    .ImageInDetail {
+        max-width: 48%;
+        max-height: 90%;
+        float: right;
+    }
+
+    .InfoInDetail {
+        max-width: 48%;
+        display: grid;
+    }
+
+    @media screen and (max-width: 1000px) {
+
+        .ImageInDetail {
+            float: none;
+            margin: auto;
+        }
+
+        .InfoInDetail {
+            max-width: 90%;
+        }
+
+        .progressbox {
+            width: 70%;
+        }
+
+
+        .progressbutton {
+            width: 12%;
+        }
+    }
+
+    @media screen and (max-width: 700px) {
+        .ItemPreview {
+            width: 45%;
+        }
+    }
+
+
+    @media screen and (max-width: 1000px) and (min-width:700px) {
+        .ItemPreview {
+            width: 30%;
+        }
+    }
 
 
 
-.horizontal {
-    display: inline-block;
-    position: relative;
-}
+    .horizontal {
+        display: inline-block;
+        position: relative;
+    }
 
 
-/* The sidebar menu */
-.sidebar {
-    height: 100%; /* 100% Full-height */
-    width: 0; /* 0 width - change this with JavaScript */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Stay on top */
-    top: 0;
-    left: 0;
-    background-color: #0d6efd;
-    overflow-x: hidden; /* Disable horizontal scroll */
-    padding-top: 60px; /* Place content 60px from the top */
-    transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
-    font-size: 1.5vw;
-}
+    /* The sidebar menu */
+    .sidebar {
+        height: 100%; /* 100% Full-height */
+        width: 0; /* 0 width - change this with JavaScript */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Stay on top */
+        top: 0;
+        left: 0;
+        background-color: #0d6efd;
+        overflow-x: hidden; /* Disable horizontal scroll */
+        padding-top: 60px; /* Place content 60px from the top */
+        transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
+        font-size: 1.5vw;
+    }
 
-.moviecreateblockrule {
-    font-size: 1.5vw;
-}
-/* The sidebar links */
-.sidebar a {
-    padding: 8px 8px 8px 32px;
-    text-decoration: none;
-    font-size: 15px;
-    color: #818181;
-    display: block;
-    transition: 0.3s;
-}
+    .moviecreateblockrule {
+        font-size: 1.5vw;
+    }
+    /* The sidebar links */
+    .sidebar a {
+        padding: 8px 8px 8px 32px;
+        text-decoration: none;
+        font-size: 15px;
+        color: #818181;
+        display: block;
+        transition: 0.3s;
+    }
 
         /* When you mouse over the navigation links, change their color */
         .sidebar a:hover {
@@ -220,131 +250,128 @@ body {
         right: 25px;
         font-size: 36px;
         margin-left: 50px;
-
     }
 
-/* The button used to open the sidebar */
-.openbtn {
-    font-size: 20px;
-    cursor: pointer;
-    background-color: #0d6efd;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-}
-
-    .openbtn:hover {
-        background-color: #444;
+    /* The button used to open the sidebar */
+    .openbtn {
+        font-size: 20px;
+        cursor: pointer;
+        background-color: #0d6efd;
+        color: white;
+        padding: 10px 15px;
+        border: none;
     }
 
-/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
-#main {
-    transition: margin-left .5s; /* If you want a transition effect */
-    padding: 20px;
-}
+        .openbtn:hover {
+            background-color: #444;
+        }
 
-/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
-@media screen and (max-height: 450px) {
-    .sidebar {
-        padding-top: 15px;
+    /* Style page content - use this if you want to push the page content to the right when you open the side navigation */
+    #main {
+        transition: margin-left .5s; /* If you want a transition effect */
+        padding: 20px;
     }
 
-    
-}
-.moviefilter > *, .moviecreateblockrule > * {
-    width: 90% !important;
-    align-self: center;
-    display: block !important;
-    margin: 0 auto !important;
-}
+    /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+    @media screen and (max-height: 450px) {
+        .sidebar {
+            padding-top: 15px;
+        }
+    }
 
-.moviefilter, .moviecreateblockrule {
-    margin-top: 25px;
-    
-}
+    .moviefilter > *, .moviecreateblockrule > * {
+        width: 90% !important;
+        align-self: center;
+        display: block !important;
+        margin: 0 auto !important;
+    }
 
-/*Umístìní ikonek v hlavním menu*/
-.navbar-collapse > ul {
-    margin-left:27%;
-}
+    .moviefilter, .moviecreateblockrule {
+        margin-top: 25px;
+    }
 
-.navbar-toggler > ul {
-    margin-left: 0% !important;
-}
+    /*Umístìní ikonek v hlavním menu*/
+    .navbar-collapse > ul {
+        margin-left: 27%;
+    }
 
-.navbar-toggler {
-    margin-left: 27%;
-    float:right;
-}
+    .navbar-toggler > ul {
+        margin-left: 0% !important;
+    }
 
-
-.dropdown-menu {
-    max-width: 90% !important;
-}
-
-/*Movie Detail*/
-dl {
-    display: grid;
-    grid-template-columns: max-content auto;
-}
-
-dt {
-    grid-column-start: 1;
-}
-
-dd {
-    grid-column-start: 2;
-}
-
-a.disabled {
-    pointer-events: none;
-    cursor: default;
-}
-
-/*Block rules to 3 columns*/
-.PropertyBlock {
-    float: left;
-    width: 33.33%;
-}
-
-.PropertyBlocks:after {
-    content: "";
-    display: table;
-    clear: both;
-}
-
-/*drag and drop*/
-.container {
-    display: grid;
-    gap: 10px;
-}
-
-.box {
-    border: 3px solid #666;
-    background-color: #0d6efd;
-    color:white;
-    border-radius: .5em;
-    padding: 10px;
-    cursor: move;
-}
+    .navbar-toggler {
+        margin-left: 27%;
+        float: right;
+    }
 
 
-.card-body {
-    text-align: center;
-}
+    .dropdown-menu {
+        max-width: 90% !important;
+    }
 
-/* Stays on top even when scrolling */
-.infocard {
-    position: sticky;
-    top: 3px;
-    z-index: 100;
-    text-align: center;
-}
+    /*Movie Detail*/
+    dl {
+        display: grid;
+        grid-template-columns: max-content auto;
+    }
 
-#Manual img {
-    max-width: 100%;
-}
+    dt {
+        grid-column-start: 1;
+    }
 
-#Manual {
-    background-color: #F0F8FF;
-}
+    dd {
+        grid-column-start: 2;
+    }
+
+    a.disabled {
+        pointer-events: none;
+        cursor: default;
+    }
+
+    /*Block rules to 3 columns*/
+    .PropertyBlock {
+        float: left;
+        width: 33.33%;
+    }
+
+    .PropertyBlocks:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    /*drag and drop*/
+    .container {
+        display: grid;
+        gap: 10px;
+    }
+
+    .box {
+        border: 3px solid #666;
+        background-color: #0d6efd;
+        color: white;
+        border-radius: .5em;
+        padding: 10px;
+        cursor: move;
+    }
+
+
+    .card-body {
+        text-align: center;
+    }
+
+    /* Stays on top even when scrolling */
+    .infocard {
+        position: sticky;
+        top: 3px;
+        z-index: 100;
+        text-align: center;
+    }
+
+    #Manual img {
+        max-width: 100%;
+    }
+
+    #Manual {
+        background-color: #F0F8FF;
+    }

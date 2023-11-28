@@ -9,7 +9,7 @@
     </a>
 </div>
 <br />
-<div class="input-group" id="input-metrics-group" style="font-size: 1.3vw ;">
+<div class="input-group" id="input-metrics-group" >
     @{
         int index = 0;
     }
@@ -318,7 +318,7 @@
                     cache: false
                 });
             }
-            set_input_hidden_values()
+            set_input_hidden_values();
             dragboxes.forEach(function (dragbox) {
                 dragbox.style.opacity = '1';
             });
