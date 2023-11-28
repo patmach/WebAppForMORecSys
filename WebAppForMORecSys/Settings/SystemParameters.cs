@@ -77,7 +77,7 @@ namespace WebAppForMORecSys.Settings
         /// <summary>
         /// Default colours for used metrics (according to their ranking in the database)
         /// </summary>
-        public static string[] Colors { get; set; } = new string[] { "#002d62","#fbff00","#f98686", "#00FFFF", "#088F8F", "#00A36C" };
+        public static string[] Colors { get; set; } = new string[] { "#002d62", "#ff0000", "#f98686", "#00FFFF", "#088F8F", "#00A36C" };
 
         /// <summary>
         /// Dictionary mapping metrics to their default colours

@@ -16,20 +16,20 @@ footer {
     @media (max-width: 400px) {
 
         input, .filter-option, .btn, #input-metrics-group {
-            font-size: 2.5vw !important;
+            font-size: 3.2vw !important;
         }
 
         .modal-text {
-            font-size: 2.4vw !important;
+            font-size: 3.0vw !important;
         }
     }
     @media (min-width: 400px) {
         input, .filter-option, .btn, #input-metrics-group {
-            font-size: 1.8vw !important;
+            font-size: 2.1vw !important;
         }
 
         .modal-text {
-            font-size: 1.7vw !important;
+            font-size: 2.0vw !important;
         }
     }
 }
@@ -93,10 +93,10 @@ footer {
         margin-bottom: 60px;
     }
 
-    .range-wrap {
-        position: relative;
-        margin: 0 auto 3rem;
-    }
+.range-wrap {
+    position: relative;
+    margin: 0 auto 3rem;
+}
 
     .range {
         width: 100%;
@@ -375,3 +375,9 @@ padding: 3px;*/
     #Manual {
         background-color: #F0F8FF;
     }
+
+.dragbox, .range-wrap {
+    min-width: 80px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}

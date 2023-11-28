@@ -17,19 +17,14 @@
         {
             string id = "range" + index;        
             string valueAsNumber = id + ".valueAsNumber";
-            string margin = "";
-            if (index == 0)
-                margin = "margin-left:auto;";
-            else if (index == Model.Metrics.Keys.Count - 1) {
-                margin = "margin-right:auto;";
-        }
+       
         
         @if (Model.User.GetMetricsView() == MetricsView.DragAndDrop)
             {
 
                 <div draggable="true" id="@("drag_" +@index)" class="drag box dragbox"
                  style="background-color: @Model.User.GetMetricIDsToColors()[metric.Id] ; width: @(100/Model.Metrics.Count - 5)%; 
-                    border-radius:0.5em; @margin">
+                    border-radius:0.5em;">
                 @if (metric.HasVariants()){
                     <a title="Set how to compute @metric.Name" data-bs-toggle="modal" data-bs-target="#userMetricModal" href="javascript:void(0;)"
                     style="color:white;" data-bs-metricid="@metric.Id">@metric.Name</a>
