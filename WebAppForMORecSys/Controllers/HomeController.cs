@@ -528,7 +528,7 @@ namespace WebAppForMORecSys.Controllers
         public IActionResult GetLogsOfWebAppForMORecSys(string filename)
         {
             User user = GetCurrentUser();
-            if(user.UserName != "log_master")
+            if(user.UserName != "log_master2")
             {
                 return Content("Wrong username");
             }

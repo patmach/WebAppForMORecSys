@@ -1,14 +1,17 @@
 ﻿@model WebAppForMORecSys.Models.ViewModels.PreviewDetailViewModel
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
+@{
+    string aclass = Model.User != null ? "" : "disabled";
+    string ratingClass = "ratingstar" + Model.Item.Id;
+    string removeClass = "remove" + Model.Item.Id;
+    var rating = Model.UserRatings.Where(r => r.ItemID == Model.Item.Id).FirstOrDefault();
+    int ratingScore = 0;
+    if (Model.User != null)
+        ratingScore = rating?.RatingScore ?? 0;
+}
 <div class="rating">
     <span>
-        @{
-            string aclass = Model.User != null ? "" : "disabled";
-            string ratingClass = "ratingstar" + Model.Item.Id;
-            string removeClass = "remove" + Model.Item.Id;
-            var rating = Model.UserRatings.Where(r => r.ItemID == Model.Item.Id).FirstOrDefault();
-        }
+        
         @for (int i = 0; i < 10; i++)
         {
             <a style="text-decoration:unset" 
@@ -21,39 +24,9 @@
            class="@removeClass @aclass" href="javascript:void(0)" >
             <i class="fa fa-remove" aria-hidden="true" title="Remove my rating"></i>
         </a>
-        
 
     </span>
 </div>
-<script>
-    //Prepares full / empty rating star icons corresponding to rating score from user. 
-    // Shows / hides option of removing rating
-    
-    /*
-    $(function () {
-    @{
-        int ratingScore = 0;
-        if (Model.User != null)
-            ratingScore = rating?.RatingScore ?? 0;
-    }
-        var ratingValue = @Html.Raw(ratingScore);
-        var movieId = @Html.Raw(Model.Item.Id);
-        var startlist = $('.ratingstar' + movieId);
-        for (var i = 0; i < ratingValue; i++) {
-            startlist[i].classList.remove('fa-star-o');
-            startlist[i].classList.add('fa-star');
-        }
-        var removeLink = $('.@removeClass')[0];
-        if (ratingValue > 0) {
-            removeLink.style.display = '';
-        }
-        else {
-            removeLink.style.display = 'none';
-        }
-    })*/
-    show_new_rating_value(@Html.Raw(ratingScore), @Html.Raw(Model.Item.Id))
-
-   
-
-
+<script>    
+    show_new_rating_value(@Html.Raw(ratingScore), @Html.Raw(Model.Item.Id));
 </script>

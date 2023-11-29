@@ -73,6 +73,9 @@ function setPreviewClick(){
                 details.style.display = ""
                 document.getElementById('Previews').style.display = "none";
                 document.getElementById('loadmore_div').style.display = "none";
+                var arr = details.getElementsByTagName('script');
+                for (var n = 0; n < arr.length; n++)
+                    eval(arr[n].innerHTML)//run script inside div
                 coords = getElementCoords(details);
                 window.scrollTo(coords.left, coords.top);
             }
@@ -145,20 +148,25 @@ function show_by_property(name, index) {
 function show_new_rating_value(newValue, itemId) {
     var ratingValue = newValue
     var startlist = $('.ratingstar' + itemId);
-    for (var i = 0; i < ratingValue; i++) {
-        startlist[i].classList.remove('fa-star-o');
-        startlist[i].classList.add('fa-star');
+    while (startlist.length > 0) {
+        for (var i = 0; i < ratingValue; i++) {
+            startlist[i].classList.remove('fa-star-o');
+            startlist[i].classList.add('fa-star');
+        }
+        for (var i = ratingValue; i < 10; i++) {
+            startlist[i].classList.remove('fa-star');
+            startlist[i].classList.add('fa-star-o');
+        }
+        startlist = startlist.slice(10);
     }
-    for (var i = ratingValue; i < 10; i++) {
-        startlist[i].classList.remove('fa-star');
-        startlist[i].classList.add('fa-star-o');
-    }
-    var removeLink = $('.remove' + itemId)[0];
-    if (newValue > 0) {
-        removeLink.style.display = '';
-    }
-    else {
-        removeLink.style.display = 'none';
+    var removeLinks = $('.remove' + itemId);
+    for (var i = 0; i < removeLinks.length; i++) {
+        if (newValue > 0) {
+            removeLinks[i].style.display = '';
+        }
+        else {
+            removeLinks[i].style.display = 'none';
+        }
     }
 }
 

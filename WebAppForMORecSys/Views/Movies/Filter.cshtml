@@ -24,7 +24,7 @@
     }
     <label for="igenre">Genre</label>
 
-    <select class="selectpicker" multiple data-live-search="true" name="genres" placeholder="Genres">
+    <select  id="igenre" class="selectpicker" multiple data-live-search="true" name="genres" placeholder="Genres">
        
         @foreach (var genre in Movie.AllGenres.Except(Model.User.GetGenresInBlackList()))
         {
