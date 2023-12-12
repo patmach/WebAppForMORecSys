@@ -4,48 +4,53 @@ html {
 
 footer {
     position: relative !important;
+    text-align: left;
+    max-width: 100%;
+    line-height: normal !important;
+    white-space: unset !important;
 }
 
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
+
+    @media (min-width: 768px) {
+        html {
+            font-size: 16px;
+        }
     }
-}
 
-@media (max-width: 768px) {
-    @media (max-width: 400px) {
+    @media (max-width: 768px) {
+        @media (max-width: 400px) {
 
+            input, .filter-option, .btn, #input-metrics-group {
+                font-size: 3.2vw !important;
+            }
+
+            .modal-text {
+                font-size: 3.0vw !important;
+            }
+        }
+
+        @media (min-width: 400px) {
+            input, .filter-option, .btn, #input-metrics-group {
+                font-size: 2.1vw !important;
+            }
+
+            .modal-text {
+                font-size: 2.0vw !important;
+            }
+        }
+    }
+
+
+
+    @media (min-width: 768px) {
         input, .filter-option, .btn, #input-metrics-group {
-            font-size: 3.2vw !important;
+            font-size: 1.3vw !important;
         }
 
         .modal-text {
-            font-size: 3.0vw !important;
+            font-size: 1.2vw !important;
         }
     }
-    @media (min-width: 400px) {
-        input, .filter-option, .btn, #input-metrics-group {
-            font-size: 2.1vw !important;
-        }
-
-        .modal-text {
-            font-size: 2.0vw !important;
-        }
-    }
-}
-
-
-
-@media (min-width: 768px) {
-    input, .filter-option, .btn, #input-metrics-group {
-        font-size: 1.3vw !important;
-    }
-
-    .modal-text {
-        font-size: 1.2vw !important;
-    }
-}
-
 
     .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
         box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
@@ -63,7 +68,7 @@ footer {
     #logo-holder {
         position: relative;
         /*  height:fit-content;*/
-    }
+}
 
         #logo-holder .image,
         #logo-holder .text {

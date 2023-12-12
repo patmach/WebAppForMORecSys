@@ -1,6 +1,9 @@
 ﻿
+using System.Text;
 using WebAppForMORecSys.Loggers;
 using WebAppForMORecSys.Models;
+using WebAppForMORecSys.Models.ViewModels;
+using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Helpers
 {
@@ -103,4 +106,31 @@ namespace WebAppForMORecSys.Helpers
         }
     }
 
+    public static class RecommenderQueryLogExtensions
+    {
+        /// <summary>
+        /// For logging of every interaction to file
+        /// </summary>
+        private static MyFileLogger loggerQuery = new MyFileLogger("Logs/RecommenderQueries.txt");
+
+        /// <summary>
+        /// Log interaction
+        /// </summary>
+        public static void Log(this MainViewModel mainViewModel, List<string> mvCodes)
+        {
+            var messageSB = new StringBuilder();
+            foreach (var code in mvCodes)
+            {
+                messageSB.Append(code).Append(";");
+            }
+            foreach (var value in mainViewModel.Metrics.Values)
+            {
+                messageSB.Append(value).Append(";");
+            }
+            messageSB.Append(mainViewModel.User.GetMetricsView().ToFriendlyString()).Append(";");
+            messageSB.Append(mainViewModel.User.Id).Append(";");
+            messageSB.Append(DateTime.Now.ToString(loggerQuery.format));
+            loggerQuery.Log(messageSB.ToString());
+        }
+    }
 }
