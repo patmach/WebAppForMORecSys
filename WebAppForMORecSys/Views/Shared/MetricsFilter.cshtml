@@ -125,45 +125,23 @@
 </div>
 
 <script>
-    /* Make sliders responsive to change of value */
-
-    /* Computes sum of values set to the merics*/
-    function getSumOfRangeValues() {
-        let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
-        let length = inputranges.length;
-        let sum = 0;
-        for (let i = 0; i < length; i++) {
-            sum += parseInt(inputranges[i].value)
-        }
-        return sum;
+    //Sets colours and bubbles that are used when used metrics view are sliders
+    var colors = []
+    @for (int i = 0; i < Model.User.GetColors().Length; i++)
+    {
+        @:colors.push('@Model.User.GetColors()[i]');
     }
+    setBubbles();
+    setBackgroundOfBoxes();
 
-    function getRandomInt(max) {
-        return Math.floor(Math.random() * max);
-    }
 
-    /* When + and - buttons are used, the next 2 methods increases/decreases its value by 10*/
-    function increase(index){
-        let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
-        let value = parseInt(inputranges[index].value) + 10;
-        value = Math.max(0, Math.min(100, value));
-        inputranges[index].value = value;
-        changeValues(value, index);
-        setBackgroundOfBoxes();
-    }
-
-    function decrease(index) {
-        let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
-        let value = parseInt(inputranges[index].value) - 10;
-        value = Math.max(0, Math.min(100, value));
-        inputranges[index].value = value;
-        changeValues(value, index);
-        setBackgroundOfBoxes();
-    }
-
-    /* When there is a change of value of metrics importance, other values are decreased (if needed to be)
-        for the sum of all importances be less than 100. */
-    function changeValues(value, index) {       
+    /**
+     * When there is a change of value of metrics importance, other values are decreased (if needed to be)
+        for the sum of all importances be less than 100
+     * @@param {number} value - new value
+     * @@param {any} index - index of metric (objective) whose value is changed
+     */
+    function changeValues(value, index) {
         let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
         let length = inputranges.length;
         let sum = getSumOfRangeValues();
@@ -191,166 +169,11 @@
         });
     }
 
-    /* Load metrics importance values to item filter form. 
-    So the importance values are part of the request even if user uses the more detailed filter */
-    function copyValuesToOtherForm(inputranges){
-        let group = document.getElementById("input-copy-metrics-group");
-        if (group === null) return;
-        let inputhiddens = document.getElementById("input-copy-metrics-group").getElementsByTagName('input');
-        if ((inputhiddens== null) || (inputhiddens.length == 0)) return;
-        for (let i = 0; i < inputhiddens.length; i++) {
-            inputhiddens[i].value = inputranges[i].value;
-        }
+    //Modal used for selecting used variant of metric
+    var userMetricModal = document.getElementById('userMetricModal')
 
-    }
-    /* For showing values under sliders. */
-    function setBubbles() {
-        const allRanges = document.querySelectorAll(".range-wrap");
-        allRanges.forEach(wrap => {
-            const range = wrap.querySelector(".range");
-            const bubble = wrap.querySelector(".bubble");
-            if (bubble != null){
-                range.addEventListener("input", () => {
-                    setBubble(range, bubble);
-                });
-                setBubble(range, bubble);
-            }
-        });
-    }
-    var colors = []
-    @for (int i = 0; i < Model.User.GetColors().Length; i++)
-    {
-        @:colors.push('@Model.User.GetColors()[i]');
-    }
-    setBubbles();
-    setBackgroundOfBoxes();
- 
-    function setBubble(range, bubble) {
-        const val = range.value;
-        const min = range.min ? range.min : 0;
-        const max = range.max ? range.max : 100;
-        const newVal = Number(((val - min) * 100) / (max - min));
-        bubble.innerHTML = val;
-
-        // Sorta magic numbers based on size of the native UI thumb
-        bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
-    }
-
-    /* Change the colour transition in background and colour of text when using plus minus buttons. */
-    function setBackgroundOfBoxes(){
-        let boxes = document.getElementsByClassName("progressbox");
-        let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
-        if(boxes === null) return;
-        for (let i=0; i< boxes.length;i++){
-            boxes[i].style.background = 'linear-gradient(to right,' + colors[i] + ' '
-                + (parseInt(inputranges[i].value) - 20) + '%, white ' + (parseInt(inputranges[i].value) + 20) + '% 100% ) ';
-            if (parseInt(inputranges[i].value) > 50) {
-                boxes[i].style.color = "white";
-            }
-            else{
-                boxes[i].style.color = "black";
-            }
-        }
-    }
-
-
-    //Drag and drop
+    //Drag and drop launch
     document.addEventListener('DOMContentLoaded', (event) => {
-        /* Sets the values corresponding to rank of the boxes.
-            Ratio is used. When there are 3 metrics. The sum of 100 is divided in 3:2:1*/
-        function set_input_hidden_values(){
-            //sets right values to hidden (metrics ranking is the same as on start)
-            let inputranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
-            let length = inputranges.length;
-            //let drag_ranges = document.getElementById("input-metrics-group").getElementsByClassName('drag');
-            let numberOfParts = 0;
-            for (let i = 0; i < length; i++) {
-                numberOfParts += i + 1;
-            }
-            for (let i = 0; i < length; i++) {
-                let index = parseInt(inputranges[i].id.replace(/^range/, ''));
-                inputranges[index].value = 100 / numberOfParts * (length - i);
-            }
-            copyValuesToOtherForm(inputranges) 
-        }
-
-        function handleDragStart(e) {
-            this.style.opacity = '0.4';
-            dragSrcEl = this;
-
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/html', this.innerHTML);
-        }
-
-        function handleDragEnd(e) {
-            
-        }
-
-        function handleDragOver(e) {
-            e.preventDefault();
-            return false;
-        }
-
-        function handleDragEnter(e) {
-            this.classList.add('over');
-        }
-
-        function handleDragLeave(e) {
-            this.classList.remove('over');
-        }
-
-        /* Swap the html of the dragged box and the box where the first was dragged */
-        function handleDrop(e) {
-            e.stopPropagation(); // stops the browser from redirecting.
-            if (dragSrcEl !== this) {
-                dragSrcEl.innerHTML = this.innerHTML;
-                var tempColor = dragSrcEl.style.backgroundColor;
-                dragSrcEl.style.backgroundColor = this.style.backgroundColor;
-                this.style.backgroundColor = tempColor;
-                this.innerHTML = e.dataTransfer.getData('text/html');
-                $.ajax({
-                    url: '@Url.Action("AddAct","Home", new { code = "MetricsFilterUsage" })',
-                    cache: false
-                });
-            }
-            set_input_hidden_values();
-            dragboxes.forEach(function (dragbox) {
-                dragbox.style.opacity = '1';
-            });
-            return false;
-        }
-
-        /* Order drag boxes of metrics when page is loaded. According to the rnaking user last used.*/
-        function order_drag_boxes_at_start(){
-            let drag_ranges = document.getElementById("input-metrics-group").getElementsByClassName('dragbox');
-            if (drag_ranges.length==0){
-                return;
-            }
-            let input_ranges = document.getElementById("input-metrics-group").getElementsByTagName('input');
-            let temp = [];
-            let values=[];
-            let sorted = [];
-            let backgrounds = [];
-            for (let i = 0; i < drag_ranges.length; i++) {
-                temp[i] = drag_ranges[i].innerHTML;
-                backgrounds[i] = drag_ranges[i].style.backgroundColor
-                values[i] = Number(input_ranges[i].value);
-                sorted[i] = Number(input_ranges[i].value);
-
-            }
-            sorted.sort(function (a, b) { return a - b; });
-            sorted=sorted.reverse();
-            for (let i = 0; i < drag_ranges.length; i++) {
-                let index = sorted.indexOf(values[i]);
-                drag_ranges[index].innerHTML = temp[i];
-                drag_ranges[index].style.backgroundColor = backgrounds[i]
-                sorted[index] = -1; //next call of indexOf on the same value would return same index
-            }
-            set_input_hidden_values()
-
-
-        }
-
         let dragboxes = document.querySelectorAll('.dragbox');
         dragboxes.forEach(function (item) {
             item.addEventListener('dragstart', handleDragStart);
@@ -363,7 +186,30 @@
         order_drag_boxes_at_start();
     });
 
-    var userMetricModal = document.getElementById('userMetricModal')
+    /**
+    *  Swap the html of the dragged box and the box where the first was dragged
+    */
+    function handleDrop(e) {
+        e.stopPropagation(); // stops the browser from redirecting.
+        if (dragSrcEl !== this) {
+            dragSrcEl.innerHTML = this.innerHTML;
+            var tempColor = dragSrcEl.style.backgroundColor;
+            dragSrcEl.style.backgroundColor = this.style.backgroundColor;
+            this.style.backgroundColor = tempColor;
+            this.innerHTML = e.dataTransfer.getData('text/html');
+            $.ajax({
+                url: '@Url.Action("AddAct","Home", new { code = "MetricsFilterUsage" })',
+                cache: false
+            });
+        }
+        set_input_hidden_values();
+        let dragboxes = document.querySelectorAll('.dragbox');
+        dragboxes.forEach(function (dragbox) {
+            dragbox.style.opacity = '1';
+        });
+        return false;
+    }
+
 
     /* Set modal content. Shows dialog with change of type of the metric. */
     userMetricModal.addEventListener('shown.bs.modal', function (event) {
@@ -399,6 +245,4 @@
         $('#userMetricModalBody').html('');
         $('#userMetricLabel').html('');
     });
-
-    
 </script>

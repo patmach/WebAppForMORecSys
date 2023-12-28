@@ -26,6 +26,7 @@
 }
 
 <script>
+    /* Sets user calibration profile inside all explanations to the elements with class 'calibrationprofile_span' */
     document.addEventListener("DOMContentLoaded", function (event) {
         $.ajax({
             url: '@Url.Action("GetUserProfileForCalibration", SystemParameters.Controller)',

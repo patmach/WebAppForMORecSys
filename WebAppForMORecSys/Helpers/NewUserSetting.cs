@@ -5,7 +5,7 @@ using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Helpers
 {
-    public static class LatinSquaresForNewUser
+    public static class NewUserSetting
     {
 
         /// <summary>
@@ -13,9 +13,9 @@ namespace WebAppForMORecSys.Helpers
         /// </summary>
         static Random rnd = new Random();
 
-        public static List<List<object>> GetLatinSquaresForFirstSetting(ApplicationDbContext context)
+        public static List<List<object>> GetCombinationsForFirstSetting(ApplicationDbContext context)
         {
-            if (_latinSquares == null)
+            if (_combinations == null)
             {
 
                 var lists = new List<List<object>>();
@@ -39,13 +39,13 @@ namespace WebAppForMORecSys.Helpers
                     latinSquares = latinSquares.SelectMany(ls => list, (ls, o) => AddToAndReturn(ls, o)).ToList();
                 }
                 latinSquares = latinSquares.OrderBy(ls => Guid.NewGuid()).ToList();
-                _latinSquares = latinSquares;
+                _combinations = latinSquares;
             }
-            return _latinSquares;
+            return _combinations;
 
         }
 
-        private static List<List<object>> _latinSquares;
+        private static List<List<object>> _combinations;
 
         private static List<object> AddToAndReturn(this List<object> ls, object o)
         {

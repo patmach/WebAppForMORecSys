@@ -34,6 +34,14 @@ namespace WebAppForMORecSys.Models.ViewModels
         /// </summary>
         public Dictionary<Metric, double> MetricsContribution;
 
+        /// <summary>
+        /// Constructor, set its parameters
+        /// </summary>
+        /// <param name="item">Item that the preview or detail is about</param>
+        /// <param name="user">User to whom is the view displayed</param>
+        /// <param name="userRatings">Ratings of that user</param>
+        /// <param name="metricsContribution">Metrics score of this item. Only used when its displayed as recommendation </param>
+        /// <param name="variants">Variants of metrics computation user uses or default variants</param>
         public PreviewDetailViewModel(Item item, User user, List<Rating> userRatings,
             Dictionary<Metric, double> metricsContribution = null, List<MetricVariant> variants=null)
         {

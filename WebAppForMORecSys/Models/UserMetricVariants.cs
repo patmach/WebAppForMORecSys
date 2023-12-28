@@ -68,10 +68,10 @@ namespace WebAppForMORecSys.Models
         /// </summary>
         /// <param name="user">Newly created user</param>
         /// <param name="context">Database context</param>
-        public static void SetRandomMetricVariants(User user, List<List<object>> latinSquares, 
+        public static void SetRandomMetricVariants(User user, List<List<object>> combinations, 
             ApplicationDbContext context)
         {
-            var selectedRow = latinSquares[user.Id % latinSquares.Count];
+            var selectedRow = combinations[user.Id % combinations.Count];
             var metricsWithVariants = context.Metrics.Include(m => m.MetricVariants)
                 .Where(m => m.MetricVariants.Count > 0).OrderBy(m => m.Id);
             List<string> selectedVariantsCodes = new List<string>();

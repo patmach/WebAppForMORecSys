@@ -24,12 +24,9 @@ using WebAppForMORecSys.Helpers;
 using WebAppForMORecSys.Helpers.MovielensLoaders;
 using WebAppForMORecSys.Models;
 using WebAppForMORecSys.Models.ViewModels;
-using WebAppForMORecSys.Models.ViewModels;
 using WebAppForMORecSys.RequestHandlers;
-using WebAppForMORecSys.Settings;
 using static WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler;
 using static WebAppForMORecSys.Helpers.UserActHelper;
-using Interaction = WebAppForMORecSys.Models.Interaction;
 
 namespace WebAppForMORecSys.Controllers
 {
@@ -84,8 +81,8 @@ namespace WebAppForMORecSys.Controllers
           string[] metricsimportance)
         {
             User user = GetCurrentUser();
-            var viewModel = _requestsHandler.ProcessMainQuery(user,search, director, actor, genres, typeOfSearch,
-                releasedateto, releasedatefrom, metricsimportance).Result;
+            var viewModel = await _requestsHandler.ProcessMainQuery(user,search, director, actor, genres, typeOfSearch,
+                releasedateto, releasedatefrom, metricsimportance);
             if (!viewModel.Message.IsNullOrEmpty())
                 TempData["msg"] = viewModel.Message;
             AddUserActsFromMainViewModel(viewModel, typeOfSearch, _context);
@@ -113,8 +110,8 @@ namespace WebAppForMORecSys.Controllers
         {
             int[] currentList = l; 
             User user = GetCurrentUser();
-            var viewModel = _requestsHandler.ProcessMainQuery(user, search, director, actor, genres, typeOfSearch,
-                releasedateto, releasedatefrom, metricsimportance, currentList).Result;
+            var viewModel = await _requestsHandler.ProcessMainQuery(user, search, director, actor, genres, typeOfSearch,
+                releasedateto, releasedatefrom, metricsimportance, currentList);
             return PartialView(viewModel);
         }
 
@@ -132,8 +129,8 @@ namespace WebAppForMORecSys.Controllers
         {
             User user = GetCurrentUser();
             string method = HttpContext.Request.Method;
-            var viewModel = _requestsHandler.ProcessBlockSettings(user, search, block, director, actor, genres, method, _context)
-                .Result;
+            var viewModel = await _requestsHandler.ProcessBlockSettings(user, search, block, director, actor, genres, 
+                method, _context);
             if (!viewModel.Message.IsNullOrEmpty())
                 TempData["msg"] = "<script>alert('" + viewModel.Message + "');</script>";
             return View(viewModel);

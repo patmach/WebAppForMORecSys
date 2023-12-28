@@ -108,7 +108,7 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
         }
 
 
-
+        /*
         public static List<Act> ParseActs()
         {
             var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -161,9 +161,9 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
                 answers = csv.GetRecords<Answer>().ToList();
             }
             return answers;
-        }
+        }*/
     }
-
+    /*
     public class AnswerMap : ClassMap<Answer>
     {
         public AnswerMap()
@@ -189,7 +189,7 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
         }
     }
 
-
+     */
     /// <summary>
     /// Class that describes mapping between movies.csv/movies.dat file and Movie Class
     /// </summary>

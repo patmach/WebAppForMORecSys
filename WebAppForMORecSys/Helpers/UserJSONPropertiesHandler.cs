@@ -580,7 +580,7 @@ namespace WebAppForMORecSys.Helpers
                 AddStringValueToJSONFilter(user, "metricsImportance", metricImportance, false);
             }
             MetricsImportanceLogger.Log(user.Id + ";" + string.Join(';', values) + ';'
-                + DateTime.Now.ToString(MetricsImportanceLogger.format));
+                + DateTime.Now.ToString(MetricsImportanceLogger.DateFormat));
         }
 
         /// <summary>

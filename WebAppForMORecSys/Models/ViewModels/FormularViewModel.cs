@@ -49,7 +49,7 @@ namespace WebAppForMORecSys.Models.ViewModels
         public string NeededInformation { get; set; } = "";
 
         /// <summary>
-        /// True if user has done all acts that are needed for participating in user study
+        /// Last section of questions visited by user
         /// </summary>
         public int LastSectionID { get; set; } = -1;
 

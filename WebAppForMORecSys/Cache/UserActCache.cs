@@ -16,6 +16,9 @@ using static System.Net.WebRequestMethods;
 
 namespace WebAppForMORecSys.Cache
 {
+    /// <summary>
+    /// Cache that saves every act performed by user (once every (selected) number of seconds are new acts saved to the database 
+    /// </summary>
     public static class UserActCache
     {
 
@@ -97,7 +100,7 @@ namespace WebAppForMORecSys.Cache
             list.AddRange(actIDs);
             list = list.Distinct().ToList();
             _cache.Set(userId, list, new CacheItemPolicy { SlidingExpiration = _expiration });
-            actIDs.ForEach(actID => logger.Log($"{userId};{actID};{DateTime.Now.ToString(logger.format)}"));
+            actIDs.ForEach(actID => logger.Log($"{userId};{actID};{DateTime.Now.ToString(logger.DateFormat)}"));
         }
 
         /// <summary>
@@ -117,7 +120,7 @@ namespace WebAppForMORecSys.Cache
                 list.Add(actID);
             }
             _cache.Set(userId, list, new CacheItemPolicy { SlidingExpiration = _expiration });
-            logger.Log($"{userId};{actID};{DateTime.Now.ToString(logger.format)}");
+            logger.Log($"{userId};{actID};{DateTime.Now.ToString(logger.DateFormat)}");
         }
         
 

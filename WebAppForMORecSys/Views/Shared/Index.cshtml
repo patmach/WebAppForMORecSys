@@ -119,8 +119,10 @@
 
 <script>
 
-    
+    /*contains IDs of item whose preview were seen by the user*/
     var seen = [];
+
+
     var controller = '@controller';
     $(document).ready(function () {
         /*Loads possible values to autocomplete the text boxes*/
@@ -157,12 +159,12 @@
         } 
     };
 
-
-
+    /* Stored information if more item previews are being loaded*/
     var loadingmore = false;
 
-   
-
+    /**
+     * Loads more item previews (more recommendations)
+     */
     function loadmore() {
         if ('Movies' == '@controller')
         {

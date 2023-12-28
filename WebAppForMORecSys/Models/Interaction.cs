@@ -59,6 +59,9 @@ namespace WebAppForMORecSys.Models
 
     }
 
+    /// <summary>
+    /// Represents possible types of interaction
+    /// </summary>
     public enum TypeOfInteraction
     {
         Click,

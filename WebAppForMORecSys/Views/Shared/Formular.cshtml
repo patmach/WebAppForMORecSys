@@ -114,15 +114,107 @@ else
     
 }
 <script>
+    /*Setting array od questionIDs and SectionIDs to javascript variables*/
     var questionArray = @Html.Raw(Json.Serialize(QuestionIDs as List<int>));
     var sectionsArray = @Html.Raw(Json.Serialize(SectionIDs as List<int>));
 
+    /*Last section visited by user*/
     var currentIndex = @(SectionIDs.Contains(Model.LastSectionID) 
         ? SectionIDs.IndexOf(Model.LastSectionID)
         : Model.LastSectionID);
 
+    /*Show questions of last section visited by user*/
     changeSection(currentIndex);
 
+
+
+    /**
+     * Checks if all questions  of section are answered. Change colour of the text of not answered questions to red.
+     * @@param {number} index - index of checked section in sectionsArray
+     */
+    function checkAnswersAndChangeSection(index) {
+        let displayedQuestions = $('#sectiondiv .questiondiv');
+        let displayedQuestionIDs = [];
+        for (let i = 0; i < displayedQuestions.length; i++) {
+            displayedQuestionIDs.push(getQuestionIdFromQuestionDiv(displayedQuestions[i]));
+        }
+        $.ajax({
+            url: '@Url.Action("GetNotAnsweredQuestions","Users")',
+            cache: false,
+            success: function (data) {
+                let notAnswered = data;
+                let allAnswered = true;
+                for (let i = 0; i < displayedQuestionIDs.length; i++) {
+                    if (notAnswered.includes(displayedQuestionIDs[i])) {
+                        allAnswered = false;
+                        displayedQuestions[i].style.color = 'red';
+                        var debug = false;
+                    }
+                    else {
+                        displayedQuestions[i].style.color = '';
+                    }
+                }
+                if (allAnswered) {
+                    changeSection(index);
+                }
+                else {
+                    alert('You need to answer all questions!');
+                }
+            }
+        });
+
+    }
+    /**
+    * Saves user text answer to question
+    * @@param {number} qid - ID of the question
+    * @@param {string} textboxId - ID of the textbox with user text answer
+    */
+    function saveTextAnswer(qid, textboxId) {
+        text = $(textboxId)[0].value;
+        if (text != '') {
+            $.ajax({
+                url: '@Url.Action("SaveAnswer","Home")/' + '?questionID=' + qid + '&text=' + encodeURIComponent(text),
+                cache: false,
+                success: function (data) {
+                }
+            });
+        }
+    }
+
+    /**
+     * Saves user value answer (Likert scale) to the question
+     * @@param {number} qid - ID of the question
+     * @@param {number} value - Value of the answer
+     */
+    function saveValueAnswer(qid, value) {
+        $.ajax({
+            url: '@Url.Action("SaveAnswer","Home")/' + '?questionID=' + qid + '&value=' + value,
+            cache: false,
+            success: function (data) {
+            }
+        });
+    }
+
+    /**
+     * Saves ID of user answer to the question
+     * @@param {number} qid - ID of the question
+     * @@param {number} aid - ID of the answer
+     */
+    function saveOptionAnswer(qid, aid) {
+        $.ajax({
+            url: '@Url.Action("SaveAnswer","Home")/' + '?questionID=' + qid + '&answerID=' + aid,
+            cache: false,
+            success: function (data) {
+            }
+        });
+    }
+
+    /**
+    * Show questions of section with this index in sectionsArray
+    * Shows first page of user study from if index < 0
+    * Shows last page of user study form if index >= sectionsArray.length
+    * @@param {number} index - index of section in sectionsArray
+    */
     function changeSection(index) {
         if (index < 0) {
             $('#userstudy')[0].style.display = 'none';
@@ -144,7 +236,7 @@ else
                         data = '<h5>You still haven\'t answered these: </h5><br/>' + data;
                     }
                     $('#questionslist').html(data);
-                    currentIndex = @int.MaxValue;
+                    currentIndex = 1000000; //magic big number
                     window.scrollTo(0, 0);
                     setImgTooltips();
                 }
@@ -165,91 +257,6 @@ else
                     setImgTooltips();
                 }
             });
-        }        
-    }        
-   
-
-    function nextSection() {
-        checkAnswersAndChangeSection(currentIndex + 1)
-    }
-
-    function previousSection() {
-        changeSection(currentIndex - 1)
-    }
-
-    function checkAnswersAndChangeSection(index) {
-        let displayedQuestions = $('#sectiondiv .questiondiv');
-        let displayedQuestionIDs = [];
-        for (let i = 0; i < displayedQuestions.length; i++) {
-            displayedQuestionIDs.push(getQuestionIdFromQuestionDiv(displayedQuestions[i]));
-        }
-        $.ajax({
-            url: '@Url.Action("GetNotAnsweredQuestions","Users")',
-            cache: false,
-            success: function (data) {
-                let notAnswered = data;
-                let allAnswered = true;
-                for (let i = 0; i < displayedQuestionIDs.length; i++) {
-                    if (notAnswered.includes(displayedQuestionIDs[i])) {
-                        allAnswered = false;
-                        displayedQuestions[i].style.color = 'red';
-                        var debug = false;
-                    }
-                    else 
-                    {
-                        displayedQuestions[i].style.color = '';
-                    }
-                }
-                if (allAnswered) {
-                    changeSection(index);
-                }
-                else {
-                    alert('You need to answer all questions!');
-                }
-            }
-        });
-
-    }
-    
-    function getQuestionIdFromQuestionDiv(element) {
-        return parseInt(element.id.replace("question_", ""));
-    }
-
-    function saveTextAnswer(qid, textboxId) {
-        text = $(textboxId)[0].value;
-        if (text != '') {
-            $.ajax({
-                url: '@Url.Action("SaveAnswer","Home")/' + '?questionID=' + qid + '&text=' + encodeURIComponent(text),
-                cache: false,
-                success: function (data) {
-                }
-            });
-        }
-    }
-    function saveValueAnswer(qid, value) {
-        $.ajax({
-            url: '@Url.Action("SaveAnswer","Home")/' + '?questionID=' + qid + '&value=' + value,
-            cache: false,
-            success: function (data) {
-            }
-        });
-    }
-    function saveOptionAnswer(qid, aid) {
-        $.ajax({
-            url: '@Url.Action("SaveAnswer","Home")/' + '?questionID=' + qid + '&answerID=' + aid,
-            cache: false,
-            success: function (data) {
-            }
-        });
-    }
-        
-    function setImgTooltips() {
-
-        var tooltips = $(".tooltip-with-img");
-        for (let i = 0; i < tooltips.length; i++) {
-            let img_id = tooltips[i].id.slice(0,-1) + 'img';
-            let content = $('#' + img_id)[0].outerHTML;
-            $('#' + tooltips[i].id).tooltip({ content: content });
         }
     }
 

@@ -53,9 +53,9 @@ namespace WebAppForMORecSys.Controllers
             User user = new User { UserName = userName };
             _context.Add(user);
             _context.SaveChanges();
-            var latinSquares = LatinSquaresForNewUser.GetLatinSquaresForFirstSetting(_context);
+            var combinations = NewUserSetting.GetCombinationsForFirstSetting(_context);
             user.SetRandomSettingsForNewUser(_context);
-            UserMetricVariants.SetRandomMetricVariants(user, latinSquares, _context);
+            UserMetricVariants.SetRandomMetricVariants(user, combinations, _context);
             _context.Update(user);
             _context.SaveChanges();
             return RedirectToAction("Manual", "Home");

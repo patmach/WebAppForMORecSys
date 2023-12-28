@@ -38,7 +38,8 @@ namespace WebAppForMORecSys.RequestHandlers
             _context = context;
             if (movieIDsSortedByRatings.Count == 0)
             {
-                movieIDsSortedByRatings = context.Ratings.GroupBy(r => r.ItemID).OrderByDescending(g => g.Count()).Select(g => g.Key).ToList();
+                movieIDsSortedByRatings = context.Ratings.GroupBy(r => r.ItemID).OrderByDescending(g => g.Count())
+                    .Select(g => g.Key).ToList();
             }
         }
 
@@ -103,6 +104,22 @@ namespace WebAppForMORecSys.RequestHandlers
                 actor, director, releasedatefrom, releasedateto, genres);
         }
 
+        /// <summary>
+        /// Returns personalized recommendations from recommender system
+        /// </summary>
+        /// <param name="viewModel">View model of main page</param>
+        /// <param name="whitelistIDs">IDs of searched items (Empty if nothing is searched)</param>
+        /// <param name="whitelist">searched items (Empty if nothing is searched)</param>
+        /// <param name="rs">Recommender system instance</param>
+        /// <param name="metrics">List of used metrics</param>
+        /// <param name="currentList">Items already displayed on the page</param>
+        /// <param name="search">searched value (full-text search on name of the item)</param>
+        /// <param name="actor">Movie filter user search on actor></param>
+        /// <param name="director">Movie filter user search on director</param>
+        /// <param name="releasedatefrom">Movie filter user search on the earliest release date</param>
+        /// <param name="releasedateto">Movie filter user search on the latest release date</param>
+        /// <param name="genres">Movie filter user search on genres</param>
+        /// <returns>View model of main page with loaded items that will be displayed to user</returns>
         private async Task<MainViewModel> ReturnPersonalized(MainViewModel viewModel, List<int> whitelistIDs, 
             IQueryable<Item> whitelist, RecommenderSystem rs, List<Metric> metrics, int[] currentList,
             string search, string actor, string director, string releasedatefrom, string releasedateto, string[] genres)
@@ -138,6 +155,15 @@ namespace WebAppForMORecSys.RequestHandlers
             return viewModel;
         }
 
+        /// <summary>
+        /// Returns random items from the most known ones
+        /// </summary>
+        /// <param name="viewModel">View model of main page</param>
+        /// <param name="whitelistIDs">IDs of searched items (Empty if nothing is searched)</param>
+        /// <param name="whitelist">searched items (Empty if nothing is searched)</param>
+        /// <param name="blacklist">Items that can't be recommended</param>
+        /// <param name="positivelyRatedCount">Number of positively rated items by user</param>
+        /// <returns>View model of main page with loaded items that will be displayed to user</returns>
         private MainViewModel ReturnNonPersonalized(MainViewModel viewModel, List<int> whitelistIDs, 
             IQueryable<Item> whitelist, List<int> blacklist, int positivelyRatedCount)
         {
@@ -148,13 +174,22 @@ namespace WebAppForMORecSys.RequestHandlers
             return viewModel;
         }
 
+        /// <summary>
+        /// Returns items corresponding to the user search
+        /// </summary>
+        /// <param name="viewModel">View model of main page</param>
+        /// <param name="whitelistIDs">IDs of searched items (Empty if nothing is searched)</param>
+        /// <param name="currentList">Items already displayed on the page</param>
+        /// <param name="whitelist">searched items (Empty if nothing is searched)</param>
+        /// <param name="returnedViewModel">View model of main page with loaded items that will be displayed to user</param>
+        /// <returns>True - If there are less items that corresponds to the search than length of the list of recommendations</returns>
         private bool ReturnSearched(MainViewModel viewModel, List<int> whitelistIDs, int[] currentList,
             IQueryable<Item> whitelist, out MainViewModel returnedViewModel)
         {
             returnedViewModel = viewModel;
             if (whitelistIDs.Count > 0){
                 whitelistIDs.RemoveAll(id => currentList.Contains(id));
-                if (whitelistIDs.Count <= 15)
+                if (whitelistIDs.Count <= SystemParameters.LengthOfRecommendationsList)
                 {
                     returnedViewModel.Items = whitelist.Where(item => whitelistIDs.Contains(item.Id)).ToList();
                     return true;
@@ -164,6 +199,20 @@ namespace WebAppForMORecSys.RequestHandlers
             return false;
         }
 
+        /// <summary>
+        /// Sets parameters to the properties of main page view model
+        /// </summary>
+        /// <param name="viewModel">main page view model</param>
+        /// <param name="user">User that requests the page</param>
+        /// <param name="metrics">Used metrics</param>
+        /// <param name="metricsimportance">Currently given importance from user</param>
+        /// <param name="search">Searched value from user request. Will be set in the textbox</param>
+        /// <param name="typeOfSearch">Specifies if user clicked the search for main search or in movie filter</param>
+        /// <param name="director">Movie filter user search on director</param>
+        /// <param name="actor">Movie filter user search on actor></param>
+        /// <param name="releasedatefrom">Movie filter user search on the earliest release date</param>
+        /// <param name="releasedateto">Movie filter user search on the latest release date</param>
+        /// <param name="genres">Movie filter user search on genres</param>
         private void SetMainViewModel(MainViewModel viewModel, User user, List<Metric> metrics, string[] metricsimportance, 
             string search, string typeOfSearch, string director, string actor, string releasedatefrom, string releasedateto,
             string[] genres)

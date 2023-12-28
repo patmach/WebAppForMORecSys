@@ -20,7 +20,7 @@ namespace WebAppForMORecSys.Helpers
         public static void Log(this Interaction interaction)
         {
             logger.Log($"{interaction.UserID};{interaction.ItemID};{interaction.type};" +
-            $"{interaction.Last.ToString(logger.format)}");
+            $"{interaction.Last.ToString(logger.DateFormat)}");
         }
     }
 
@@ -37,7 +37,7 @@ namespace WebAppForMORecSys.Helpers
         /// </summary>
         public static void Log(this Rating rating) {
             logger.Log($"{rating.UserID};{rating.ItemID};{rating.RatingScore};" +
-                $"{rating.Date.ToString(logger.format)}");
+                $"{rating.Date.ToString(logger.DateFormat)}");
         }
     }
 
@@ -55,7 +55,7 @@ namespace WebAppForMORecSys.Helpers
         public static void Log(this UserAnswer userAnswer)
         {
             logger.Log($"{userAnswer.UserID};{userAnswer.QuestionID};" +
-                $"{userAnswer.Date.ToString(logger.format)};{userAnswer.AnswerID.ToString() ?? ""};" +
+                $"{userAnswer.Date.ToString(logger.DateFormat)};{userAnswer.AnswerID.ToString() ?? ""};" +
                 $"{userAnswer.Value.ToString() ?? ""};{userAnswer.Text ?? ""}");
         }
     }
@@ -74,7 +74,7 @@ namespace WebAppForMORecSys.Helpers
         public static void Log(this UserActSuggestion userActSuggestion)
         {
             logger.Log($"{userActSuggestion.UserID};{userActSuggestion.ActID};{userActSuggestion.NumberOfSuggestions};" +
-                $"{DateTime.Now.ToString(logger.format)}");
+                $"{DateTime.Now.ToString(logger.DateFormat)}");
         }
     }
 
@@ -97,12 +97,12 @@ namespace WebAppForMORecSys.Helpers
         /// </summary>
         public static void LogBlock(this User user, string property, string value)
         {
-            loggerBlock.Log($"{user.Id},{property},{value},{DateTime.Now.ToString(loggerBlock.format)}");
+            loggerBlock.Log($"{user.Id},{property},{value},{DateTime.Now.ToString(loggerBlock.DateFormat)}");
         }
 
         public static void LogUnblock(this User user, string property, string value)
         {
-            loggerUnblock.Log($"{user.Id},{property},{value},{DateTime.Now.ToString(loggerUnblock.format)}");
+            loggerUnblock.Log($"{user.Id},{property},{value},{DateTime.Now.ToString(loggerUnblock.DateFormat)}");
         }
     }
 
@@ -129,7 +129,7 @@ namespace WebAppForMORecSys.Helpers
             }
             messageSB.Append(mainViewModel.User.GetMetricsView().ToFriendlyString()).Append(";");
             messageSB.Append(mainViewModel.User.Id).Append(";");
-            messageSB.Append(DateTime.Now.ToString(loggerQuery.format));
+            messageSB.Append(DateTime.Now.ToString(loggerQuery.DateFormat));
             loggerQuery.Log(messageSB.ToString());
         }
     }

@@ -15,6 +15,9 @@
         /// </summary>
         public User User { get; set; }
 
+        /// <summary>
+        /// Constructor, creates dictionary Metrics
+        /// </summary>
         public MetricsFilterViewModel() {
             Metrics = new Dictionary<Metric, int>();
         }
