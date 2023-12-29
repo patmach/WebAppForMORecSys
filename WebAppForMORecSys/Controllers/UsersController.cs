@@ -10,6 +10,9 @@ using WebAppForMORecSys.Models;
 
 namespace WebAppForMORecSys.Controllers
 {
+    /// <summary>
+    /// Controller for the requests on actions related to the user
+    /// </summary>
     public class UsersController : Controller
     {
         /// <summary>

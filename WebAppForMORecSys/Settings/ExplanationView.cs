@@ -10,6 +10,9 @@
         AboveAverageMetricPopover
     }
 
+    /// <summary>
+    /// Extension class with ToFriendlyString for enum ExplanationView
+    /// </summary>
     public static class ExplanationViewExtensions
     {
         /// <summary>

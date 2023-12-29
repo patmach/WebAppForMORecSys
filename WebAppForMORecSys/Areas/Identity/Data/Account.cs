@@ -16,9 +16,16 @@ namespace WebAppForMORecSys.Areas.Identity.Data;
 /// </summary>
 public class Account : IdentityUser
 {
+
+    /// <summary>
+    /// ID of user (WebAppForMORecSys.Models.User) record in database
+    /// </summary>
     [ForeignKey("User")]
     public int UserID { get; set; }
 
+    /// <summary>
+    /// Corresponding user (WebAppForMORecSys.Models.User)
+    /// </summary>
     public User User;
 
     public Account()

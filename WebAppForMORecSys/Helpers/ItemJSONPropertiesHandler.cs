@@ -12,7 +12,7 @@ namespace WebAppForMORecSys.Helpers
     /// <summary>
     /// Adds new method to be called on item. Mostly setting the json properties
     /// </summary>
-    public class ItemJSONPropertiesHandler
+    public static class ItemJSONPropertiesHandler
     {
         /// <summary>
         /// </summary>

@@ -5,6 +5,10 @@ using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Helpers
 {
+    /// <summary>
+    /// Class that creates and then returns randomly ordered list of combinations of set parameters 
+    /// to choose users first set variants
+    /// </summary>
     public static class NewUserSetting
     {
 
@@ -13,6 +17,11 @@ namespace WebAppForMORecSys.Helpers
         /// </summary>
         static Random rnd = new Random();
 
+        /// <summary>
+        /// Creates randomly ordered list of combinations of set parameters if not already created
+        /// </summary>
+        /// <param name="context">Database conrext</param>
+        /// <returns>combinations of set parameters</returns>
         public static List<List<object>> GetCombinationsForFirstSetting(ApplicationDbContext context)
         {
             if (_combinations == null)
@@ -47,6 +56,12 @@ namespace WebAppForMORecSys.Helpers
 
         private static List<List<object>> _combinations;
 
+        /// <summary>
+        /// Creates new instance of list that is exteded by object
+        /// </summary>
+        /// <param name="ls">List to be extended</param>
+        /// <param name="o">Object that will be add to the end of the list</param>
+        /// <returns>new instance of list that is exteded by object</returns>
         private static List<object> AddToAndReturn(this List<object> ls, object o)
         {
             List<object> newList = new List<object>();

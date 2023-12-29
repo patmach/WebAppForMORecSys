@@ -12,6 +12,9 @@
         Bar
     }
 
+    /// <summary>
+    /// Extension class with ToFriendlyString for enum MetricContributionScoreView
+    /// </summary>
     public static class MetricContributionScoreViewExtensions
     {
         /// <summary>

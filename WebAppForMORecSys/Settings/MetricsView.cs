@@ -11,6 +11,9 @@
         PlusMinusButtons
     }
 
+    /// <summary>
+    /// Extension class with ToFriendlyString for enum MetricsView
+    /// </summary>
     public static class MetricsViewExtensions
     {
         /// <summary>

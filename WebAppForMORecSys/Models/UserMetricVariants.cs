@@ -8,17 +8,36 @@ using WebAppForMORecSys.Data;
 
 namespace WebAppForMORecSys.Models
 {
+    /// <summary>
+    /// Represents current user choice of variant of the metric
+    /// </summary>
     public class UserMetricVariants
     {
+        /// <summary>
+        /// Unique ID of the user choice of metric variant
+        /// </summary>
         public int Id { get; set; }
 
+        /// <summary>
+        ///  ID of user with selected variant
+        /// </summary>
         [ForeignKey("User")]
         public int UserID { get; set; }
 
+        /// <summary>
+        /// ID of selected variant
+        /// </summary>
         [ForeignKey("MetricVariant")]
         public int MetricVariantID { get; set; }
 
+        /// <summary>
+        ///  User with selected variant
+        /// </summary>
         public User User { get; set; }
+
+        /// <summary>
+        /// Selected variant
+        /// </summary>
         public MetricVariant MetricVariant { get; set; }
 
         public UserMetricVariants()

@@ -10,6 +10,9 @@
         TitleColor
     }
 
+    /// <summary>
+    /// Extension class with ToFriendlyString for enum PreviewExplanationView
+    /// </summary>
     public static class PreviewExplanationViewExtensions
     {
         /// <summary>

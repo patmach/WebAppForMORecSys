@@ -20,6 +20,9 @@ using System.IO;
 
 namespace WebAppForMORecSys.Controllers
 {
+    /// <summary>
+    /// Controller for the requests on pages and actions not based on domain
+    /// </summary>
     [Authorize]
     public class HomeController : Controller
     {

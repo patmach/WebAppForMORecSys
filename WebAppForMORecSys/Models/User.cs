@@ -63,7 +63,7 @@ namespace WebAppForMORecSys.Models
         /// <summary>
         /// Account of this user if he has one
         /// </summary>
-        public Account account;
+        public Account Account;
 
         /// <summary>
         /// User's answers on questions

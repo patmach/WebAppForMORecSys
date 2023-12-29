@@ -203,6 +203,7 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
         }
     }
 
+    /*
     public class LoadedMovieMap : ClassMap<Item>
     {
         public LoadedMovieMap()
@@ -214,6 +215,7 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
             Map(p => p.JSONParams).Index(4);
         }
     }
+    */
 
     /// <summary>
     /// Class corresponding to the links.csv file

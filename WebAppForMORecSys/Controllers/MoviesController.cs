@@ -30,6 +30,9 @@ using static WebAppForMORecSys.Helpers.UserActHelper;
 
 namespace WebAppForMORecSys.Controllers
 {
+    /// <summary>
+    /// Controller for the requests on pages and actions based on the movie domain
+    /// </summary>
     [Authorize]
     public class MoviesController : Controller
     {

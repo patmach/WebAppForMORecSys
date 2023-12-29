@@ -59,6 +59,9 @@ namespace WebAppForMORecSys.Models
 
     }
 
+    /// <summary>
+    /// Variants of answer types
+    /// </summary>
     public enum TypeOfAnswer
     {
         AgreeScale,
@@ -66,6 +69,9 @@ namespace WebAppForMORecSys.Models
         Text
     }
 
+    /// <summary>
+    /// Used likert scale
+    /// </summary>
     public enum AgreeScale
     {
         StronglyAgree,
@@ -75,6 +81,9 @@ namespace WebAppForMORecSys.Models
         StronglyDisagree
     }
 
+    /// <summary>
+    /// Extension class with ToFriendlyString for enum AgreeScale
+    /// </summary>
     public static class AgreeScaleExtensions
     {
         /// <summary>

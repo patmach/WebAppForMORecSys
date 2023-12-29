@@ -2,6 +2,9 @@
 
 namespace WebAppForMORecSys.Models
 {
+    /// <summary>
+    /// Section of questions
+    /// </summary>
     public class QuestionSection
     {
         /// <summary>

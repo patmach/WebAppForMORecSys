@@ -8,6 +8,9 @@ using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Controllers
 {
+    /// <summary>
+    /// Controller for the request on saving the user acts from cache to the database
+    /// </summary>
     public class UserActController : Controller
     {
         /// <summary>

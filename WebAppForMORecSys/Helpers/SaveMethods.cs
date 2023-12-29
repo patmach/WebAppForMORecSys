@@ -4,6 +4,9 @@ using WebAppForMORecSys.Models;
 
 namespace WebAppForMORecSys.Helpers
 {
+    /// <summary>
+    /// Contains methods that saves entities to the database
+    /// </summary>
     public static class SaveMethods
     {
         /// <summary>

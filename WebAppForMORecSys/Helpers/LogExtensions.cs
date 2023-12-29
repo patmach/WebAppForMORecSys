@@ -7,6 +7,10 @@ using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Helpers
 {
+
+    /// <summary>
+    /// Contains properties and methods to log interaction
+    /// </summary>
     public static class InteractionLogExtensions
     {
         /// <summary>
@@ -24,6 +28,9 @@ namespace WebAppForMORecSys.Helpers
         }
     }
 
+    /// <summary>
+    /// Contains properties and methods to log rating
+    /// </summary>
     public static class RatingLogExtension
     {
 
@@ -41,6 +48,9 @@ namespace WebAppForMORecSys.Helpers
         }
     }
 
+    /// <summary>
+    /// Contains properties and methods to log user answer
+    /// </summary>
     public static class UserAnswerLogExtension
     {
 
@@ -60,6 +70,9 @@ namespace WebAppForMORecSys.Helpers
         }
     }
 
+    /// <summary>
+    /// Contains properties and methods to log user act
+    /// </summary>
     public static class UserActSuggestionLogExtension
     {
 
@@ -78,8 +91,10 @@ namespace WebAppForMORecSys.Helpers
         }
     }
 
-
-    public static class UserLogExtension
+    /// <summary>
+    /// Contains properties and methods to log setting of user jsonparams
+    /// </summary>
+    public static class UserJSONParamsLogExtension
     {
 
         /// <summary>
@@ -106,6 +121,9 @@ namespace WebAppForMORecSys.Helpers
         }
     }
 
+    /// <summary>
+    /// Contains properties and methods to log every query to recommender made by user
+    /// </summary>
     public static class RecommenderQueryLogExtensions
     {
         /// <summary>
