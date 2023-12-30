@@ -15,12 +15,12 @@
         @for (int i = 0; i < 10; i++)
         {
             <span style="text-decoration:unset" 
-                onclick="rate(@Html.Raw(i+1), @Model.Item.Id, '@Url.Action("Rate","Home", new { id=Model.Item.Id, score= i+1 })')"
+                onclick="rate(@Html.Raw(i+1), @Model.Item.Id, '@Url.Action("Save","Ratings", new { id=Model.Item.Id, score= i+1 })')"
                class="@aclass" >
                 <i class="@ratingClass fa fa-star-o" aria-hidden="true" title="@((i+1) + " / 10")"></i>
             </span>
         }
-        <span style="text-decoration:unset; color:red" onclick="unrate(@Model.Item.Id, '@Url.Action("Unrate","Home", new { id=Model.Item.Id})')"
+        <span style="text-decoration:unset; color:red" onclick="unrate(@Model.Item.Id, '@Url.Action("Remove","Ratings", new { id=Model.Item.Id})')"
            class="@removeClass @aclass"  >
             <i class="fa fa-remove" aria-hidden="true" title="Remove my rating"></i>
         </span>

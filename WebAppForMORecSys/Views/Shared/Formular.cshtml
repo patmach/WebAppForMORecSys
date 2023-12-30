@@ -173,7 +173,7 @@ else
         text = $(textboxId)[0].value;
         if (text != '') {
             $.ajax({
-                url: '@Url.Action("SaveAnswer","Home")/' + '?questionID=' + qid + '&text=' + encodeURIComponent(text),
+                url: '@Url.Action("SaveAnswer", "Questions")/' + '?questionID=' + qid + '&text=' + encodeURIComponent(text),
                 cache: false,
                 success: function (data) {
                 }
@@ -188,7 +188,7 @@ else
      */
     function saveValueAnswer(qid, value) {
         $.ajax({
-            url: '@Url.Action("SaveAnswer","Home")/' + '?questionID=' + qid + '&value=' + value,
+            url: '@Url.Action("SaveAnswer","Questions")/' + '?questionID=' + qid + '&value=' + value,
             cache: false,
             success: function (data) {
             }
@@ -202,7 +202,7 @@ else
      */
     function saveOptionAnswer(qid, aid) {
         $.ajax({
-            url: '@Url.Action("SaveAnswer","Home")/' + '?questionID=' + qid + '&answerID=' + aid,
+            url: '@Url.Action("SaveAnswer", "Questions")/' + '?questionID=' + qid + '&answerID=' + aid,
             cache: false,
             success: function (data) {
             }
@@ -226,7 +226,7 @@ else
         else if (index >= sectionsArray.length) {
 
             $.ajax({
-                url: '@Url.Action("ListOfQuestions","Home", new { onlyNotAnswered = true })',
+                url: '@Url.Action("ListOfQuestions","Questions", new { onlyNotAnswered = true })',
                 cache: false,
                 success: function (data) {
                     $('#userstudy')[0].style.display = 'none';
@@ -244,7 +244,7 @@ else
         }
         else {
             $.ajax({
-                url: '@Url.Action("ListOfQuestions","Home")' + '?sectionid=' + sectionsArray[index],
+                url: '@Url.Action("ListOfQuestions", "Questions")' + '?sectionid=' + sectionsArray[index],
                 cache: false,
                 success: function (data) {
                     $('#userstudy')[0].style.display = '';

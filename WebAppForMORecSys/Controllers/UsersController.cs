@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAppForMORecSys.Areas.Identity.Data;
 using WebAppForMORecSys.Data;
+using WebAppForMORecSys.Data.Cache;
 using WebAppForMORecSys.Helpers.JSONPropertiesHandlers;
 using WebAppForMORecSys.Models;
 using WebAppForMORecSys.Settings;
@@ -64,10 +65,12 @@ namespace WebAppForMORecSys.Controllers
             _context.SaveChanges();
             return RedirectToAction("Manual", "Home");
         }
-        
+
+        /// <summary>
+        /// </summary>
+        /// <returns>Currently logged user that sent this request.</returns>
         private User GetCurrentUser()
         {
-            //TODO DELETE
             var account = _userManager.GetUserAsync(User).Result;
             User user = null;
             if (account != null)
@@ -122,6 +125,175 @@ namespace WebAppForMORecSys.Controllers
         public List<User> GetAll()
         {
             return _context.Users.ToList();
+        }
+
+
+
+
+
+
+        /// <summary>
+        /// Sets user choice of displaying metrics filter.
+        /// </summary>
+        /// <param name="metricsview">Chosen display of metrics filter</param>
+        /// <returns>App settings page</returns>
+        public IActionResult SetMetricsView(int metricsview)
+        {
+            if ((metricsview < 0) || (metricsview >= Enum.GetValues(typeof(MetricsView)).Length))
+                return RedirectToAction("AppSettings","Home");
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+            user.SetMetricsView(metricsview);
+            _context.Update(user);
+            _context.SaveChanges();
+            AddAct(((MetricsView)metricsview).ToString());
+            return RedirectToAction("AppSettings","Home", "Home");
+
+        }
+
+        /// <summary>
+        /// Sets user choice on how he want to add new block rules.
+        /// </summary>
+        /// <param name="addblockruleview">Chosen way to add new block rukes.</param>
+        /// <returns>App settings page</returns>
+        public IActionResult SetAddBlockRuleView(int addblockruleview)
+        {
+            if ((addblockruleview < 0) || (addblockruleview >= Enum.GetValues(typeof(AddBlockRuleView)).Length))
+                return RedirectToAction("AppSettings","Home");
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+            user.SetAddBlockRuleView(addblockruleview);
+            _context.Update(user);
+            _context.SaveChanges();
+            return RedirectToAction("AppSettings","Home");
+
+        }
+
+        /// <summary>
+        /// Sets user choice on what information he wants in explanations.
+        /// </summary>
+        /// <param name="explanationview">Chosen type of explanation.</param>
+        /// <returns>App settings page</returns>
+        public IActionResult SetExplanationView(int explanationview)
+        {
+            if ((explanationview < 0) || (explanationview >= Enum.GetValues(typeof(ExplanationView)).Length))
+                return RedirectToAction("AppSettings","Home");
+            User user = GetCurrentUser();
+            user.SetExplanationView(explanationview);
+            _context.Update(user);
+            _context.SaveChanges();
+            AddAct(((ExplanationView)explanationview).ToString());
+            return RedirectToAction("AppSettings","Home");
+
+        }
+
+        /// <summary>
+        /// Sets user choice on what type of explanation of metrics share (s)he wants to see in item preview
+        /// </summary>
+        /// <param name="previewExplanationView">Chosen type of score for metrics</param>
+        /// <returns>App settings page</returns>
+        public IActionResult SetPreviewExplanationView(int previewExplanationView)
+        {
+            if ((previewExplanationView < 0) || (previewExplanationView >= Enum.GetValues(typeof(PreviewExplanationView)).Length))
+                return RedirectToAction("AppSettings","Home");
+            User user = GetCurrentUser();
+            user.SetPreviewExplanationView(previewExplanationView);
+            _context.Update(user);
+            _context.SaveChanges();
+            AddAct(((PreviewExplanationView)previewExplanationView).ToString());
+            return RedirectToAction("AppSettings","Home");
+
+        }
+
+        /// <summary>
+        /// Sets user choice on what type of score for metrics he wants to see.
+        /// </summary>
+        /// <param name="metricContributionScoreView">Chosen type of score for metrics</param>
+        /// <returns>App settings page</returns>
+        public IActionResult SetMetricContributionScoreView(int metricContributionScoreView)
+        {
+            if ((metricContributionScoreView < 0) || (metricContributionScoreView >= Enum.GetValues(typeof(MetricContributionScoreView)).Length))
+                return RedirectToAction("AppSettings","Home");
+            User user = GetCurrentUser();
+            user.SetMetricContributionScoreView(metricContributionScoreView);
+            _context.Update(user);
+            _context.SaveChanges();
+            AddAct(((MetricContributionScoreView)metricContributionScoreView).ToString());
+            return RedirectToAction("AppSettings","Home");
+        }
+
+        /// <summary>
+        /// Sets user choice on colors that corresponds to metrics.
+        /// </summary>
+        /// <param name="color">Chosen colors</param>
+        /// <returns>App settings page</returns>
+        public IActionResult SetMetricsColors(string[] metriccolor)
+        {
+            var rs = SystemParameters.GetRecommenderSystem(_context);
+            if ((metriccolor == null) || (metriccolor.Length < 0)
+                || (metriccolor.Length != _context.Metrics.Where(m => m.RecommenderSystemID == rs.Id).Count()))
+                return RedirectToAction("AppSettings","Home");
+            User user = GetCurrentUser();
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+            user.SetColors(metriccolor);
+            _context.Update(user);
+            _context.SaveChanges();
+            AddAct("ColoursChanged");
+            return RedirectToAction("AppSettings","Home");
+        }
+
+        /// <summary>
+        /// Saves act done by user
+        /// </summary>
+        /// <param name="code">Code of the act</param>
+        /// <returns>No Content</returns>
+        public IResult AddAct(string code)
+        {
+            User user = GetCurrentUser();
+            UserActCache.AddAct(user.Id.ToString(), code, _context);
+            return Results.NoContent();
+        }
+
+        /// <summary>
+        /// Saves new user block for an item
+        /// </summary>
+        /// <param name="id">Item ID</param>
+        /// <returns>HTTP response without content</returns>
+        public IResult Hide(int id)
+        {
+            if (_context.Items.Where(m => m.Id == id).Count() == 0)
+                return Results.NoContent();
+            User user = GetCurrentUser();
+            user.AddItemToBlackList(id);
+            _context.Update(user);
+            _context.SaveChanges();
+            AddAct("MovieBlock");
+            user.LogBlock("id", id.ToString());
+            return Results.NoContent();
+        }
+
+        /// <summary>
+        /// Cancel user block on an item
+        /// </summary>
+        /// <param name="id">Item ID</param>
+        /// <returns>HTTP response without content</returns>
+        public IResult Show(int id)
+        {
+            User user = GetCurrentUser();
+            user.RemoveItemFromBlackList(id);
+            _context.Update(user);
+            _context.SaveChanges();
+            user.LogUnblock("id", id.ToString());
+            return Results.NoContent();
         }
     }
 }

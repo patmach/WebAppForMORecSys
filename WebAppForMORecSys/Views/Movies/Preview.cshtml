@@ -64,11 +64,11 @@
     </a>
     <div>
         <a style="position: absolute; right: 1px; display:@hideDisplay" id="hideimg" class="hideimg" 
-            onclick="hide(@Model.Item.Id)" href='@Url.Action("Hide","Home", new { id=Model.Item.Id })'>
+            onclick="hide(@Model.Item.Id)" href='@Url.Action("Hide","Users", new { id=Model.Item.Id })'>
             <img src="@Url.Content("~/Resources/Images/hide.png")" title="Don't recommend this movie" />
         </a>
-        <a style="position: absolute; right: 1px; display:@showDisplay" id="showimg" class="showimg" 
-            onclick="show(@Model.Item.Id)" href='@Url.Action("Show","Home", new { id=Model.Item.Id })'>
+        <a style="position: absolute; right: 1px; display:@showDisplay" id="showimg" class="showimg"
+           onclick="show(@Model.Item.Id)" href='@Url.Action("Show","Users", new { id=Model.Item.Id })'>
             <img src="@Url.Content("~/Resources/Images/show.png")" title="Show this movie again." />
         </a>
     </div>

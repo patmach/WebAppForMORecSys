@@ -333,132 +333,15 @@
             </summary>
             <returns>Partial view with informed consent and aims and targets of the study</returns>
         </member>
-        <member name="M:WebAppForMORecSys.Controllers.HomeController.ListOfQuestions(System.Boolean,System.Int32[],System.Nullable{System.Int32})">
-            <summary>
-            Choose question that are should be part of the list and returns partial view with these questions
-            </summary>
-            <param name="onlyNotAnswered">If set only questions user can answer and haven't yet answered are displayed.</param>
-            <param name="specificIDs">If set only questions with these IDs that user can answer are displayed.</param>
-            <param name="sectionID">If set only questions from this section that user can answer are displayed.</param>
-            <returns>Partial view with list of questions</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Controllers.HomeController.Question(System.Int32)">
-            <summary>
-            </summary>
-            <param name="id">Id of the question</param>
-            <returns>Partial view with one question</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Controllers.HomeController.SaveAnswer(System.Int32,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String)">
-            <summary>
-            Saves user's answer to a question
-            </summary>
-            <param name="questionID">Question that was answered</param>
-            <param name="answerID">If the answer is TypeOfAnswer.Option answer ID is saved as answer</param>
-            <param name="value">If the answer is TypeOfAnswer.AgreeScale value is saved as answer</param>
-            <param name="text">If the answer is TypeOfAnswer.Text text is saved as answer</param>
-            <returns>No content</returns>
-        </member>
         <member name="M:WebAppForMORecSys.Controllers.HomeController.MetricsFilterHelp">
             <summary>
             </summary>
             <returns>Partial view with manual how to use metrics filter.</returns>
         </member>
-        <member name="M:WebAppForMORecSys.Controllers.HomeController.UserMetricSetting(System.Int32)">
-            <summary>
-            </summary>
-            <param name="metricID">ID of metric whose variant will be selected</param>
-            <returns>Partial view where user can select which metric variant he wants to use.</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Controllers.HomeController.SaveUserMetricVariant(System.String)">
-            <summary>
-            Saves variant of the metric that user has selected to use
-            </summary>
-            <param name="variant">Code of selected metric variant</param>
-            <returns>No Content - if everything goes well</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Controllers.HomeController.SetMetricsView(System.Int32)">
-            <summary>
-            Sets user choice of displaying metrics filter.
-            </summary>
-            <param name="metricsview">Chosen display of metrics filter</param>
-            <returns>App settings page</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Controllers.HomeController.SetAddBlockRuleView(System.Int32)">
-            <summary>
-            Sets user choice on how he want to add new block rules.
-            </summary>
-            <param name="addblockruleview">Chosen way to add new block rukes.</param>
-            <returns>App settings page</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Controllers.HomeController.SetExplanationView(System.Int32)">
-            <summary>
-            Sets user choice on what information he wants in explanations.
-            </summary>
-            <param name="explanationview">Chosen type of explanation.</param>
-            <returns>App settings page</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Controllers.HomeController.SetPreviewExplanationView(System.Int32)">
-            <summary>
-            Sets user choice on what type of explanation of metrics share (s)he wants to see in item preview
-            </summary>
-            <param name="previewExplanationView">Chosen type of score for metrics</param>
-            <returns>App settings page</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Controllers.HomeController.SetMetricContributionScoreView(System.Int32)">
-            <summary>
-            Sets user choice on what type of score for metrics he wants to see.
-            </summary>
-            <param name="metricContributionScoreView">Chosen type of score for metrics</param>
-            <returns>App settings page</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Controllers.HomeController.SetMetricsColors(System.String[])">
-            <summary>
-            Sets user choice on colors that corresponds to metrics.
-            </summary>
-            <param name="color">Chosen colors</param>
-            <returns>App settings page</returns>
-        </member>
         <member name="M:WebAppForMORecSys.Controllers.HomeController.GetCurrentUser">
             <summary>
             </summary>
             <returns>Currently logged user that sent this request.</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Controllers.HomeController.Rate(System.Int32,System.Byte)">
-            <summary>
-            Saves new user rating for a movie
-            </summary>
-            <param name="id">Movie ID</param>
-            <param name="score">Rating score</param>
-            <returns>HTTP response without content</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Controllers.HomeController.Unrate(System.Int32)">
-            <summary>
-            Deletes user rating of a movie
-            </summary>
-            <param name="id">Movie ID</param>
-            <returns>HTTP response without content</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Controllers.HomeController.SetInteraction(System.Int32,WebAppForMORecSys.Models.TypeOfInteraction)">
-            <summary>
-            Saves new user interaction with an item
-            </summary>
-            <param name="id">Item ID</param>
-            <param name="type">Type of interaction</param>
-            <returns>HTTP response without content</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Controllers.HomeController.Hide(System.Int32)">
-            <summary>
-            Saves new user block for an item
-            </summary>
-            <param name="id">Item ID</param>
-            <returns>HTTP response without content</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Controllers.HomeController.Show(System.Int32)">
-            <summary>
-            Cancel user block on an item
-            </summary>
-            <param name="id">Item ID</param>
-            <returns>HTTP response without content</returns>
         </member>
         <member name="M:WebAppForMORecSys.Controllers.HomeController.AddAct(System.String)">
             <summary>
@@ -478,6 +361,41 @@
             </summary>
             <param name="filename">name of the log file</param>
             <returns>Text file with logs</returns>
+        </member>
+        <member name="T:WebAppForMORecSys.Controllers.InteractionsController">
+            <summary>
+            Controller for the requests on actions related to interactions
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Controllers.InteractionsController._context">
+            <summary>
+            Database context
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Controllers.InteractionsController._userManager">
+            <summary>
+            User manager for accesing acount the app communicates with
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.InteractionsController.#ctor(WebAppForMORecSys.Data.ApplicationDbContext,Microsoft.AspNetCore.Identity.UserManager{WebAppForMORecSys.Areas.Identity.Data.Account})">
+            <summary>
+            Gets connection to db and UserManager
+            </summary>
+            <param name="context">Database context</param>
+            <param name="userManager">User manager for accesing acount the app communicates with</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.InteractionsController.Save(System.Int32,WebAppForMORecSys.Models.TypeOfInteraction)">
+            <summary>
+            Saves new user interaction with an item
+            </summary>
+            <param name="id">Item ID</param>
+            <param name="type">Type of interaction</param>
+            <returns>HTTP response without content</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.InteractionsController.GetCurrentUser">
+            <summary>
+            </summary>
+            <returns>Currently logged user that sent this request.</returns>
         </member>
         <member name="T:WebAppForMORecSys.Controllers.MoviesController">
             <summary>
@@ -646,6 +564,100 @@
             <param name="genre">Genre to be unblocked</param>
             <returns>HTTP response without content</returns>
         </member>
+        <member name="T:WebAppForMORecSys.Controllers.QuestionsController">
+            <summary>
+            Controller for the requests on actions related to ratings
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Controllers.QuestionsController._context">
+            <summary>
+            Database context
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Controllers.QuestionsController._userManager">
+            <summary>
+            User manager for accesing acount the app communicates with
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.QuestionsController.#ctor(WebAppForMORecSys.Data.ApplicationDbContext,Microsoft.AspNetCore.Identity.UserManager{WebAppForMORecSys.Areas.Identity.Data.Account})">
+            <summary>
+            Gets connection to db and UserManager
+            </summary>
+            <param name="context">Database context</param>
+            <param name="userManager">User manager for accesing acount the app communicates with</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.QuestionsController.ListOfQuestions(System.Boolean,System.Int32[],System.Nullable{System.Int32})">
+            <summary>
+            Choose question that are should be part of the list and returns partial view with these questions
+            </summary>
+            <param name="onlyNotAnswered">If set only questions user can answer and haven't yet answered are displayed.</param>
+            <param name="specificIDs">If set only questions with these IDs that user can answer are displayed.</param>
+            <param name="sectionID">If set only questions from this section that user can answer are displayed.</param>
+            <returns>Partial view with list of questions</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.QuestionsController.Index(System.Int32)">
+            <summary>
+            </summary>
+            <param name="id">Id of the question</param>
+            <returns>Partial view with one question</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.QuestionsController.SaveAnswer(System.Int32,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String)">
+            <summary>
+            Saves user's answer to a question
+            </summary>
+            <param name="questionID">Question that was answered</param>
+            <param name="answerID">If the answer is TypeOfAnswer.Option answer ID is saved as answer</param>
+            <param name="value">If the answer is TypeOfAnswer.AgreeScale value is saved as answer</param>
+            <param name="text">If the answer is TypeOfAnswer.Text text is saved as answer</param>
+            <returns>No content</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.QuestionsController.GetCurrentUser">
+            <summary>
+            </summary>
+            <returns>Currently logged user that sent this request.</returns>
+        </member>
+        <member name="T:WebAppForMORecSys.Controllers.RatingsController">
+            <summary>
+            Controller for the requests on actions related to ratings
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Controllers.RatingsController._context">
+            <summary>
+            Database context
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Controllers.RatingsController._userManager">
+            <summary>
+            User manager for accesing acount the app communicates with
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.RatingsController.#ctor(WebAppForMORecSys.Data.ApplicationDbContext,Microsoft.AspNetCore.Identity.UserManager{WebAppForMORecSys.Areas.Identity.Data.Account})">
+            <summary>
+            Gets connection to db and UserManager
+            </summary>
+            <param name="context">Database context</param>
+            <param name="userManager">User manager for accesing acount the app communicates with</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.RatingsController.Save(System.Int32,System.Byte)">
+            <summary>
+            Saves new user rating for a movie
+            </summary>
+            <param name="id">Movie ID</param>
+            <param name="score">Rating score</param>
+            <returns>HTTP response without content</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.RatingsController.Remove(System.Int32)">
+            <summary>
+            Deletes user rating of a movie
+            </summary>
+            <param name="id">Movie ID</param>
+            <returns>HTTP response without content</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.RatingsController.GetCurrentUser">
+            <summary>
+            </summary>
+            <returns>Currently logged user that sent this request.</returns>
+        </member>
         <member name="T:WebAppForMORecSys.Controllers.UserActController">
             <summary>
             Controller for the request on saving the user acts from cache to the database
@@ -673,6 +685,46 @@
             Saves cache contents to database
             </summary>
             <returns>No content</returns>
+        </member>
+        <member name="T:WebAppForMORecSys.Controllers.UserMetricVariantsController">
+            <summary>
+            Controller for the requests on actions related to UserMetricVariants
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Controllers.UserMetricVariantsController._context">
+            <summary>
+            Database context
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Controllers.UserMetricVariantsController._userManager">
+            <summary>
+            User manager for accesing acount the app communicates with
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.UserMetricVariantsController.#ctor(WebAppForMORecSys.Data.ApplicationDbContext,Microsoft.AspNetCore.Identity.UserManager{WebAppForMORecSys.Areas.Identity.Data.Account})">
+            <summary>
+            Gets connection to db and UserManager
+            </summary>
+            <param name="context">Database context</param>
+            <param name="userManager">User manager for accesing acount the app communicates with</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.UserMetricVariantsController.UserMetricSetting(System.Int32)">
+            <summary>
+            </summary>
+            <param name="metricID">ID of metric whose variant will be selected</param>
+            <returns>Partial view where user can select which metric variant he wants to use.</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.UserMetricVariantsController.Save(System.String)">
+            <summary>
+            Saves variant of the metric that user has selected to use
+            </summary>
+            <param name="variant">Code of selected metric variant</param>
+            <returns>No Content - if everything goes well</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.UserMetricVariantsController.GetCurrentUser">
+            <summary>
+            </summary>
+            <returns>Currently logged user that sent this request.</returns>
         </member>
         <member name="T:WebAppForMORecSys.Controllers.UsersController">
             <summary>
@@ -710,6 +762,11 @@
             <param name="returnUrl">To what page is user redirected after creating his instance</param>
             <returns>The page from returnUrl parameter or code 200</returns>
         </member>
+        <member name="M:WebAppForMORecSys.Controllers.UsersController.GetCurrentUser">
+            <summary>
+            </summary>
+            <returns>Currently logged user that sent this request.</returns>
+        </member>
         <member name="M:WebAppForMORecSys.Controllers.UsersController.GetNotAnsweredQuestions">
             <summary>
             </summary>
@@ -726,6 +783,69 @@
             <summary>
             </summary>
             <returns>All users from database</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.UsersController.SetMetricsView(System.Int32)">
+            <summary>
+            Sets user choice of displaying metrics filter.
+            </summary>
+            <param name="metricsview">Chosen display of metrics filter</param>
+            <returns>App settings page</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.UsersController.SetAddBlockRuleView(System.Int32)">
+            <summary>
+            Sets user choice on how he want to add new block rules.
+            </summary>
+            <param name="addblockruleview">Chosen way to add new block rukes.</param>
+            <returns>App settings page</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.UsersController.SetExplanationView(System.Int32)">
+            <summary>
+            Sets user choice on what information he wants in explanations.
+            </summary>
+            <param name="explanationview">Chosen type of explanation.</param>
+            <returns>App settings page</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.UsersController.SetPreviewExplanationView(System.Int32)">
+            <summary>
+            Sets user choice on what type of explanation of metrics share (s)he wants to see in item preview
+            </summary>
+            <param name="previewExplanationView">Chosen type of score for metrics</param>
+            <returns>App settings page</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.UsersController.SetMetricContributionScoreView(System.Int32)">
+            <summary>
+            Sets user choice on what type of score for metrics he wants to see.
+            </summary>
+            <param name="metricContributionScoreView">Chosen type of score for metrics</param>
+            <returns>App settings page</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.UsersController.SetMetricsColors(System.String[])">
+            <summary>
+            Sets user choice on colors that corresponds to metrics.
+            </summary>
+            <param name="color">Chosen colors</param>
+            <returns>App settings page</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.UsersController.AddAct(System.String)">
+            <summary>
+            Saves act done by user
+            </summary>
+            <param name="code">Code of the act</param>
+            <returns>No Content</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.UsersController.Hide(System.Int32)">
+            <summary>
+            Saves new user block for an item
+            </summary>
+            <param name="id">Item ID</param>
+            <returns>HTTP response without content</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Controllers.UsersController.Show(System.Int32)">
+            <summary>
+            Cancel user block on an item
+            </summary>
+            <param name="id">Item ID</param>
+            <returns>HTTP response without content</returns>
         </member>
         <member name="T:WebAppForMORecSys.Data.Cache.BlockedItemsCache">
             <summary>

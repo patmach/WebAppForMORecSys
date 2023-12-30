@@ -298,7 +298,7 @@ function SaveItemPreviewSeenInteractions() {
             var id = itempreviews[i].id.replace('preview_', '');
             $.ajax(
                 {
-                    url: "Home/SetInteraction",
+                    url: "Interactions/Save",
                     type: "POST",
                     dataType: "json",
                     data: { id: id, type: 1 }

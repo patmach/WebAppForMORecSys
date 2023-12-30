@@ -219,7 +219,7 @@
         if (button.hasAttribute('data-bs-metricid')) {
             var metricId = button.getAttribute('data-bs-metricid')
             $.ajax({
-                url: '@Url.Action("UserMetricSetting","Home")' + '?metricID=' + metricId,
+                url: '@Url.Action("UserMetricSetting", "UserMetricVariants")' + '?metricID=' + metricId,
                 cache: false,
                 success: function (data) {
                     $('#userMetricModalBody').html(data);

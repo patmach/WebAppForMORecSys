@@ -23,11 +23,11 @@
     </div>
     <div>
         <a style="display:@hideDisplay;" class="hideimg" onclick="hide(@Model.Item.Id)"
-            href='@Url.Action("Hide","Home", new { id=Model.Item.Id })'>
+            href='@Url.Action("Hide","Users", new { id=Model.Item.Id })'>
             <img src="@Url.Content("~/Resources/Images/hide.png")" title="Don't recommend this movie" />
         </a>
         <a style="display:@showDisplay;" class="showimg" onclick="show(@Model.Item.Id)"
-            href='@Url.Action("Show","Home", new { id=Model.Item.Id })'>
+           href='@Url.Action("Show","Users", new { id=Model.Item.Id })'>
             <img src="@Url.Content("~/Resources/Images/show.png")" title="Show movie again." />
         </a>
         <hr />

@@ -26,7 +26,7 @@
         const body = {
             variant: code,
         };
-        const url = '@Url.Action("SaveUserMetricVariant","Home")';
+        const url = '@Url.Action("Save", "UserMetricVariants")';
         $.post(url, body, (data, status) => { });
     }
 </script>

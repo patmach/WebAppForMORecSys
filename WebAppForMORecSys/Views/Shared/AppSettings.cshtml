@@ -20,7 +20,7 @@
             string typeOfBtn = "btn-secondary";
             if (Model.User.GetMetricsView() == (MetricsView)value)
                 typeOfBtn = "btn-primary";
-            <a style="margin:auto" class="btn @typeOfBtn" href='@Url.Action("SetMetricsView","Home", new { metricsview=index })'>
+            <a style="margin:auto" class="btn @typeOfBtn" href='@Url.Action("SetMetricsView","Users", new { metricsview=index })'>
                 @value.ToFriendlyString()
             </a>
             index++;
@@ -44,7 +44,7 @@
             string typeOfBtn = "btn-secondary";
             if (Model.User.GetPreviewExplanationView() == (PreviewExplanationView)value)
                 typeOfBtn = "btn-primary";
-            <a style="margin:auto;" class="btn btn-sm @typeOfBtn" href='@Url.Action("SetPreviewExplanationView","Home", new { previewExplanationView=index })'>
+            <a style="margin:auto;" class="btn btn-sm @typeOfBtn" href='@Url.Action("SetPreviewExplanationView","Users", new { previewExplanationView=index })'>
                 @value.ToFriendlyString()
             </a>
             index++;
@@ -61,7 +61,7 @@
             if (Model.User.GetMetricContributionScoreView() == (MetricContributionScoreView)value)
                 typeOfBtn = "btn-primary";
             <a style="margin:auto; 
-" class="btn btn-sm @typeOfBtn" href='@Url.Action("SetMetricContributionScoreView","Home", new { metricContributionScoreView=index })'>
+    " class="btn btn-sm @typeOfBtn" href='@Url.Action("SetMetricContributionScoreView","Users", new { metricContributionScoreView=index })'>
                 @value.ToFriendlyString()
             </a>
             index++;
@@ -78,7 +78,7 @@
             string typeOfBtn = "btn-secondary";
             if (Model.User.GetExplanationView() == (ExplanationView)value)
                 typeOfBtn = "btn-primary";
-            <a style="margin:auto;" class="btn @typeOfBtn" href='@Url.Action("SetExplanationView","Home", new { explanationView=index })'>
+            <a style="margin:auto;" class="btn @typeOfBtn" href='@Url.Action("SetExplanationView","Users", new { explanationView=index })'>
                 @value.ToFriendlyString()
             </a>
             index++;
@@ -110,7 +110,7 @@
         index = 0;
     }
     <h4 id="colorssetting">Choose Metric Colors</h4>
-    <form asp-controller="Home" asp-action="SetMetricsColors" method="post" style="display:grid">
+    <form asp-controller="Users" asp-action="SetMetricsColors" method="post" style="display:grid">
         <div class="input-group color-group" style="width:100%">
             @foreach (var metric in Model.Metrics.Keys)
             {
@@ -142,7 +142,7 @@
             string typeOfBtn = "btn-secondary";
             if (Model.User.GetAddBlockRuleView() == (AddBlockRuleView)value)
                 typeOfBtn = "btn-primary";
-            <a style="margin:auto" class="btn @typeOfBtn" href='@Url.Action("SetAddBlockRuleView","Home", new { addBlockRuleView=index })'>
+            <a style="margin:auto" class="btn @typeOfBtn" href='@Url.Action("SetAddBlockRuleView","Users", new { addBlockRuleView=index })'>
                 @value
             </a>
             index++;
