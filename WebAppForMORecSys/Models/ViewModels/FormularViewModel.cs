@@ -2,8 +2,8 @@
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.MinimalApi;
 using NuGet.Packaging;
 using System.Text;
-using WebAppForMORecSys.Cache;
 using WebAppForMORecSys.Data;
+using WebAppForMORecSys.Data.Cache;
 using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Models.ViewModels

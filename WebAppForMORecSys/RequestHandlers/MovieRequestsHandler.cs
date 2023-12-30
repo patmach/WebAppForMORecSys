@@ -5,10 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Web.Razor.Parser.SyntaxTree;
 using System.Xml.Linq;
-using WebAppForMORecSys.Cache;
 using WebAppForMORecSys.Data;
-using WebAppForMORecSys.Helpers;
+using WebAppForMORecSys.Data.Cache;
+using WebAppForMORecSys.Helpers.JSONPropertiesHandlers;
 using WebAppForMORecSys.Models;
+using WebAppForMORecSys.Models.ItemDomainExtension.Movie;
 using WebAppForMORecSys.Models.ViewModels;
 using WebAppForMORecSys.Settings;
 
@@ -70,8 +71,7 @@ namespace WebAppForMORecSys.RequestHandlers
                 viewModel.User = user;
                 viewModel.UserRatings = await (from rating in _context.Ratings
                                                       where rating.UserID == viewModel.User.Id
-                                                      select rating).ToListAsync();
-               
+                                                      select rating).ToListAsync();               
             }
             RecommenderSystem rs = SystemParameters.GetRecommenderSystem(_context);
             List<Metric> metrics = await _context.Metrics.Include(m => m.MetricVariants)

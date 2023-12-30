@@ -3,7 +3,7 @@ using WebAppForMORecSys.Models;
 using WebAppForMORecSys.Models.ViewModels;
 using WebAppForMORecSys.Settings;
 
-namespace WebAppForMORecSys.Helpers
+namespace WebAppForMORecSys.RequestHandlers
 {
     /// <summary>
     /// This class contains method that calls the Recommender API
@@ -24,7 +24,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="userId">For which user the recommendations should be</param>
         /// <param name="rsURI">URI of Recommender API</param>
         /// <returns>List of recommendations with their metrics contribution score</returns>
-        public async static Task<Dictionary<int, double[]>> GetRecommendations(int[] whitelist, int[]blacklist,
+        public async static Task<Dictionary<int, double[]>> GetRecommendations(int[] whitelist, int[] blacklist,
             int[] metricsimportance, int userId, string rsURI, string[] metricVariantsCodes, int[] currentList)
         {
             RecommenderQuery rq = new RecommenderQuery

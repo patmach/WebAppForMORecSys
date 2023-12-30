@@ -1,7 +1,9 @@
 ﻿@model WebAppForMORecSys.Models.ViewModels.UserBlockRuleViewModel
-@using static WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler
-@using static WebAppForMORecSys.Helpers.UserJSONPropertiesHandler
+@using static WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler
+@using static WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler
+@using WebAppForMORecSys.Helpers
 
+@using WebAppForMORecSys.Models.ItemDomainExtension.Movie
 @using WebAppForMORecSys.Settings
 <form asp-controller="Movies" asp-action="UserBlockSettings" method="post" class="moviecreateblockrule">
     @if (Model.CurrentUser.GetAddBlockRuleView() == AddBlockRuleView.Single)

@@ -3,7 +3,6 @@ using WebAppForMORecSys.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
-using WebAppForMORecSys.Cache;
 using WebAppForMORecSys.Settings;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using WebAppForMORecSys.Data;
@@ -11,8 +10,9 @@ using Humanizer;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using WebAppForMORecSys.Loggers;
+using WebAppForMORecSys.Data.Cache;
 
-namespace WebAppForMORecSys.Helpers
+namespace WebAppForMORecSys.Helpers.JSONPropertiesHandlers
 {
     /// <summary>
     /// Adds new method to be called on user. Mostly setting the json properties
@@ -25,7 +25,7 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>Value of property JSONBlockRules</returns>
         private static dynamic GetBlockRuleDynamic(User user)
         {
-            dynamic jsonObj = JsonConvert.DeserializeObject(user.JSONBlockRules??"");
+            dynamic jsonObj = JsonConvert.DeserializeObject(user.JSONBlockRules ?? "");
             return jsonObj;
 
         }
@@ -62,11 +62,11 @@ namespace WebAppForMORecSys.Helpers
             var jsonObj = GetBlockRuleDynamic(user);
             if (jsonObj == null)
             {
-                user.JSONBlockRules="{\"Id\":["+itemId+"]}";
+                user.JSONBlockRules = "{\"Id\":[" + itemId + "]}";
                 return;
             }
             var jarray = (JArray)jsonObj["Id"];
-            if ((!jarray?.ToObject<List<int>>()?.Contains(itemId)) ?? false)
+            if (!jarray?.ToObject<List<int>>()?.Contains(itemId) ?? false)
                 ((JArray)jsonObj["Id"]).Add(itemId);
             user.JSONBlockRules = JsonConvert.SerializeObject(jsonObj);
             BlockedItemsCache.RemoveBlockedItemIdsForUser(user.Id.ToString());
@@ -95,7 +95,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="value">The added value</param>
         /// <param name="uniqueValues">True - Checks if value is already present and then dont add the value. False - Add anyway</param>
         /// <returns></returns>
-        public static dynamic AddStringValue(dynamic jsonObj,User user ,string name, string value, bool uniqueValues = true)
+        public static dynamic AddStringValue(dynamic jsonObj, User user, string name, string value, bool uniqueValues = true)
         {
             if (jsonObj == null)
             {
@@ -106,7 +106,7 @@ namespace WebAppForMORecSys.Helpers
                 ((JObject)jsonObj).Add(name, new JArray());
             }
             var jarray = (JArray)jsonObj[name];
-            if (!uniqueValues || ((!jarray?.ToObject<List<string>>()?.Contains(value)) ?? false))
+            if (!uniqueValues || (!jarray?.ToObject<List<string>>()?.Contains(value) ?? false))
                 ((JArray)jsonObj[name]).Add(value);
             return jsonObj;
         }
@@ -129,7 +129,7 @@ namespace WebAppForMORecSys.Helpers
             {
                 ((JObject)jsonObj).Add(name, value);
             }
-            else 
+            else
             {
                 jsonObj[name] = value;
             }
@@ -144,7 +144,7 @@ namespace WebAppForMORecSys.Helpers
         public static void RemoveItemFromBlackList(this User user, int itemId)
         {
             var jsonObj = GetBlockRuleDynamic(user);
-            if ((jsonObj == null) || (jsonObj["Id"] == null))
+            if (jsonObj == null || jsonObj["Id"] == null)
             {
                 return;
             }
@@ -204,7 +204,7 @@ namespace WebAppForMORecSys.Helpers
         /// <returns></returns>
         private static dynamic RemoveStringValue(dynamic jsonObj, User user, string name, string value)
         {
-            if ((jsonObj == null) || (!jsonObj.ContainsKey(name)))
+            if (jsonObj == null || !jsonObj.ContainsKey(name))
             {
                 return jsonObj;
             }
@@ -223,7 +223,7 @@ namespace WebAppForMORecSys.Helpers
         public static bool IsItemInBlackList(this User user, int itemId)
         {
             var jsonObj = GetBlockRuleDynamic(user);
-            if ((jsonObj == null)||(jsonObj["Id"]==null))
+            if (jsonObj == null || jsonObj["Id"] == null)
             {
                 return false;
             }
@@ -242,7 +242,7 @@ namespace WebAppForMORecSys.Helpers
         public static bool IsStringValueInBlackList(this User user, string name, string value)
         {
             var jsonObj = GetBlockRuleDynamic(user);
-            if ((jsonObj == null) || (jsonObj[name] == null))
+            if (jsonObj == null || jsonObj[name] == null)
             {
                 return false;
             }
@@ -259,7 +259,7 @@ namespace WebAppForMORecSys.Helpers
         public static List<int> GetItemsInBlackList(this User user)
         {
             var jsonObj = GetBlockRuleDynamic(user);
-            if ((jsonObj == null) || (jsonObj["Id"] == null))
+            if (jsonObj == null || jsonObj["Id"] == null)
             {
                 return new List<int>();
             }
@@ -307,14 +307,15 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="user">User whose set values should be returned</param>
         /// <param name="name">Name of key</param>
         /// <returns>Values of given key from the given JSON property</returns>
-        private static List<string> GetStringValues(User user, string name, dynamic jsonObj) {
-            if ((jsonObj == null) || (jsonObj[name] == null))
+        private static List<string> GetStringValues(User user, string name, dynamic jsonObj)
+        {
+            if (jsonObj == null || jsonObj[name] == null)
             {
                 return new List<string>();
             }
             var listOfValues = ((JArray)jsonObj[name])?.ToObject<List<string>>();
             return listOfValues;
-        
+
         }
 
         /// <summary>
@@ -325,7 +326,7 @@ namespace WebAppForMORecSys.Helpers
         private static string GetStringValueInUserChoices(this User user, string name)
         {
             var jsonObj = GetUserChoicesDynamic(user);
-            if ((jsonObj == null) || (jsonObj[name] == null))
+            if (jsonObj == null || jsonObj[name] == null)
             {
                 return null;
             }
@@ -375,7 +376,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="value">Value to be saved</param>
         public static void SetMetricsView(this User user, int value)
         {
-            SetStringValueToUserChoices(user, "MetricsView", value.ToString());
+            user.SetStringValueToUserChoices("MetricsView", value.ToString());
         }
 
         /// <summary>
@@ -384,9 +385,9 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>Saved type of metrics view</returns>
         public static MetricsView GetMetricsView(this User user)
         {
-            var metricsview = GetStringValueInUserChoices(user, "MetricsView");
+            var metricsview = user.GetStringValueInUserChoices("MetricsView");
             int value;
-            if ((metricsview == null) || !int.TryParse(metricsview, out value))
+            if (metricsview == null || !int.TryParse(metricsview, out value))
             {
                 return SystemParameters.MetricsView;
             }
@@ -403,7 +404,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="value">Value to be saved</param>
         public static void SetExplanationView(this User user, int value)
         {
-            SetStringValueToUserChoices(user, "ExplanationView", value.ToString());
+            user.SetStringValueToUserChoices("ExplanationView", value.ToString());
         }
 
         /// <summary>
@@ -412,9 +413,9 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>Saved type of explanation view </returns>
         public static ExplanationView GetExplanationView(this User user)
         {
-            var Explanationview = GetStringValueInUserChoices(user, "ExplanationView");
+            var Explanationview = user.GetStringValueInUserChoices("ExplanationView");
             int value;
-            if ((Explanationview == null) || !int.TryParse(Explanationview, out value))
+            if (Explanationview == null || !int.TryParse(Explanationview, out value))
             {
                 return SystemParameters.ExplanationView;
             }
@@ -431,7 +432,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="value">Value to be saved</param>
         public static void SetMetricContributionScoreView(this User user, int value)
         {
-            SetStringValueToUserChoices(user, "MetricContributionScoreView", value.ToString());
+            user.SetStringValueToUserChoices("MetricContributionScoreView", value.ToString());
         }
 
         /// <summary>
@@ -440,9 +441,9 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>Saved type of metric contribution score view</returns>
         public static MetricContributionScoreView GetMetricContributionScoreView(this User user)
         {
-            var MetricContributionScoreView = GetStringValueInUserChoices(user, "MetricContributionScoreView");
+            var MetricContributionScoreView = user.GetStringValueInUserChoices("MetricContributionScoreView");
             int value;
-            if ((MetricContributionScoreView == null) || !int.TryParse(MetricContributionScoreView, out value))
+            if (MetricContributionScoreView == null || !int.TryParse(MetricContributionScoreView, out value))
             {
                 return SystemParameters.MetricContributionScoreView;
             }
@@ -460,7 +461,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="value">Value to be saved</param>
         public static void SetPreviewExplanationView(this User user, int value)
         {
-            SetStringValueToUserChoices(user, "PreviewExplanationView", value.ToString());
+            user.SetStringValueToUserChoices("PreviewExplanationView", value.ToString());
         }
 
         /// <summary>
@@ -469,9 +470,9 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>Saved type of preview explanation view</returns>
         public static PreviewExplanationView GetPreviewExplanationView(this User user)
         {
-            var PreviewExplanationView = GetStringValueInUserChoices(user, "PreviewExplanationView");
+            var PreviewExplanationView = user.GetStringValueInUserChoices("PreviewExplanationView");
             int value;
-            if ((PreviewExplanationView == null) || !int.TryParse(PreviewExplanationView, out value))
+            if (PreviewExplanationView == null || !int.TryParse(PreviewExplanationView, out value))
             {
                 return SystemParameters.PreviewExplanationView;
             }
@@ -488,7 +489,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="value">Value to be saved</param>
         public static void SetAddBlockRuleView(this User user, int value)
         {
-            SetStringValueToUserChoices(user, "AddBlockRuleView", value.ToString());
+            user.SetStringValueToUserChoices("AddBlockRuleView", value.ToString());
         }
 
         /// <summary>
@@ -497,9 +498,9 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>Saved type of block rule addition</returns>
         public static AddBlockRuleView GetAddBlockRuleView(this User user)
         {
-            var addBlockRuleView = GetStringValueInUserChoices(user, "AddBlockRuleView");
+            var addBlockRuleView = user.GetStringValueInUserChoices("AddBlockRuleView");
             int value;
-            if ((addBlockRuleView == null) || !int.TryParse(addBlockRuleView, out value))
+            if (addBlockRuleView == null || !int.TryParse(addBlockRuleView, out value))
             {
                 return SystemParameters.AddBlockRuleView;
             }
@@ -516,12 +517,13 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="value">Values to be saved</param>
         public static void SetColors(this User user, string[] value)
         {
-            foreach (var color in GetStringValuesInUserChoices(user, "Colors")) {
-                RemoveStringValueFromUserChoices(user, "Colors", color);
+            foreach (var color in user.GetStringValuesInUserChoices("Colors"))
+            {
+                user.RemoveStringValueFromUserChoices("Colors", color);
             }
             foreach (var color in value)
             {
-                AddStringValueToUserChoices(user, "Colors", color, false);
+                user.AddStringValueToUserChoices("Colors", color, false);
             }
         }
 
@@ -531,23 +533,23 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>Chosen colors for metrics</returns>
         public static string[] GetColors(this User user)
         {
-            var colors = GetStringValuesInUserChoices(user, "Colors");
-            if ((colors == null) || (colors.Count == 0))
+            var colors = user.GetStringValuesInUserChoices("Colors");
+            if (colors == null || colors.Count == 0)
                 return SystemParameters.Colors;
             for (int i = colors.Count; i < SystemParameters.Colors.Length; i++)
             {
                 colors.Add(SystemParameters.Colors[i]);
             }
-            return colors.ToArray(); 
+            return colors.ToArray();
         }
 
         /// <summary>
         /// </summary>
         /// <param name="user">User whose saved color values should be mapped to metrics</param>
         /// <returns>Metrics mapped on chosen colors</returns>
-        public static Dictionary<int,string> GetMetricIDsToColors(this User user)
+        public static Dictionary<int, string> GetMetricIDsToColors(this User user)
         {
-            var colors = GetColors(user);
+            var colors = user.GetColors();
             var metrics = SystemParameters.MetricsToColors.Keys.Select(metric => metric.Id).ToList();
             return Enumerable.Range(0, metrics.Count).ToDictionary(i => metrics[i], i => colors[i]);
         }
@@ -558,8 +560,8 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>Saved value of metrics importance in JSONFilter property</returns>
         public static string[] GetMetricsImportance(this User user)
         {
-            var metricsImportance = GetStringValuesInJSONFilter(user, "metricsImportance");
-            if ((metricsImportance == null) || (metricsImportance.Count == 0))
+            var metricsImportance = user.GetStringValuesInJSONFilter("metricsImportance");
+            if (metricsImportance == null || metricsImportance.Count == 0)
                 return null;
             return metricsImportance.ToArray();
         }
@@ -571,13 +573,13 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="values">Values to be saved</param>
         public static void SetMetricsImportance(this User user, string[] values)
         {
-            foreach (var metricImportance in GetStringValuesInJSONFilter(user, "metricsImportance"))
+            foreach (var metricImportance in user.GetStringValuesInJSONFilter("metricsImportance"))
             {
-                RemoveStringValueFromJSONFilter(user, "metricsImportance", metricImportance);
+                user.RemoveStringValueFromJSONFilter("metricsImportance", metricImportance);
             }
             foreach (var metricImportance in values)
             {
-                AddStringValueToJSONFilter(user, "metricsImportance", metricImportance, false);
+                user.AddStringValueToJSONFilter("metricsImportance", metricImportance, false);
             }
             MetricsImportanceLogger.Log(user.Id + ";" + string.Join(';', values) + ';'
                 + DateTime.Now.ToString(MetricsImportanceLogger.DateFormat));
@@ -596,8 +598,8 @@ namespace WebAppForMORecSys.Helpers
         public static List<int> GetRatedAndSeenItems(this User user, ApplicationDbContext context)
         {
             var rated = context.Ratings.Where(r => r.UserID == user.Id).Select(r => r.ItemID).ToList();
-            var seen = context.Interactions.Where(i => (i.type == TypeOfInteraction.Click && i.Last > DateTime.Now.AddMinutes(-15))
-            || (i.type == TypeOfInteraction.Seen && (i.Last > DateTime.Now.AddMinutes(-5) || i.NumberOfInteractions >= 3)))
+            var seen = context.Interactions.Where(i => i.type == TypeOfInteraction.Click && i.Last > DateTime.Now.AddMinutes(-15)
+            || i.type == TypeOfInteraction.Seen && (i.Last > DateTime.Now.AddMinutes(-5) || i.NumberOfInteractions >= 3))
                 .Select(r => r.ItemID).ToList();
             return rated.Union(seen).ToList();
         }
@@ -609,7 +611,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="value">Value to be saved</param>
         public static void SetLastSectionID(this User user, int value)
         {
-            SetStringValueToUserChoices(user, "LastSectionID", value.ToString());
+            user.SetStringValueToUserChoices("LastSectionID", value.ToString());
         }
 
         /// <summary>
@@ -618,9 +620,9 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>Last question user saw in the formular</returns>
         public static int GetLastSectionID(this User user)
         {
-            var lastQuestionID = GetStringValueInUserChoices(user, "LastSectionID");
+            var lastQuestionID = user.GetStringValueInUserChoices("LastSectionID");
             int value;
-            if ((lastQuestionID == null) || !int.TryParse(lastQuestionID, out value))
+            if (lastQuestionID == null || !int.TryParse(lastQuestionID, out value))
             {
                 return -1;
             }
@@ -638,7 +640,7 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>Codes of variants of metrics selected by user</returns>
         public static string[] GetMetricVariantCodes(this User user, ApplicationDbContext context, List<int> metricIDs)
         {
-            return GetMetricVariants(user, context, metricIDs).Select(mv=> mv?.Code ?? "").ToArray();
+            return user.GetMetricVariants(context, metricIDs).Select(mv => mv?.Code ?? "").ToArray();
         }
 
         /// <summary>
@@ -653,7 +655,7 @@ namespace WebAppForMORecSys.Helpers
             var defaultMVs = context.MetricVariants.Where(mv => metricIDs.Contains(mv.MetricID) && mv.DefaultVariant)
                 .ToList();
             var userMVs = context.UserMetricVariants.Include(umv => umv.MetricVariant).
-                Where(umv => (umv.UserID == user.Id) && metricIDs.Contains(umv.MetricVariant.MetricID))
+                Where(umv => umv.UserID == user.Id && metricIDs.Contains(umv.MetricVariant.MetricID))
                 .Select(umv => umv.MetricVariant).ToList();
             foreach (int metricID in metricIDs)
             {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebAppForMORecSys.Areas.Identity.Data;
-using WebAppForMORecSys.Cache;
 using WebAppForMORecSys.Data;
+using WebAppForMORecSys.Data.Cache;
 using WebAppForMORecSys.Loggers;
 using WebAppForMORecSys.Settings;
 

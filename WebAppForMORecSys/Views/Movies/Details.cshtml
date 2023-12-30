@@ -1,5 +1,6 @@
-﻿@using static WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler
-@using static WebAppForMORecSys.Helpers.UserJSONPropertiesHandler
+﻿@using static WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler
+@using static WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler
+@using static WebAppForMORecSys.Models.ItemDomainExtension.Movie.Movie
 @model WebAppForMORecSys.Models.ViewModels.PreviewDetailViewModel
 @{
     string divClass = "Detail_" + Model.Item.Id;

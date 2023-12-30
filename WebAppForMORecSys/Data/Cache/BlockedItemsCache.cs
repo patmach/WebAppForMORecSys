@@ -8,7 +8,7 @@ using WebAppForMORecSys.Data;
 using Microsoft.EntityFrameworkCore;
 using WebAppForMORecSys.Models;
 
-namespace WebAppForMORecSys.Cache
+namespace WebAppForMORecSys.Data.Cache
 {
     /// <summary>
     /// Cache on blocked items by users
@@ -30,7 +30,7 @@ namespace WebAppForMORecSys.Cache
         /// <param name="userId">Id of user whose blocked items should be returned</param>
         /// <param name="context">Database context</param>
         /// <returns>Blocked items by user from cache if present or database</returns>
-        public static List<int> GetBlockedItemIdsForUser(string userId,ApplicationDbContext context)
+        public static List<int> GetBlockedItemIdsForUser(string userId, ApplicationDbContext context)
         {
             if (_cache.Contains(userId))
             {
@@ -60,11 +60,11 @@ namespace WebAppForMORecSys.Cache
         private static List<int> GetBlockedItemIdsFromDatabase(string userId, ApplicationDbContext context)
         {
             int id = -1;
-            if(!int.TryParse(userId, out id))
+            if (!int.TryParse(userId, out id))
                 return new List<int>();
             User user = context.Users.Where(u => u.Id == id).FirstOrDefault();
             if (user == null)
-                return new List<int>(); 
+                return new List<int>();
             return user.GetAllBlockedItems(context.Items).Select(item => item.Id).ToList();
         }
     }

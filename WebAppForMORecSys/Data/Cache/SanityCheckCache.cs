@@ -1,4 +1,4 @@
-﻿namespace WebAppForMORecSys.Cache
+﻿namespace WebAppForMORecSys.Data.Cache
 {
     /// <summary>
     /// Used for sanity check question on item
@@ -20,12 +20,12 @@
         {
             var key = new Tuple<int, int>(userID, questionID);
             lock (Cache)
-            {                
+            {
                 if (Cache.ContainsKey(key))
                 {
                     Cache[key] = itemID;
                 }
-                else 
+                else
                 {
                     Cache.Add(key, itemID);
                 }
@@ -39,7 +39,7 @@
         public static int? Get(int userID, int questionID)
         {
             var key = new Tuple<int, int>(userID, questionID);
-            if (Cache.ContainsKey(key))            
+            if (Cache.ContainsKey(key))
                 return Cache[key];
             return null;
         }

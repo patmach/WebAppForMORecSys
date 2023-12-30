@@ -37,7 +37,7 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
 
             return movies;
         }
-
+        
         /// <summary>
         /// Read the csv file with parsed movies. It should be called
         /// when movies where loaded but not everzthing was successfully added to db.
@@ -61,7 +61,7 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
 
             return movies;
         }
-
+        
         /// <summary>
         /// Read the csv/dat file and creates list of movie links (IMBD ID and TMBD ID) corresponding to the file.
         /// </summary>
@@ -203,7 +203,9 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
         }
     }
 
-    /*
+    /// <summary>
+    /// Class that describes mapping between loaded movies (before filtering and saving to db) and Movie Class
+    /// </summary>
     public class LoadedMovieMap : ClassMap<Item>
     {
         public LoadedMovieMap()
@@ -215,7 +217,7 @@ namespace WebAppForMORecSys.Helpers.MovielensLoaders
             Map(p => p.JSONParams).Index(4);
         }
     }
-    */
+    
 
     /// <summary>
     /// Class corresponding to the links.csv file

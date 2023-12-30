@@ -1,11 +1,12 @@
 ﻿
 using System.Text;
+using WebAppForMORecSys.Helpers.JSONPropertiesHandlers;
 using WebAppForMORecSys.Loggers;
 using WebAppForMORecSys.Models;
 using WebAppForMORecSys.Models.ViewModels;
 using WebAppForMORecSys.Settings;
 
-namespace WebAppForMORecSys.Helpers
+namespace WebAppForMORecSys.Data
 {
 
     /// <summary>
@@ -42,7 +43,8 @@ namespace WebAppForMORecSys.Helpers
         /// <summary>
         /// Log rating
         /// </summary>
-        public static void Log(this Rating rating) {
+        public static void Log(this Rating rating)
+        {
             logger.Log($"{rating.UserID};{rating.ItemID};{rating.RatingScore};" +
                 $"{rating.Date.ToString(logger.DateFormat)}");
         }

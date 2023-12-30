@@ -3,16 +3,14 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Text.Json.Nodes;
 using WebAppForMORecSys.Models;
-using static WebAppForMORecSys.Helpers.UserJSONPropertiesHandler;
+using static WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler;
 using NuGet.Packaging;
 using System.IO;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Primitives;
-using WebAppForMORecSys.Settings;
-using WebAppForMORecSys.Cache;
+using WebAppForMORecSys.Models.ItemDomainExtension.Movie;
 
-namespace WebAppForMORecSys.Helpers
+namespace WebAppForMORecSys.Helpers.JSONPropertiesHandlers
 {
     /// <summary>
     /// Extension class for class Item. Enables to work with item as movie.
@@ -56,7 +54,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="actor">Name of the actor</param>
         public static void AddDirectorToBlackList(this User user, string director)
         {
-            UserJSONPropertiesHandler.AddStringValueToBlackList(user, "Director", director);
+            user.AddStringValueToBlackList("Director", director);
         }
 
         /// <summary>
@@ -66,7 +64,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="director">Name of the director</param>
         public static void AddActorToBlackList(this User user, string actor)
         {
-            UserJSONPropertiesHandler.AddStringValueToBlackList(user, "Actor", actor);
+            user.AddStringValueToBlackList("Actor", actor);
         }
 
         /// <summary>
@@ -76,7 +74,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="genre">Name of the genre</param>
         public static void AddGenreToBlackList(this User user, string genre)
         {
-            UserJSONPropertiesHandler.AddStringValueToBlackList(user, "Genre", genre);
+            user.AddStringValueToBlackList("Genre", genre);
         }
 
         /// <summary>
@@ -86,7 +84,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="director">Name of the director</param>
         public static void RemoveDirectorFromBlackList(this User user, string director)
         {
-            UserJSONPropertiesHandler.RemoveStringValueFromBlackList(user, "Director", director);
+            user.RemoveStringValueFromBlackList("Director", director);
         }
 
         /// <summary>
@@ -96,7 +94,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="actor">Name of the actor</param>
         public static void RemoveActorFromBlackList(this User user, string actor)
         {
-            UserJSONPropertiesHandler.RemoveStringValueFromBlackList(user, "Actor", actor);
+            user.RemoveStringValueFromBlackList("Actor", actor);
         }
 
         /// <summary>
@@ -106,7 +104,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="genre">Name of the genre</param>
         public static void RemoveGenreFromBlackList(this User user, string genre)
         {
-            UserJSONPropertiesHandler.RemoveStringValueFromBlackList(user, "Genre", genre);
+            user.RemoveStringValueFromBlackList("Genre", genre);
         }
 
         /// <summary>
@@ -116,7 +114,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="director">Name of the director</param>
         public static bool IsDirectorInBlackList(this User user, string director)
         {
-            return UserJSONPropertiesHandler.IsStringValueInBlackList(user, "Director", director);
+            return user.IsStringValueInBlackList("Director", director);
         }
 
         /// <summary>
@@ -126,7 +124,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="actor">Name of the actor</param>
         public static bool IsActorInBlackList(this User user, string actor)
         {
-            return UserJSONPropertiesHandler.IsStringValueInBlackList(user, "Actor", actor);
+            return user.IsStringValueInBlackList("Actor", actor);
         }
 
         /// <summary>
@@ -136,7 +134,7 @@ namespace WebAppForMORecSys.Helpers
         /// <param name="genre">Name of the genre</param>
         public static bool IsGenreInBlackList(this User user, string genre)
         {
-            return UserJSONPropertiesHandler.IsStringValueInBlackList(user, "Genre", genre);
+            return user.IsStringValueInBlackList("Genre", genre);
         }
 
 
@@ -146,7 +144,7 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>Names of all blocked directors by user</returns>
         public static List<string> GetDirectorsInBlackList(this User user)
         {
-            return UserJSONPropertiesHandler.GetStringValuesInBlackList(user, "Director");
+            return user.GetStringValuesInBlackList("Director");
         }
 
         /// <summary>
@@ -155,7 +153,7 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>Names of all blocked actors by user</returns>
         public static List<string> GetActorsInBlackList(this User user)
         {
-            return UserJSONPropertiesHandler.GetStringValuesInBlackList(user, "Actor");
+            return user.GetStringValuesInBlackList("Actor");
         }
 
         /// <summary>
@@ -164,9 +162,9 @@ namespace WebAppForMORecSys.Helpers
         /// <returns>All blocked genres by user</returns>
         public static List<string> GetGenresInBlackList(this User user)
         {
-            return UserJSONPropertiesHandler.GetStringValuesInBlackList(user, "Genre");
+            return user.GetStringValuesInBlackList("Genre");
         }
-        
+
         /// <summary>
         /// </summary>
         /// <param name="user">User whose blocked list should be computed</param>
@@ -177,7 +175,7 @@ namespace WebAppForMORecSys.Helpers
             StringBuilder filterSQL = new StringBuilder($"SELECT * FROM dbo.{nameof(Item)}s WHERE ");
             filterSQL.Append(getAllBlockedItemsSQLWhere(user));
             return allItems.FromSqlRaw(filterSQL.ToString());
-            
+
         }
 
         /// <summary>
@@ -187,12 +185,12 @@ namespace WebAppForMORecSys.Helpers
         public static string getAllBlockedItemsSQLWhere(User user)
         {
             StringBuilder filterSQL = new StringBuilder();
-            var idsBL = UserJSONPropertiesHandler.GetItemsInBlackList(user);
-            var directorsBL = GetDirectorsInBlackList(user);
-            var actorsBL = GetActorsInBlackList(user);
-            var genresBL = GetGenresInBlackList(user);
+            var idsBL = user.GetItemsInBlackList();
+            var directorsBL = user.GetDirectorsInBlackList();
+            var actorsBL = user.GetActorsInBlackList();
+            var genresBL = user.GetGenresInBlackList();
 
-            
+
             if (!directorsBL.IsNullOrEmpty() || !genresBL.IsNullOrEmpty() || !actorsBL.IsNullOrEmpty())
             {
                 filterSQL.Append($" (ISJSON({nameof(Item.JSONParams)}) > 0) and ");
@@ -202,26 +200,26 @@ namespace WebAppForMORecSys.Helpers
             if (!idsBL.IsNullOrEmpty())
             {
                 filterSQL.Append(" or ");
-                filterSQL.Append($"(Id IN ({String.Join(",", idsBL)}) ) ");         
+                filterSQL.Append($"(Id IN ({string.Join(",", idsBL)}) ) ");
             }
             if (!genresBL.IsNullOrEmpty())
             {
                 filterSQL.Append(" or EXISTS(");
                 filterSQL.Append("SELECT value FROM OPENJSON(JSON_QUERY(JSONParams, '$.Genres'))  WHERE value IN ");
-                filterSQL.Append($"({String.Join(",", genresBL.Select(g=> $"'{g.Replace("'", "''")}'"))})) ");
+                filterSQL.Append($"({string.Join(",", genresBL.Select(g => $"'{g.Replace("'", "''")}'"))})) ");
 
             }
             if (!directorsBL.IsNullOrEmpty())
             {
                 filterSQL.Append(" or ");
                 filterSQL.Append($"(JSON_VALUE(JSONParams, '$.Director') IN ");
-                filterSQL.Append($"({String.Join(",",directorsBL.Select(d => $"'{d.Replace("'", "''")}'"))}))");
+                filterSQL.Append($"({string.Join(",", directorsBL.Select(d => $"'{d.Replace("'", "''")}'"))}))");
             }
             if (!actorsBL.IsNullOrEmpty())
             {
                 filterSQL.Append(" or EXISTS(");
                 filterSQL.Append("SELECT value FROM OPENJSON(JSON_QUERY(JSONParams, '$.Actors'))  WHERE value IN ");
-                filterSQL.Append($"({String.Join(",", actorsBL.Select(a => $"'{a.Replace("'", "''")}'"))})) ");
+                filterSQL.Append($"({string.Join(",", actorsBL.Select(a => $"'{a.Replace("'", "''")}'"))})) ");
 
             }
 
@@ -242,22 +240,22 @@ namespace WebAppForMORecSys.Helpers
                 switch (blockedValue[0].ToLower().Trim())
                 {
                     case "actor":
-                        return AddMultipleBlockRules(user, actor: blockedValue[1].Trim());
+                        return user.AddMultipleBlockRules(actor: blockedValue[1].Trim());
                     case "director":
-                        return AddMultipleBlockRules(user, director: blockedValue[1].Trim());
+                        return user.AddMultipleBlockRules(director: blockedValue[1].Trim());
                     case "genre":
-                        return AddMultipleBlockRules(user, genres: new string[] { blockedValue[1].Trim() });
+                        return user.AddMultipleBlockRules(genres: new string[] { blockedValue[1].Trim() });
                     default:
                         return $"There is no property \"{blockedValue[0]}\" which values can be blocked!";
                 }
             }
             else if (blockedValue.Length == 1)
             {
-                string message = AddMultipleBlockRules(user, director: blockedValue[0].Trim());
+                string message = user.AddMultipleBlockRules(director: blockedValue[0].Trim());
                 if (!message.IsNullOrEmpty())
-                    message = AddMultipleBlockRules(user, actor: blockedValue[0].Trim());
+                    message = user.AddMultipleBlockRules(actor: blockedValue[0].Trim());
                 if (!message.IsNullOrEmpty())
-                    message = AddMultipleBlockRules(user, genres: new string[] { blockedValue[0].Trim() });
+                    message = user.AddMultipleBlockRules(genres: new string[] { blockedValue[0].Trim() });
                 if (!message.IsNullOrEmpty())
                     return $"No property contains a value \"{blockedValue[0]}\" that can be blocked!";
 

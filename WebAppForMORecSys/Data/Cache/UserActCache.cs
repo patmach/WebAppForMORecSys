@@ -14,7 +14,7 @@ using WebAppForMORecSys.Models;
 using WebAppForMORecSys.Settings;
 using static System.Net.WebRequestMethods;
 
-namespace WebAppForMORecSys.Cache
+namespace WebAppForMORecSys.Data.Cache
 {
     /// <summary>
     /// Cache that saves every act performed by user (once every (selected) number of seconds are new acts saved to the database 
@@ -111,7 +111,7 @@ namespace WebAppForMORecSys.Cache
         /// <param name="context">Database context</param>
         public static void AddAct(string userId, string actCode, ApplicationDbContext context)
         {
-            int actID = AllActs.Where(a => a.Code==actCode).Select(a => a.Id).FirstOrDefault();
+            int actID = AllActs.Where(a => a.Code == actCode).Select(a => a.Id).FirstOrDefault();
             if (actID == 0)
                 return;
             List<int> list = GetActs(userId, context);
@@ -122,7 +122,7 @@ namespace WebAppForMORecSys.Cache
             _cache.Set(userId, list, new CacheItemPolicy { SlidingExpiration = _expiration });
             logger.Log($"{userId};{actID};{DateTime.Now.ToString(logger.DateFormat)}");
         }
-        
+
 
         /// <summary>
         /// Sets timer for repeatedly calling function that saves cache contents to database
@@ -138,7 +138,7 @@ namespace WebAppForMORecSys.Cache
             _savetodbtimer.Elapsed += new ElapsedEventHandler((sender, e) => CallSave()
             );
             _savetodbtimer.Start();
-                   
+
         }
 
         /// <summary>
@@ -154,7 +154,8 @@ namespace WebAppForMORecSys.Cache
                 string baseAddress = SystemParameters.BaseAddress;
                 var response = await _client.GetAsync($"{baseAddress}UserAct/SaveContentsOfTheCache");
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 SystemParameters.MainDebugLogger.Log("CallSave: Exception " + ex.ToString() + ex.StackTrace);
             }
         }
@@ -170,12 +171,13 @@ namespace WebAppForMORecSys.Cache
             foreach (var userID in userIDs)
             {
                 string id = userID.ToString();
-                if (_cache.Contains(id)) {
+                if (_cache.Contains(id))
+                {
                     List<int> actIDs = (List<int>)_cache.Get(id);
-                    var useracts = actIDs.Select(actId => new UserAct { ActID = actId, UserID = userID}).ToList();
+                    var useracts = actIDs.Select(actId => new UserAct { ActID = actId, UserID = userID }).ToList();
                     foreach (var useract in useracts)
                     {
-                        context.UserActs.AddIfNotExists(useract, ua=> (ua.UserID == useract.UserID) && (ua.ActID == useract.ActID));                    
+                        context.UserActs.AddIfNotExists(useract, ua => ua.UserID == useract.UserID && ua.ActID == useract.ActID);
                     }
                 }
             }

@@ -7,7 +7,7 @@ using System.Text.Unicode;
 using System.Web.Helpers;
 using WebAppForMORecSys.Models;
 
-namespace WebAppForMORecSys.Helpers
+namespace WebAppForMORecSys.Helpers.JSONPropertiesHandlers
 {
     /// <summary>
     /// Adds new method to be called on item. Mostly setting the json properties
@@ -24,10 +24,10 @@ namespace WebAppForMORecSys.Helpers
             try
             {
                 if (item.JSONParams == null) return "";
-                JsonObject? Params = (JsonObject?)JsonObject.Parse(item.JSONParams);
+                JsonObject? Params = (JsonObject?)JsonNode.Parse(item.JSONParams);
                 JsonNode jsonNode;
                 if (Params != null && Params.TryGetPropertyValue(property, out jsonNode))
-                {                    
+                {
                     return System.Text.RegularExpressions.Regex.Unescape(jsonNode.ToString());
                 }
             }
@@ -49,7 +49,7 @@ namespace WebAppForMORecSys.Helpers
             {
                 List<string> values = new List<string>();
                 if (item.JSONParams == null) return new string[0];
-                JsonObject? Params = (JsonObject?)JsonObject.Parse(item.JSONParams);
+                JsonObject? Params = (JsonObject?)JsonNode.Parse(item.JSONParams);
                 JsonNode jsonNode;
                 if (Params != null && Params.TryGetPropertyValue(property, out jsonNode))
                 {

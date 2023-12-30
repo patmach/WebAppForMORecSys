@@ -277,143 +277,10 @@
                 directly from your code. This API may change or be removed in future releases.
             </summary>
         </member>
-        <member name="T:WebAppForMORecSys.Cache.BlockedItemsCache">
+        <member name="T:WebAppForMORecSys.Controllers.HomeController">
             <summary>
-            Cache on blocked items by users
+            Controller for the requests on pages and actions not based on domain
             </summary>
-        </member>
-        <member name="F:WebAppForMORecSys.Cache.BlockedItemsCache._cache">
-            <summary>
-            Cache object
-            </summary>
-        </member>
-        <member name="F:WebAppForMORecSys.Cache.BlockedItemsCache._expiration">
-            <summary>
-            Expiration time of data in cache
-            </summary>
-        </member>
-        <member name="M:WebAppForMORecSys.Cache.BlockedItemsCache.GetBlockedItemIdsForUser(System.String,WebAppForMORecSys.Data.ApplicationDbContext)">
-            <summary>
-            </summary>
-            <param name="userId">Id of user whose blocked items should be returned</param>
-            <param name="context">Database context</param>
-            <returns>Blocked items by user from cache if present or database</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Cache.BlockedItemsCache.RemoveBlockedItemIdsForUser(System.String)">
-            <summary>
-            Remove user's blocked items from cache
-            </summary>
-            <param name="userId">Id of user whose record should be removed from cache</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Cache.BlockedItemsCache.GetBlockedItemIdsFromDatabase(System.String,WebAppForMORecSys.Data.ApplicationDbContext)">
-            <summary>
-            </summary>
-            <param name="userId">Id of user whose blocked items should be returned</param>
-            <param name="context">Database context</param>
-            <returns>List of blocked items from database</returns>
-        </member>
-        <member name="T:WebAppForMORecSys.Cache.SanityCheckCache">
-            <summary>
-            Used for sanity check question on item
-            </summary>
-        </member>
-        <member name="F:WebAppForMORecSys.Cache.SanityCheckCache.Cache">
-            <summary>
-            Randomly selected items for sanity questions are 
-            </summary>
-        </member>
-        <member name="M:WebAppForMORecSys.Cache.SanityCheckCache.Add(System.Int32,System.Int32,System.Int32)">
-            <summary>
-            Adds new item for sanity check question to the cache
-            </summary>
-            <param name="userID">ID of user</param>
-            <param name="questionID">ID of sanity check question</param>
-            <param name="itemID">ID of item selected for sanity check</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Cache.SanityCheckCache.Get(System.Int32,System.Int32)">
-            <summary>
-            </summary>
-            <param name="userID">ID of user</param>
-            <param name="questionID">ID of sanity check question</param>
-            <returns>ID of item selected for sanity check question</returns>
-        </member>
-        <member name="T:WebAppForMORecSys.Cache.UserActCache">
-            <summary>
-            Cache that saves every act performed by user (once every (selected) number of seconds are new acts saved to the database 
-            </summary>
-        </member>
-        <member name="F:WebAppForMORecSys.Cache.UserActCache._savetodbtimer">
-            <summary>
-            Timer for saving cache contents to database
-            </summary>
-        </member>
-        <member name="F:WebAppForMORecSys.Cache.UserActCache.AllActs">
-            <summary>
-            All acts that user can do
-            </summary>
-        </member>
-        <member name="F:WebAppForMORecSys.Cache.UserActCache._cache">
-            <summary>
-            Cache object
-            </summary>
-        </member>
-        <member name="F:WebAppForMORecSys.Cache.UserActCache._expiration">
-            <summary>
-            Expiration time of data in cache
-            </summary>
-        </member>
-        <member name="M:WebAppForMORecSys.Cache.UserActCache.GetActs(System.String,WebAppForMORecSys.Data.ApplicationDbContext)">
-            <summary>
-            </summary>
-            <param name="userId">Id of user whose acts should be returned</param>
-            <param name="context">Database context</param>
-            <returns>Acts done by user</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Cache.UserActCache.GetActsFromDatabase(System.String,WebAppForMORecSys.Data.ApplicationDbContext)">
-            <summary>
-            
-            </summary>
-            <param name="userId">Id of user whose acts should be returned</param>
-            <param name="context">Database context</param>
-            <returns>Acts done by user</returns>
-        </member>
-        <member name="F:WebAppForMORecSys.Cache.UserActCache.logger">
-            <summary>
-            For logging of every act to file
-            </summary>
-        </member>
-        <member name="M:WebAppForMORecSys.Cache.UserActCache.AddActs(System.String,System.Collections.Generic.List{System.String},WebAppForMORecSys.Data.ApplicationDbContext)">
-            <summary>
-            Add acts done by the user
-            </summary>
-            <param name="userId">Id of user that has done new acts.</param>
-            <param name="actCodes">Codes of acts user has done</param>
-            <param name="context">Database context</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Cache.UserActCache.AddAct(System.String,System.String,WebAppForMORecSys.Data.ApplicationDbContext)">
-            <summary>
-            Add one act done by the user
-            </summary>
-            <param name="userId">Id of user that has done new act.</param>
-            <param name="actCode">Code of act user has done</param>
-            <param name="context">Database context</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Cache.UserActCache.SetSaveToDbTimer">
-            <summary>
-            Sets timer for repeatedly calling function that saves cache contents to database
-            </summary>
-            <param name="context">Database context</param>
-        </member>
-        <member name="F:WebAppForMORecSys.Cache.UserActCache._client">
-            <summary>
-            Http client used for sending requests
-            </summary>
-        </member>
-        <member name="M:WebAppForMORecSys.Cache.UserActCache.SaveUserActsToDb(WebAppForMORecSys.Data.ApplicationDbContext)">
-            <summary>
-            Saves cache contents to database
-            </summary>
-            <param name="context">Database context</param>
         </member>
         <member name="F:WebAppForMORecSys.Controllers.HomeController._context">
             <summary>
@@ -612,6 +479,11 @@
             <param name="filename">name of the log file</param>
             <returns>Text file with logs</returns>
         </member>
+        <member name="T:WebAppForMORecSys.Controllers.MoviesController">
+            <summary>
+            Controller for the requests on pages and actions based on the movie domain
+            </summary>
+        </member>
         <member name="F:WebAppForMORecSys.Controllers.MoviesController._context">
             <summary>
             Database context
@@ -774,6 +646,11 @@
             <param name="genre">Genre to be unblocked</param>
             <returns>HTTP response without content</returns>
         </member>
+        <member name="T:WebAppForMORecSys.Controllers.UserActController">
+            <summary>
+            Controller for the request on saving the user acts from cache to the database
+            </summary>
+        </member>
         <member name="F:WebAppForMORecSys.Controllers.UserActController._context">
             <summary>
             Database context
@@ -796,6 +673,11 @@
             Saves cache contents to database
             </summary>
             <returns>No content</returns>
+        </member>
+        <member name="T:WebAppForMORecSys.Controllers.UsersController">
+            <summary>
+            Controller for the requests on actions related to the user
+            </summary>
         </member>
         <member name="F:WebAppForMORecSys.Controllers.UsersController._context">
             <summary>
@@ -845,221 +727,455 @@
             </summary>
             <returns>All users from database</returns>
         </member>
-        <member name="T:WebAppForMORecSys.Helpers.ItemJSONPropertiesHandler">
+        <member name="T:WebAppForMORecSys.Data.Cache.BlockedItemsCache">
+            <summary>
+            Cache on blocked items by users
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Data.Cache.BlockedItemsCache._cache">
+            <summary>
+            Cache object
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Data.Cache.BlockedItemsCache._expiration">
+            <summary>
+            Expiration time of data in cache
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.Cache.BlockedItemsCache.GetBlockedItemIdsForUser(System.String,WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            </summary>
+            <param name="userId">Id of user whose blocked items should be returned</param>
+            <param name="context">Database context</param>
+            <returns>Blocked items by user from cache if present or database</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.Cache.BlockedItemsCache.RemoveBlockedItemIdsForUser(System.String)">
+            <summary>
+            Remove user's blocked items from cache
+            </summary>
+            <param name="userId">Id of user whose record should be removed from cache</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.Cache.BlockedItemsCache.GetBlockedItemIdsFromDatabase(System.String,WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            </summary>
+            <param name="userId">Id of user whose blocked items should be returned</param>
+            <param name="context">Database context</param>
+            <returns>List of blocked items from database</returns>
+        </member>
+        <member name="T:WebAppForMORecSys.Data.Cache.SanityCheckCache">
+            <summary>
+            Used for sanity check question on item
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Data.Cache.SanityCheckCache.Cache">
+            <summary>
+            Randomly selected items for sanity questions are 
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.Cache.SanityCheckCache.Add(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Adds new item for sanity check question to the cache
+            </summary>
+            <param name="userID">ID of user</param>
+            <param name="questionID">ID of sanity check question</param>
+            <param name="itemID">ID of item selected for sanity check</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.Cache.SanityCheckCache.Get(System.Int32,System.Int32)">
+            <summary>
+            </summary>
+            <param name="userID">ID of user</param>
+            <param name="questionID">ID of sanity check question</param>
+            <returns>ID of item selected for sanity check question</returns>
+        </member>
+        <member name="T:WebAppForMORecSys.Data.Cache.UserActCache">
+            <summary>
+            Cache that saves every act performed by user (once every (selected) number of seconds are new acts saved to the database 
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Data.Cache.UserActCache._savetodbtimer">
+            <summary>
+            Timer for saving cache contents to database
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Data.Cache.UserActCache.AllActs">
+            <summary>
+            All acts that user can do
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Data.Cache.UserActCache._cache">
+            <summary>
+            Cache object
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Data.Cache.UserActCache._expiration">
+            <summary>
+            Expiration time of data in cache
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.Cache.UserActCache.GetActs(System.String,WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            </summary>
+            <param name="userId">Id of user whose acts should be returned</param>
+            <param name="context">Database context</param>
+            <returns>Acts done by user</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.Cache.UserActCache.GetActsFromDatabase(System.String,WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            
+            </summary>
+            <param name="userId">Id of user whose acts should be returned</param>
+            <param name="context">Database context</param>
+            <returns>Acts done by user</returns>
+        </member>
+        <member name="F:WebAppForMORecSys.Data.Cache.UserActCache.logger">
+            <summary>
+            For logging of every act to file
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.Cache.UserActCache.AddActs(System.String,System.Collections.Generic.List{System.String},WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            Add acts done by the user
+            </summary>
+            <param name="userId">Id of user that has done new acts.</param>
+            <param name="actCodes">Codes of acts user has done</param>
+            <param name="context">Database context</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.Cache.UserActCache.AddAct(System.String,System.String,WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            Add one act done by the user
+            </summary>
+            <param name="userId">Id of user that has done new act.</param>
+            <param name="actCode">Code of act user has done</param>
+            <param name="context">Database context</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.Cache.UserActCache.SetSaveToDbTimer">
+            <summary>
+            Sets timer for repeatedly calling function that saves cache contents to database
+            </summary>
+            <param name="context">Database context</param>
+        </member>
+        <member name="F:WebAppForMORecSys.Data.Cache.UserActCache._client">
+            <summary>
+            Http client used for sending requests
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.Cache.UserActCache.SaveUserActsToDb(WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            Saves cache contents to database
+            </summary>
+            <param name="context">Database context</param>
+        </member>
+        <member name="T:WebAppForMORecSys.Data.DbSetExtensions">
+            <summary>
+            Extension class for DbSet
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.DbSetExtensions.AddIfNotExists``1(Microsoft.EntityFrameworkCore.DbSet{``0},``0,System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            Adds entity to the database if not already exists
+            </summary>
+            <typeparam name="T">Type of entity</typeparam>
+            <param name="dbSet">database set of this type of entity</param>
+            <param name="entity">One entity of type T</param>
+            <param name="predicate">Predicate that checks if the entity is not already in the database</param>
+            <returns></returns>
+        </member>
+        <member name="T:WebAppForMORecSys.Data.InteractionLogExtensions">
+            <summary>
+            Contains properties and methods to log interaction
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Data.InteractionLogExtensions.logger">
+            <summary>
+            For logging of every interaction to file
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.InteractionLogExtensions.Log(WebAppForMORecSys.Models.Interaction)">
+            <summary>
+            Log interaction
+            </summary>
+        </member>
+        <member name="T:WebAppForMORecSys.Data.RatingLogExtension">
+            <summary>
+            Contains properties and methods to log rating
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Data.RatingLogExtension.logger">
+            <summary>
+            For logging of every rating to file
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.RatingLogExtension.Log(WebAppForMORecSys.Models.Rating)">
+            <summary>
+            Log rating
+            </summary>
+        </member>
+        <member name="T:WebAppForMORecSys.Data.UserAnswerLogExtension">
+            <summary>
+            Contains properties and methods to log user answer
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Data.UserAnswerLogExtension.logger">
+            <summary>
+            For logging of every userAnswer to file
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.UserAnswerLogExtension.Log(WebAppForMORecSys.Models.UserAnswer)">
+            <summary>
+            Log UserAnswer
+            </summary>
+        </member>
+        <member name="T:WebAppForMORecSys.Data.UserActSuggestionLogExtension">
+            <summary>
+            Contains properties and methods to log user act
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Data.UserActSuggestionLogExtension.logger">
+            <summary>
+            For logging of every rating to file
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.UserActSuggestionLogExtension.Log(WebAppForMORecSys.Models.UserActSuggestion)">
+            <summary>
+            Log rating
+            </summary>
+        </member>
+        <member name="T:WebAppForMORecSys.Data.UserJSONParamsLogExtension">
+            <summary>
+            Contains properties and methods to log setting of user jsonparams
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Data.UserJSONParamsLogExtension.loggerBlock">
+            <summary>
+            For logging of every block to file
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Data.UserJSONParamsLogExtension.loggerUnblock">
+            <summary>
+            For logging of every unblock to file
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.UserJSONParamsLogExtension.LogBlock(WebAppForMORecSys.Models.User,System.String,System.String)">
+            <summary>
+            Log UserAnswer
+            </summary>
+        </member>
+        <member name="T:WebAppForMORecSys.Data.RecommenderQueryLogExtensions">
+            <summary>
+            Contains properties and methods to log every query to recommender made by user
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Data.RecommenderQueryLogExtensions.loggerQuery">
+            <summary>
+            For logging of every interaction to file
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.RecommenderQueryLogExtensions.Log(WebAppForMORecSys.Models.ViewModels.MainViewModel,System.Collections.Generic.List{System.String})">
+            <summary>
+            Log interaction
+            </summary>
+        </member>
+        <member name="T:WebAppForMORecSys.Data.SaveMethods">
+            <summary>
+            Contains methods that saves entities to the database
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.SaveMethods.SaveUserAnswer(WebAppForMORecSys.Models.User,System.Int32,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String,WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            Saves user's answer to a question
+            </summary>
+            <param name="user">User that answered</param>
+            <param name="questionID">Question that was answered</param>
+            <param name="answerID">If the answer is TypeOfAnswer.Option answer ID is saved as answer</param>
+            <param name="value">If the answer is TypeOfAnswer.AgreeScale value is saved as answer</param>
+            <param name="text">If the answer is TypeOfAnswer.Text text is saved as answer</param>
+            <param name="context">Database context</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.SaveMethods.SaveInteraction(System.Int32,System.Int32,WebAppForMORecSys.Models.TypeOfInteraction,WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            Saves new interaction or updates the existing one
+            </summary>
+            <param name="itemID">ID of item with which the interaction occur</param>
+            <param name="userID">ID of user that interacted with item</param>
+            <param name="typeOfInteraction">Type of interaction</param>
+            <param name="context">Database context</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.SaveMethods.SaveRating(System.Int32,System.Int32,System.Byte,WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            Saves new rating or updates the existing one
+            </summary>
+            <param name="itemID">ID of rated item </param>
+            <param name="userID">ID of user that rated with item</param>
+            <param name="score">Score of the rating</param>
+            <param name="context">Database context</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.SaveMethods.RemoveRating(System.Int32,System.Int32,WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            Deletes rating
+            </summary>
+            <param name="itemID">ID of unrated item </param>
+            <param name="userID">ID of user that unrated with item</param>
+            <param name="context">Database context</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Data.SaveMethods.SaveUserActSuggestion(System.Int32,System.Int32,WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            Saves new rating or updates the existing one
+            </summary>
+            <param name="itemID">ID of rated item </param>
+            <param name="userID">ID of user that rated with item</param>
+            <param name="score">Score of the rating</param>
+            <param name="context">Database context</param>
+        </member>
+        <member name="T:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.ItemJSONPropertiesHandler">
             <summary>
             Adds new method to be called on item. Mostly setting the json properties
             </summary>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.ItemJSONPropertiesHandler.getPropertyStringValueFromJSON(WebAppForMORecSys.Models.Item,System.String)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.ItemJSONPropertiesHandler.getPropertyStringValueFromJSON(WebAppForMORecSys.Models.Item,System.String)">
             <summary>
             </summary>
             <param name="item">Item whose property value should be returned</param>
             <param name="property">Property that should be returned</param>
             <returns>String value of specified property from given item</returns>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.ItemJSONPropertiesHandler.getPropertyListValueFromJSON(WebAppForMORecSys.Models.Item,System.String)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.ItemJSONPropertiesHandler.getPropertyListValueFromJSON(WebAppForMORecSys.Models.Item,System.String)">
             <summary>
             </summary>
             <param name="item">Item whose property value should be returned</param>
             <param name="property">Property that should be returned</param>
             <returns>List value of specified property from given item</returns>
         </member>
-        <member name="F:WebAppForMORecSys.Helpers.InteractionLogExtensions.logger">
-            <summary>
-            For logging of every interaction to file
-            </summary>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.InteractionLogExtensions.Log(WebAppForMORecSys.Models.Interaction)">
-            <summary>
-            Log interaction
-            </summary>
-        </member>
-        <member name="F:WebAppForMORecSys.Helpers.RatingLogExtension.logger">
-            <summary>
-            For logging of every rating to file
-            </summary>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.RatingLogExtension.Log(WebAppForMORecSys.Models.Rating)">
-            <summary>
-            Log rating
-            </summary>
-        </member>
-        <member name="F:WebAppForMORecSys.Helpers.UserAnswerLogExtension.logger">
-            <summary>
-            For logging of every userAnswer to file
-            </summary>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserAnswerLogExtension.Log(WebAppForMORecSys.Models.UserAnswer)">
-            <summary>
-            Log UserAnswer
-            </summary>
-        </member>
-        <member name="F:WebAppForMORecSys.Helpers.UserActSuggestionLogExtension.logger">
-            <summary>
-            For logging of every rating to file
-            </summary>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserActSuggestionLogExtension.Log(WebAppForMORecSys.Models.UserActSuggestion)">
-            <summary>
-            Log rating
-            </summary>
-        </member>
-        <member name="F:WebAppForMORecSys.Helpers.UserLogExtension.loggerBlock">
-            <summary>
-            For logging of every block to file
-            </summary>
-        </member>
-        <member name="F:WebAppForMORecSys.Helpers.UserLogExtension.loggerUnblock">
-            <summary>
-            For logging of every unblock to file
-            </summary>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserLogExtension.LogBlock(WebAppForMORecSys.Models.User,System.String,System.String)">
-            <summary>
-            Log UserAnswer
-            </summary>
-        </member>
-        <member name="F:WebAppForMORecSys.Helpers.RecommenderQueryLogExtensions.loggerQuery">
-            <summary>
-            For logging of every interaction to file
-            </summary>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.RecommenderQueryLogExtensions.Log(WebAppForMORecSys.Models.ViewModels.MainViewModel,System.Collections.Generic.List{System.String})">
-            <summary>
-            Log interaction
-            </summary>
-        </member>
-        <member name="T:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler">
+        <member name="T:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler">
             <summary>
             Extension class for class Item. Enables to work with item as movie.
             </summary>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.GetDirector(WebAppForMORecSys.Models.Item)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.GetDirector(WebAppForMORecSys.Models.Item)">
             <summary>
             </summary>
             <param name="movie">Selected movie</param>
             <returns>Director of the movie</returns>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.GetActors(WebAppForMORecSys.Models.Item)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.GetActors(WebAppForMORecSys.Models.Item)">
             <summary>
             </summary>
             <param name="movie">Selected movie</param>
             <returns>Actors that played in the movie</returns>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.GetReleaseDate(WebAppForMORecSys.Models.Item)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.GetReleaseDate(WebAppForMORecSys.Models.Item)">
             <summary>
             </summary>
             <param name="movie">Selected movie</param>
             <returns>Release date of the movie</returns>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.GetGenres(WebAppForMORecSys.Models.Item)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.GetGenres(WebAppForMORecSys.Models.Item)">
             <summary>
             </summary>
             <param name="movie">Selected movie</param>
             <returns>Genres of the movie</returns>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.AddDirectorToBlackList(WebAppForMORecSys.Models.User,System.String)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.AddDirectorToBlackList(WebAppForMORecSys.Models.User,System.String)">
             <summary>
             Adds actor to block rules
             </summary>
             <param name="user">User who adds the actor name to the blocked values</param>
             <param name="actor">Name of the actor</param>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.AddActorToBlackList(WebAppForMORecSys.Models.User,System.String)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.AddActorToBlackList(WebAppForMORecSys.Models.User,System.String)">
             <summary>
             Adds director to block rules
             </summary>
             <param name="user">User who adds the director name to the blocked values</param>
             <param name="director">Name of the director</param>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.AddGenreToBlackList(WebAppForMORecSys.Models.User,System.String)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.AddGenreToBlackList(WebAppForMORecSys.Models.User,System.String)">
             <summary>
             Adds genre to block rules
             </summary>
             <param name="user">User who adds the genre name to the blocked values</param>
             <param name="genre">Name of the genre</param>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.RemoveDirectorFromBlackList(WebAppForMORecSys.Models.User,System.String)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.RemoveDirectorFromBlackList(WebAppForMORecSys.Models.User,System.String)">
             <summary>
             Remove director from the block rules
             </summary>
             <param name="user">User who removes the director name from the blocked values</param>
             <param name="director">Name of the director</param>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.RemoveActorFromBlackList(WebAppForMORecSys.Models.User,System.String)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.RemoveActorFromBlackList(WebAppForMORecSys.Models.User,System.String)">
             <summary>
             Remove actor from the block rules
             </summary>
             <param name="user">User who removes the actor name from the blocked values</param>
             <param name="actor">Name of the actor</param>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.RemoveGenreFromBlackList(WebAppForMORecSys.Models.User,System.String)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.RemoveGenreFromBlackList(WebAppForMORecSys.Models.User,System.String)">
             <summary>
             Remove genre from the block rules
             </summary>
             <param name="user">User who removes the genre name from the blocked values</param>
             <param name="genre">Name of the genre</param>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.IsDirectorInBlackList(WebAppForMORecSys.Models.User,System.String)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.IsDirectorInBlackList(WebAppForMORecSys.Models.User,System.String)">
             <summary>
             Checks if director is in user's blocked values.
             </summary>
             <param name="user">Checked user</param>
             <param name="director">Name of the director</param>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.IsActorInBlackList(WebAppForMORecSys.Models.User,System.String)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.IsActorInBlackList(WebAppForMORecSys.Models.User,System.String)">
             <summary>
             Checks if actor is in user's blocked values.
             </summary>
             <param name="user">Checked user</param>
             <param name="actor">Name of the actor</param>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.IsGenreInBlackList(WebAppForMORecSys.Models.User,System.String)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.IsGenreInBlackList(WebAppForMORecSys.Models.User,System.String)">
             <summary>
             Checks if genre is in user's blocked values.
             </summary>
             <param name="user">Checked user</param>
             <param name="genre">Name of the genre</param>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.GetDirectorsInBlackList(WebAppForMORecSys.Models.User)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.GetDirectorsInBlackList(WebAppForMORecSys.Models.User)">
             <summary>
             </summary>
             <param name="user">Checked user</param>
             <returns>Names of all blocked directors by user</returns>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.GetActorsInBlackList(WebAppForMORecSys.Models.User)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.GetActorsInBlackList(WebAppForMORecSys.Models.User)">
             <summary>
             </summary>
             <param name="user">Checked user</param>
             <returns>Names of all blocked actors by user</returns>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.GetGenresInBlackList(WebAppForMORecSys.Models.User)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.GetGenresInBlackList(WebAppForMORecSys.Models.User)">
             <summary>
             </summary>
             <param name="user">Checked user</param>
             <returns>All blocked genres by user</returns>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.ComputeAllBlockedMovies(WebAppForMORecSys.Models.User,Microsoft.EntityFrameworkCore.DbSet{WebAppForMORecSys.Models.Item})">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.ComputeAllBlockedMovies(WebAppForMORecSys.Models.User,Microsoft.EntityFrameworkCore.DbSet{WebAppForMORecSys.Models.Item})">
             <summary>
             </summary>
             <param name="user">User whose blocked list should be computed</param>
             <param name="allItems">Database context for items</param>
             <returns>Queryable of all user's blocked movies</returns>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.getAllBlockedItemsSQLWhere(WebAppForMORecSys.Models.User)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.getAllBlockedItemsSQLWhere(WebAppForMORecSys.Models.User)">
             <summary>
             </summary>
             <param name="user">User whose blocked list should be computed</param>
             <returns>Part of sql query for the where clause to compute all blocked movies</returns>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.AddSingleBlockRule(WebAppForMORecSys.Models.User,System.String)">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.AddSingleBlockRule(WebAppForMORecSys.Models.User,System.String)">
             <summary>
             </summary>
             <param name="user">User that adds new block rule</param>
             <param name="block">Block rule in format "property: value"</param>
             <returns>Message if the addition of the new block rule wasnt successful</returns>
         </member>
-        <member name="M:WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler.AddMultipleBlockRules(WebAppForMORecSys.Models.User,System.String,System.String,System.String[])">
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler.AddMultipleBlockRules(WebAppForMORecSys.Models.User,System.String,System.String,System.String[])">
             <summary>
             </summary>
             <param name="user">User that adds new block rule</param>
@@ -1067,6 +1183,329 @@
             <param name="actor">Actor to be blocked</param>
             <param name="genres">Genres to be blocked</param>
             <returns>Message if the addition of the new block rule wasnt successful</returns>
+        </member>
+        <member name="T:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler">
+            <summary>
+            Adds new method to be called on user. Mostly setting the json properties
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetBlockRuleDynamic(WebAppForMORecSys.Models.User)">
+            <summary>
+            </summary>
+            <param name="user">User whose JSONBlockRules value should be returned</param>
+            <returns>Value of property JSONBlockRules</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetUserChoicesDynamic(WebAppForMORecSys.Models.User)">
+            <summary>
+            </summary>
+            <param name="user">User whose UserChoice value should be returned</param>
+            <returns>>Value of property UserChoice</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetJSONFilterDynamic(WebAppForMORecSys.Models.User)">
+            <summary>
+            </summary>
+            <param name="user">User whose JSONFilter value should be returned</param>
+            <returns>>Value of property JSONFilter</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.AddItemToBlackList(WebAppForMORecSys.Models.User,System.Int32)">
+            <summary>
+            Adds item to block rules if it isnt present
+            </summary>
+            <param name="user">User who adds the item to the blocked items</param>
+            <param name="itemId">ID of item that should be added to the blocked items</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.AddStringValueToBlackList(WebAppForMORecSys.Models.User,System.String,System.String)">
+            <summary>
+            Adds new block rule for user
+            </summary>
+            <param name="user">User that adds the new block rule</param>
+            <param name="name">Name of key in the block rule</param>
+            <param name="value">The blocked value</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.AddStringValue(System.Object,WebAppForMORecSys.Models.User,System.String,System.String,System.Boolean)">
+            <summary>
+            Adds to the json object new value to the given key
+            </summary>
+            <param name="jsonObj">Current value of JSON property</param>
+            <param name="user">User that addsnew value to one of its JSON properties</param>
+            <param name="name">Name of key</param>
+            <param name="value">The added value</param>
+            <param name="uniqueValues">True - Checks if value is already present and then dont add the value. False - Add anyway</param>
+            <returns></returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.SetStringValue(System.Object,WebAppForMORecSys.Models.User,System.String,System.String)">
+            <summary>
+            Sets new value to the given key in the given JSON object
+            </summary>
+            <param name="jsonObj">Current value of JSON property</param>
+            <param name="user">User that sets new value to one of its JSON properties</param>
+            <param name="name">Name of key</param>
+            <param name="value">Value to be set</param>
+            <returns></returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.RemoveItemFromBlackList(WebAppForMORecSys.Models.User,System.Int32)">
+            <summary>
+            Removes item to block rules if it is present
+            </summary>
+            <param name="user">User who removes the item to the blocked items</param>
+            <param name="itemId">ID of item that should be removed from the blocked items</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.RemoveStringValueFromBlackList(WebAppForMORecSys.Models.User,System.String,System.String)">
+            <summary>
+            Removes block rule for user
+            </summary>
+            <param name="user">User that removes the block rule</param>
+            <param name="name">Name of key in the block rule</param>
+            <param name="value">The unblocked value</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.RemoveStringValueFromUserChoices(WebAppForMORecSys.Models.User,System.String,System.String)">
+            <summary>
+            Removes set user choice
+            </summary>
+            <param name="user">User from whom his set choice should be removed</param>
+            <param name="name">Name of key in UserChoice</param>
+            <param name="value">The value to be removed</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.RemoveStringValueFromJSONFilter(WebAppForMORecSys.Models.User,System.String,System.String)">
+            <summary>
+            Removes saved filter
+            </summary>
+            <param name="user">User from whom his saved filter should be removed</param>
+            <param name="name">Name of key in JSONFIlter</param>
+            <param name="value">should be removedalue to be removed</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.RemoveStringValue(System.Object,WebAppForMORecSys.Models.User,System.String,System.String)">
+            <summary>
+            Removes value of the given key from the json object
+            </summary>
+            <param name="jsonObj">Current value of JSON property</param>
+            <param name="user">User from whom his saved value in one of its JSON properties should be removed</param>
+            <param name="name">Name of key</param>
+            <param name="value">Value to be removed</param>
+            <returns></returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.IsItemInBlackList(WebAppForMORecSys.Models.User,System.Int32)">
+            <summary>
+            </summary>
+            <param name="user">Checked user</param>
+            <param name="itemId">ID of checked item</param>
+            <returns>Is item blocked by user?</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.IsStringValueInBlackList(WebAppForMORecSys.Models.User,System.String,System.String)" -->
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetItemsInBlackList(WebAppForMORecSys.Models.User)">
+            <summary>
+            </summary>
+            <param name="user">User whose blocked items should be returned</param>
+            <returns>IDs of items blocked by user</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetStringValuesInBlackList(WebAppForMORecSys.Models.User,System.String)">
+            <summary>
+            </summary>
+            <param name="user">User whose blocked values should be returned</param>
+            <param name="name">Name of checked key</param>
+            <returns>Values of given key blocked by user</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetStringValuesInUserChoices(WebAppForMORecSys.Models.User,System.String)">
+            <summary>
+            </summary>
+            <param name="user">User whose choices should be returned</param>
+            <param name="name">Name of checked key</param>
+            <returns>Chosen values by user</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetStringValuesInJSONFilter(WebAppForMORecSys.Models.User,System.String)">
+            <summary>
+            </summary>
+            <param name="user">User whose filter settings should be returned</param>
+            <param name="name">Name of checked key</param>
+            <returns>Users filter settings for given key</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetStringValues(WebAppForMORecSys.Models.User,System.String,System.Object)">
+            <summary>
+            Gets all values of the given key in the given JSON object
+            </summary>
+            <param name="jsonObj">Current value of JSON property</param>
+            <param name="user">User whose set values should be returned</param>
+            <param name="name">Name of key</param>
+            <returns>Values of given key from the given JSON property</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetStringValueInUserChoices(WebAppForMORecSys.Models.User,System.String)">
+            <summary>
+            </summary>
+            <param name="user">User whose choice should be returned</param>
+            <param name="name">Name of checked key</param>
+            <returns>Chosen value by user</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.SetStringValueToUserChoices(WebAppForMORecSys.Models.User,System.String,System.String)">
+            <summary>
+            </summary>
+            <param name="user">User who sets new choice value</param>
+            <param name="name">Name of checked key to which the new value belongs</param>
+            <param name="value">Value to be saves</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.AddStringValueToUserChoices(WebAppForMORecSys.Models.User,System.String,System.String,System.Boolean)">
+            <summary>
+            </summary>
+            <param name="user">User who adds new choice value</param>
+            <param name="name">Name of checked key to which the new values belongs</param>
+            <param name="value">Value to be saved</param>
+            <param name="uniqueValues">True - Checks if value is already present and then dont add the value. False - Add anyway</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.AddStringValueToJSONFilter(WebAppForMORecSys.Models.User,System.String,System.String,System.Boolean)">
+            <summary>
+            </summary>
+            <param name="user">User who adds new filter settings</param>
+            <param name="name">Name of checked key to which the new filter settings value belongs</param>
+            <param name="value">Value to be saved</param>
+            <param name="uniqueValues">True - Checks if value is already present and then dont add the value. False - Add anyway</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.SetMetricsView(WebAppForMORecSys.Models.User,System.Int32)">
+            <summary>
+            Sets chosen metrics view value
+            </summary>
+            <param name="user">User that sets the value</param>
+            <param name="value">Value to be saved</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetMetricsView(WebAppForMORecSys.Models.User)">
+            <summary>
+            </summary>
+            <param name="user">User whose saved value should be returned</param>
+            <returns>Saved type of metrics view</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.SetExplanationView(WebAppForMORecSys.Models.User,System.Int32)">
+            <summary>
+            Sets chosen explanation view value
+            </summary>
+            <param name="user">User that sets the value</param>
+            <param name="value">Value to be saved</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetExplanationView(WebAppForMORecSys.Models.User)">
+            <summary>
+            </summary>
+            <param name="user">User whose saved value should be returned</param>
+            <returns>Saved type of explanation view </returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.SetMetricContributionScoreView(WebAppForMORecSys.Models.User,System.Int32)">
+            <summary>
+            Sets chosen metric contribution score view view value
+            </summary>
+            <param name="user">User that sets the value</param>
+            <param name="value">Value to be saved</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetMetricContributionScoreView(WebAppForMORecSys.Models.User)">
+            <summary>
+            </summary>
+            <param name="user">User whose saved value should be returned</param>
+            <returns>Saved type of metric contribution score view</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.SetPreviewExplanationView(WebAppForMORecSys.Models.User,System.Int32)">
+            <summary>
+            Sets chosen preview explanation view
+            </summary>
+            <param name="user">User that sets the value</param>
+            <param name="value">Value to be saved</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetPreviewExplanationView(WebAppForMORecSys.Models.User)">
+            <summary>
+            </summary>
+            <param name="user">User whose saved value should be returned</param>
+            <returns>Saved type of preview explanation view</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.SetAddBlockRuleView(WebAppForMORecSys.Models.User,System.Int32)">
+            <summary>
+            Sets chosen type of block rule addition
+            </summary>
+            <param name="user">User that sets the value</param>
+            <param name="value">Value to be saved</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetAddBlockRuleView(WebAppForMORecSys.Models.User)">
+            <summary>
+            </summary>
+            <param name="user">User whose saved value should be returned</param>
+            <returns>Saved type of block rule addition</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.SetColors(WebAppForMORecSys.Models.User,System.String[])">
+            <summary>
+            Sets chosen colors for metrics
+            </summary>
+            <param name="user">User that sets the values</param>
+            <param name="value">Values to be saved</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetColors(WebAppForMORecSys.Models.User)">
+            <summary>
+            </summary>
+            <param name="user">User whose saved values should be returned</param>
+            <returns>Chosen colors for metrics</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetMetricIDsToColors(WebAppForMORecSys.Models.User)">
+            <summary>
+            </summary>
+            <param name="user">User whose saved color values should be mapped to metrics</param>
+            <returns>Metrics mapped on chosen colors</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetMetricsImportance(WebAppForMORecSys.Models.User)">
+            <summary>
+            </summary>
+            <param name="user">User whose saved value to JSONFilter propert should be returned</param>
+            <returns>Saved value of metrics importance in JSONFilter property</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.SetMetricsImportance(WebAppForMORecSys.Models.User,System.String[])">
+            <summary>
+            Saves metrics importance value to JSONFilter property
+            </summary>
+            <param name="user">User for which the values should be saved</param>
+            <param name="values">Values to be saved</param>
+        </member>
+        <member name="F:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.MetricsImportanceLogger">
+            <summary>
+            File Logger for logging user setting of metrics importance
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetRatedAndSeenItems(WebAppForMORecSys.Models.User,WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            </summary>
+            <param name="user">User whose rated and seen items should be returned</param>
+            <param name="context">Databse context</param>
+            <returns>Rated and seen items by user</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.SetLastSectionID(WebAppForMORecSys.Models.User,System.Int32)">
+            <summary>
+            Sets ID of last question user saw in the formular
+            </summary>
+            <param name="user">User that sees the question</param>
+            <param name="value">Value to be saved</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetLastSectionID(WebAppForMORecSys.Models.User)">
+            <summary>
+            </summary>
+            <param name="user">User that saw this question as last one</param>
+            <returns>Last question user saw in the formular</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetMetricVariantCodes(WebAppForMORecSys.Models.User,WebAppForMORecSys.Data.ApplicationDbContext,System.Collections.Generic.List{System.Int32})">
+            <summary>
+            </summary>
+            <param name="user">User whose codes of selected metric variants should be returned</param>
+            <param name="context">Database context</param>
+            <param name="metricIDs">IDs of metrics whose variants codes should be returned</param>
+            <returns>Codes of variants of metrics selected by user</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.GetMetricVariants(WebAppForMORecSys.Models.User,WebAppForMORecSys.Data.ApplicationDbContext,System.Collections.Generic.List{System.Int32})">
+            <summary>
+            </summary>
+            <param name="user">User whose selected metric variants should be returned</param>
+            <param name="context">Database context</param>
+            <param name="metricIDs">IDs of metrics whose variants should be returned</param>
+            <returns>Variants of metrics selected by user</returns>
+        </member>
+        <member name="F:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.rnd">
+            <summary>
+            Instance of random, used by SetRandomSettingsForNewUser
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.JSONPropertiesHandlers.UserJSONPropertiesHandler.SetRandomSettingsForNewUser(WebAppForMORecSys.Models.User,WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            Chooses random values od configurable user settings
+            </summary>
+            <param name="user">Newly created user</param>
         </member>
         <member name="T:WebAppForMORecSys.Helpers.MovielensLoaders.CSVParsingMethods">
             <summary>
@@ -1101,6 +1540,11 @@
         <member name="T:WebAppForMORecSys.Helpers.MovielensLoaders.MovieMap">
             <summary>
             Class that describes mapping between movies.csv/movies.dat file and Movie Class
+            </summary>
+        </member>
+        <member name="T:WebAppForMORecSys.Helpers.MovielensLoaders.LoadedMovieMap">
+            <summary>
+            Class that describes mapping between loaded movies (before filtering and saving to db) and Movie Class
             </summary>
         </member>
         <member name="T:WebAppForMORecSys.Helpers.MovielensLoaders.Link">
@@ -1138,6 +1582,71 @@
             </summary>
             <param name="unixTimeStamp">Timestamp in UNIX specification</param>
             <returns>DateTime corresponding to that timestamp</returns>
+        </member>
+        <member name="T:WebAppForMORecSys.Helpers.MovielensLoaders.Filtering">
+            <summary>
+            Filter records from MovieLens dataset
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.MovielensLoaders.Filtering.RatingLowFilter(System.Collections.Generic.List{WebAppForMORecSys.Models.Rating},System.Byte)">
+            <summary>
+            </summary>
+            <param name="ratings">List of ratings</param>
+            <param name="minRatingScore">Minimal rating score for the rating to be kept</param>
+            <returns>List of ratings with rating score greater or equal to minRatingScore</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.MovielensLoaders.Filtering.MovieFilterByYear(System.Collections.Generic.List{WebAppForMORecSys.Models.Item},System.Int32)">
+            <summary>
+            </summary>
+            <param name="movies">List of movies</param>
+            <param name="minYear">Minimal year of the release date for movie to be kept</param>
+            <returns>List of movies without the old ones</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.MovielensLoaders.Filtering.RatingFilterOld(System.Collections.Generic.List{WebAppForMORecSys.Models.Rating},System.Int32)">
+            <summary>
+            </summary>
+            <param name="ratings">List of rating</param>
+            <param name="latestRatingYear">Latest year of rating for it to be kept</param>
+            <returns>List of ratings without the old ones</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.MovielensLoaders.Filtering.RatingsPerYearFilter(System.Collections.Generic.List{WebAppForMORecSys.Models.Item},System.Collections.Generic.List{WebAppForMORecSys.Models.Rating},System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="movies">List of movies</param>
+            <param name="ratings">List of ratings</param>
+            <param name="minimalratingsperyear">Minimal ratings of movies per year since its release date</param>
+            <returns>List of movies with enough ratings</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.MovielensLoaders.Filtering.RatingUserFilter(System.Collections.Generic.List{WebAppForMORecSys.Models.User},System.Collections.Generic.List{WebAppForMORecSys.Models.Rating},System.Int32)">
+            <summary>
+            </summary>
+            <param name="users">List of users</param>
+            <param name="ratings">List of ratings</param>
+            <param name="minimalratings">Minimal number of ratings for user for him to be kept</param>
+            <returns>List of users with enough ratings</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.MovielensLoaders.Filtering.RatingFilter(System.Collections.Generic.List{WebAppForMORecSys.Models.Item},System.Collections.Generic.List{WebAppForMORecSys.Models.User},System.Collections.Generic.List{WebAppForMORecSys.Models.Rating})">
+            <summary>
+            </summary>
+            <param name="movies">List of movies</param>
+            <param name="users">List of users</param>
+            <param name="ratings">List of ratings</param>
+            <returns>Ratings of movies by users from the lists given as arguments</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.MovielensLoaders.Filtering.RatedMovieFilter(System.Collections.Generic.List{WebAppForMORecSys.Models.Item},System.Collections.Generic.List{WebAppForMORecSys.Models.Rating})">
+            <summary>
+            </summary>
+            <param name="movies">List of movies</param>
+            <param name="ratings">List of ratings</param>
+            <returns>List of movies that are part of the ratings</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Helpers.MovielensLoaders.Filtering.UsersWithRaitingFilter(System.Collections.Generic.List{WebAppForMORecSys.Models.User},System.Collections.Generic.List{WebAppForMORecSys.Models.Rating})">
+            <summary>
+            </summary>
+            <param name="users">List of users</param>
+            <param name="ratings">List of ratings</param>
+            <returns>List of users that are part of the ratings</returns>
         </member>
         <member name="T:WebAppForMORecSys.Helpers.MovielensLoaders.JArrayExtensions">
             <summary>
@@ -1239,78 +1748,6 @@
             <param name="TMBDID">ID of movie in TMBD </param>
             <returns>API response with movie videos</returns>
         </member>
-        <member name="F:WebAppForMORecSys.Helpers.NewUserSetting.rnd">
-            <summary>
-            Instance of random, used by GetLatinSquaresForFirstSetting
-            </summary>
-        </member>
-        <member name="T:WebAppForMORecSys.Helpers.RecommenderCaller">
-            <summary>
-            This class contains method that calls the Recommender API
-            </summary>
-        </member>
-        <member name="F:WebAppForMORecSys.Helpers.RecommenderCaller.client">
-            <summary>
-            Http client used for sending requests
-            </summary>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.RecommenderCaller.GetRecommendations(System.Int32[],System.Int32[],System.Int32[],System.Int32,System.String,System.String[],System.Int32[])">
-            <summary>
-            Gets recommendations - Calling Recommender API
-            </summary>
-            <param name="whitelist">List with possible item IDs. Empty if user havent search for anything.</param>
-            <param name="blacklist">List with IDs of blocked items by user.</param>
-            <param name="metricsimportance">Each metrics importance. The number should be percentage</param>
-            <param name="userId">For which user the recommendations should be</param>
-            <param name="rsURI">URI of Recommender API</param>
-            <returns>List of recommendations with their metrics contribution score</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.SaveMethods.SaveUserAnswer(WebAppForMORecSys.Models.User,System.Int32,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String,WebAppForMORecSys.Data.ApplicationDbContext)">
-            <summary>
-            Saves user's answer to a question
-            </summary>
-            <param name="user">User that answered</param>
-            <param name="questionID">Question that was answered</param>
-            <param name="answerID">If the answer is TypeOfAnswer.Option answer ID is saved as answer</param>
-            <param name="value">If the answer is TypeOfAnswer.AgreeScale value is saved as answer</param>
-            <param name="text">If the answer is TypeOfAnswer.Text text is saved as answer</param>
-            <param name="context">Database context</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.SaveMethods.SaveInteraction(System.Int32,System.Int32,WebAppForMORecSys.Models.TypeOfInteraction,WebAppForMORecSys.Data.ApplicationDbContext)">
-            <summary>
-            Saves new interaction or updates the existing one
-            </summary>
-            <param name="itemID">ID of item with which the interaction occur</param>
-            <param name="userID">ID of user that interacted with item</param>
-            <param name="typeOfInteraction">Type of interaction</param>
-            <param name="context">Database context</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.SaveMethods.SaveRating(System.Int32,System.Int32,System.Byte,WebAppForMORecSys.Data.ApplicationDbContext)">
-            <summary>
-            Saves new rating or updates the existing one
-            </summary>
-            <param name="itemID">ID of rated item </param>
-            <param name="userID">ID of user that rated with item</param>
-            <param name="score">Score of the rating</param>
-            <param name="context">Database context</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.SaveMethods.RemoveRating(System.Int32,System.Int32,WebAppForMORecSys.Data.ApplicationDbContext)">
-            <summary>
-            Deletes rating
-            </summary>
-            <param name="itemID">ID of unrated item </param>
-            <param name="userID">ID of user that unrated with item</param>
-            <param name="context">Database context</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.SaveMethods.SaveUserActSuggestion(System.Int32,System.Int32,WebAppForMORecSys.Data.ApplicationDbContext)">
-            <summary>
-            Saves new rating or updates the existing one
-            </summary>
-            <param name="itemID">ID of rated item </param>
-            <param name="userID">ID of user that rated with item</param>
-            <param name="score">Score of the rating</param>
-            <param name="context">Database context</param>
-        </member>
         <member name="T:WebAppForMORecSys.Helpers.UserActHelper">
             <summary>
             Class containing methods for working with UserAct class
@@ -1337,329 +1774,6 @@
             <param name="context">Database context</param>
             <param name="Request">HTTP Request (to get base address if it's the first call)</param>
             <returns>Suggestion of one of the not done acts</returns>
-        </member>
-        <member name="T:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler">
-            <summary>
-            Adds new method to be called on user. Mostly setting the json properties
-            </summary>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetBlockRuleDynamic(WebAppForMORecSys.Models.User)">
-            <summary>
-            </summary>
-            <param name="user">User whose JSONBlockRules value should be returned</param>
-            <returns>Value of property JSONBlockRules</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetUserChoicesDynamic(WebAppForMORecSys.Models.User)">
-            <summary>
-            </summary>
-            <param name="user">User whose UserChoice value should be returned</param>
-            <returns>>Value of property UserChoice</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetJSONFilterDynamic(WebAppForMORecSys.Models.User)">
-            <summary>
-            </summary>
-            <param name="user">User whose JSONFilter value should be returned</param>
-            <returns>>Value of property JSONFilter</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.AddItemToBlackList(WebAppForMORecSys.Models.User,System.Int32)">
-            <summary>
-            Adds item to block rules if it isnt present
-            </summary>
-            <param name="user">User who adds the item to the blocked items</param>
-            <param name="itemId">ID of item that should be added to the blocked items</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.AddStringValueToBlackList(WebAppForMORecSys.Models.User,System.String,System.String)">
-            <summary>
-            Adds new block rule for user
-            </summary>
-            <param name="user">User that adds the new block rule</param>
-            <param name="name">Name of key in the block rule</param>
-            <param name="value">The blocked value</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.AddStringValue(System.Object,WebAppForMORecSys.Models.User,System.String,System.String,System.Boolean)">
-            <summary>
-            Adds to the json object new value to the given key
-            </summary>
-            <param name="jsonObj">Current value of JSON property</param>
-            <param name="user">User that addsnew value to one of its JSON properties</param>
-            <param name="name">Name of key</param>
-            <param name="value">The added value</param>
-            <param name="uniqueValues">True - Checks if value is already present and then dont add the value. False - Add anyway</param>
-            <returns></returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.SetStringValue(System.Object,WebAppForMORecSys.Models.User,System.String,System.String)">
-            <summary>
-            Sets new value to the given key in the given JSON object
-            </summary>
-            <param name="jsonObj">Current value of JSON property</param>
-            <param name="user">User that sets new value to one of its JSON properties</param>
-            <param name="name">Name of key</param>
-            <param name="value">Value to be set</param>
-            <returns></returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.RemoveItemFromBlackList(WebAppForMORecSys.Models.User,System.Int32)">
-            <summary>
-            Removes item to block rules if it is present
-            </summary>
-            <param name="user">User who removes the item to the blocked items</param>
-            <param name="itemId">ID of item that should be removed from the blocked items</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.RemoveStringValueFromBlackList(WebAppForMORecSys.Models.User,System.String,System.String)">
-            <summary>
-            Removes block rule for user
-            </summary>
-            <param name="user">User that removes the block rule</param>
-            <param name="name">Name of key in the block rule</param>
-            <param name="value">The unblocked value</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.RemoveStringValueFromUserChoices(WebAppForMORecSys.Models.User,System.String,System.String)">
-            <summary>
-            Removes set user choice
-            </summary>
-            <param name="user">User from whom his set choice should be removed</param>
-            <param name="name">Name of key in UserChoice</param>
-            <param name="value">The value to be removed</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.RemoveStringValueFromJSONFilter(WebAppForMORecSys.Models.User,System.String,System.String)">
-            <summary>
-            Removes saved filter
-            </summary>
-            <param name="user">User from whom his saved filter should be removed</param>
-            <param name="name">Name of key in JSONFIlter</param>
-            <param name="value">should be removedalue to be removed</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.RemoveStringValue(System.Object,WebAppForMORecSys.Models.User,System.String,System.String)">
-            <summary>
-            Removes value of the given key from the json object
-            </summary>
-            <param name="jsonObj">Current value of JSON property</param>
-            <param name="user">User from whom his saved value in one of its JSON properties should be removed</param>
-            <param name="name">Name of key</param>
-            <param name="value">Value to be removed</param>
-            <returns></returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.IsItemInBlackList(WebAppForMORecSys.Models.User,System.Int32)">
-            <summary>
-            </summary>
-            <param name="user">Checked user</param>
-            <param name="itemId">ID of checked item</param>
-            <returns>Is item blocked by user?</returns>
-        </member>
-        <!-- Badly formed XML comment ignored for member "M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.IsStringValueInBlackList(WebAppForMORecSys.Models.User,System.String,System.String)" -->
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetItemsInBlackList(WebAppForMORecSys.Models.User)">
-            <summary>
-            </summary>
-            <param name="user">User whose blocked items should be returned</param>
-            <returns>IDs of items blocked by user</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetStringValuesInBlackList(WebAppForMORecSys.Models.User,System.String)">
-            <summary>
-            </summary>
-            <param name="user">User whose blocked values should be returned</param>
-            <param name="name">Name of checked key</param>
-            <returns>Values of given key blocked by user</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetStringValuesInUserChoices(WebAppForMORecSys.Models.User,System.String)">
-            <summary>
-            </summary>
-            <param name="user">User whose choices should be returned</param>
-            <param name="name">Name of checked key</param>
-            <returns>Chosen values by user</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetStringValuesInJSONFilter(WebAppForMORecSys.Models.User,System.String)">
-            <summary>
-            </summary>
-            <param name="user">User whose filter settings should be returned</param>
-            <param name="name">Name of checked key</param>
-            <returns>Users filter settings for given key</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetStringValues(WebAppForMORecSys.Models.User,System.String,System.Object)">
-            <summary>
-            Gets all values of the given key in the given JSON object
-            </summary>
-            <param name="jsonObj">Current value of JSON property</param>
-            <param name="user">User whose set values should be returned</param>
-            <param name="name">Name of key</param>
-            <returns>Values of given key from the given JSON property</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetStringValueInUserChoices(WebAppForMORecSys.Models.User,System.String)">
-            <summary>
-            </summary>
-            <param name="user">User whose choice should be returned</param>
-            <param name="name">Name of checked key</param>
-            <returns>Chosen value by user</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.SetStringValueToUserChoices(WebAppForMORecSys.Models.User,System.String,System.String)">
-            <summary>
-            </summary>
-            <param name="user">User who sets new choice value</param>
-            <param name="name">Name of checked key to which the new value belongs</param>
-            <param name="value">Value to be saves</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.AddStringValueToUserChoices(WebAppForMORecSys.Models.User,System.String,System.String,System.Boolean)">
-            <summary>
-            </summary>
-            <param name="user">User who adds new choice value</param>
-            <param name="name">Name of checked key to which the new values belongs</param>
-            <param name="value">Value to be saved</param>
-            <param name="uniqueValues">True - Checks if value is already present and then dont add the value. False - Add anyway</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.AddStringValueToJSONFilter(WebAppForMORecSys.Models.User,System.String,System.String,System.Boolean)">
-            <summary>
-            </summary>
-            <param name="user">User who adds new filter settings</param>
-            <param name="name">Name of checked key to which the new filter settings value belongs</param>
-            <param name="value">Value to be saved</param>
-            <param name="uniqueValues">True - Checks if value is already present and then dont add the value. False - Add anyway</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.SetMetricsView(WebAppForMORecSys.Models.User,System.Int32)">
-            <summary>
-            Sets chosen metrics view value
-            </summary>
-            <param name="user">User that sets the value</param>
-            <param name="value">Value to be saved</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetMetricsView(WebAppForMORecSys.Models.User)">
-            <summary>
-            </summary>
-            <param name="user">User whose saved value should be returned</param>
-            <returns>Saved type of metrics view</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.SetExplanationView(WebAppForMORecSys.Models.User,System.Int32)">
-            <summary>
-            Sets chosen explanation view value
-            </summary>
-            <param name="user">User that sets the value</param>
-            <param name="value">Value to be saved</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetExplanationView(WebAppForMORecSys.Models.User)">
-            <summary>
-            </summary>
-            <param name="user">User whose saved value should be returned</param>
-            <returns>Saved type of explanation view </returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.SetMetricContributionScoreView(WebAppForMORecSys.Models.User,System.Int32)">
-            <summary>
-            Sets chosen metric contribution score view view value
-            </summary>
-            <param name="user">User that sets the value</param>
-            <param name="value">Value to be saved</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetMetricContributionScoreView(WebAppForMORecSys.Models.User)">
-            <summary>
-            </summary>
-            <param name="user">User whose saved value should be returned</param>
-            <returns>Saved type of metric contribution score view</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.SetPreviewExplanationView(WebAppForMORecSys.Models.User,System.Int32)">
-            <summary>
-            Sets chosen preview explanation view
-            </summary>
-            <param name="user">User that sets the value</param>
-            <param name="value">Value to be saved</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetPreviewExplanationView(WebAppForMORecSys.Models.User)">
-            <summary>
-            </summary>
-            <param name="user">User whose saved value should be returned</param>
-            <returns>Saved type of preview explanation view</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.SetAddBlockRuleView(WebAppForMORecSys.Models.User,System.Int32)">
-            <summary>
-            Sets chosen type of block rule addition
-            </summary>
-            <param name="user">User that sets the value</param>
-            <param name="value">Value to be saved</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetAddBlockRuleView(WebAppForMORecSys.Models.User)">
-            <summary>
-            </summary>
-            <param name="user">User whose saved value should be returned</param>
-            <returns>Saved type of block rule addition</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.SetColors(WebAppForMORecSys.Models.User,System.String[])">
-            <summary>
-            Sets chosen colors for metrics
-            </summary>
-            <param name="user">User that sets the values</param>
-            <param name="value">Values to be saved</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetColors(WebAppForMORecSys.Models.User)">
-            <summary>
-            </summary>
-            <param name="user">User whose saved values should be returned</param>
-            <returns>Chosen colors for metrics</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetMetricIDsToColors(WebAppForMORecSys.Models.User)">
-            <summary>
-            </summary>
-            <param name="user">User whose saved color values should be mapped to metrics</param>
-            <returns>Metrics mapped on chosen colors</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetMetricsImportance(WebAppForMORecSys.Models.User)">
-            <summary>
-            </summary>
-            <param name="user">User whose saved value to JSONFilter propert should be returned</param>
-            <returns>Saved value of metrics importance in JSONFilter property</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.SetMetricsImportance(WebAppForMORecSys.Models.User,System.String[])">
-            <summary>
-            Saves metrics importance value to JSONFilter property
-            </summary>
-            <param name="user">User for which the values should be saved</param>
-            <param name="values">Values to be saved</param>
-        </member>
-        <member name="F:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.MetricsImportanceLogger">
-            <summary>
-            File Logger for logging user setting of metrics importance
-            </summary>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetRatedAndSeenItems(WebAppForMORecSys.Models.User,WebAppForMORecSys.Data.ApplicationDbContext)">
-            <summary>
-            </summary>
-            <param name="user">User whose rated and seen items should be returned</param>
-            <param name="context">Databse context</param>
-            <returns>Rated and seen items by user</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.SetLastSectionID(WebAppForMORecSys.Models.User,System.Int32)">
-            <summary>
-            Sets ID of last question user saw in the formular
-            </summary>
-            <param name="user">User that sees the question</param>
-            <param name="value">Value to be saved</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetLastSectionID(WebAppForMORecSys.Models.User)">
-            <summary>
-            </summary>
-            <param name="user">User that saw this question as last one</param>
-            <returns>Last question user saw in the formular</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetMetricVariantCodes(WebAppForMORecSys.Models.User,WebAppForMORecSys.Data.ApplicationDbContext,System.Collections.Generic.List{System.Int32})">
-            <summary>
-            </summary>
-            <param name="user">User whose codes of selected metric variants should be returned</param>
-            <param name="context">Database context</param>
-            <param name="metricIDs">IDs of metrics whose variants codes should be returned</param>
-            <returns>Codes of variants of metrics selected by user</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.GetMetricVariants(WebAppForMORecSys.Models.User,WebAppForMORecSys.Data.ApplicationDbContext,System.Collections.Generic.List{System.Int32})">
-            <summary>
-            </summary>
-            <param name="user">User whose selected metric variants should be returned</param>
-            <param name="context">Database context</param>
-            <param name="metricIDs">IDs of metrics whose variants should be returned</param>
-            <returns>Variants of metrics selected by user</returns>
-        </member>
-        <member name="F:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.rnd">
-            <summary>
-            Instance of random, used by SetRandomSettingsForNewUser
-            </summary>
-        </member>
-        <member name="M:WebAppForMORecSys.Helpers.UserJSONPropertiesHandler.SetRandomSettingsForNewUser(WebAppForMORecSys.Models.User,WebAppForMORecSys.Data.ApplicationDbContext)">
-            <summary>
-            Chooses random values od configurable user settings
-            </summary>
-            <param name="user">Newly created user</param>
         </member>
         <member name="T:WebAppForMORecSys.Loggers.MyFileLogger">
             <summary>
@@ -2025,6 +2139,103 @@
             Interactions with item
             </summary>
         </member>
+        <member name="T:WebAppForMORecSys.Models.ItemDomainExtension.Movie.Movie">
+            <summary>
+            Class that works like Item extension so it can be used as movie
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Models.ItemDomainExtension.Movie.Movie.GetDirector(WebAppForMORecSys.Models.Item)">
+            <summary>
+            </summary>
+            <param name="movie">Movie whose director should be returned</param>
+            <returns>Movie director</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Models.ItemDomainExtension.Movie.Movie.GetActors(WebAppForMORecSys.Models.Item)">
+            <summary>
+            </summary>
+            <param name="movie">Movie whose actors should be returned</param>
+            <returns>Movie actors</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Models.ItemDomainExtension.Movie.Movie.GetReleaseDate(WebAppForMORecSys.Models.Item)">
+            <summary>
+            </summary>
+            <param name="movie">Movie whose release date should be returned</param>
+            <returns>Release date of the movie</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Models.ItemDomainExtension.Movie.Movie.GetGenres(WebAppForMORecSys.Models.Item)">
+            <summary>
+            </summary>
+            <param name="movie">Movie whose genres should be returned</param>
+            <returns>Movie genres</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Models.ItemDomainExtension.Movie.Movie.GetYoutubeKey(WebAppForMORecSys.Models.Item)">
+            <summary>
+            
+            </summary>
+            <param name="movie">Movie whose youtube key with trailer should be returned</param>
+            <returns>Youtube key of video with movie trailer</returns>
+        </member>
+        <member name="F:WebAppForMORecSys.Models.ItemDomainExtension.Movie.Movie.AllGenres">
+            <summary>
+            Contains all genres that are used for movies
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Models.ItemDomainExtension.Movie.Movie.AllDirectors">
+            <summary>
+            Contains directors of all of the movies in database
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Models.ItemDomainExtension.Movie.Movie.AllActors">
+            <summary>
+            Contains actors of all of the movies in database
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Models.ItemDomainExtension.Movie.Movie.GetPossibleItems(Microsoft.EntityFrameworkCore.DbSet{WebAppForMORecSys.Models.Item},WebAppForMORecSys.Models.User,System.String,System.String,System.String,System.String[],System.String,System.String,System.String)">
+            <summary>
+            Filter items according to parameters and returns the result.
+            </summary>
+            <param name="allItems">Link to all items stored in the database</param>
+            <param name="user">User that searched for the specified movies</param>
+            <param name="search">Text search on name of the movie</param>
+            <param name="director">Searched director</param>
+            <param name="actor">Searched actor</param>
+            <param name="genres">Searched genres</param>
+            <param name="type">Type of search - text search on name / detailed filter</param>
+            <param name="releasedateto">Latest searched release date</param>
+            <param name="releasedatefrom">Earliest searched release date</param>
+            <returns>Items filtered by the parameters</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Models.ItemDomainExtension.Movie.Movie.FilterByMovieFilter(WebAppForMORecSys.Models.User,Microsoft.EntityFrameworkCore.DbSet{WebAppForMORecSys.Models.Item},System.String,System.String,System.String[],System.String,System.String)">
+            <summary>
+            Filter items according to parameters in detailed filter and returns the result.
+            </summary>
+            <param name="allItems">Link to all items stored in the database</param>
+            <param name="user">User that searched for the specified movies</param>
+            <param name="director">Searched director</param>
+            <param name="actor">Searched actor</param>
+            <param name="genres">Searched genres</param>
+            <param name="releasedateto">Latest searched release date</param>
+            <param name="releasedatefrom">Earliest searched release date</param>
+            <returns>Items filtered by the parameters of detailed filter</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Models.ItemDomainExtension.Movie.Movie.SetAllGenres(WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            Loads all possible genres
+            </summary>
+            <param name="context">Database context</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Models.ItemDomainExtension.Movie.Movie.SetAllDirectors(WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            Loads all possible directors
+            </summary>
+            <param name="context">Database context</param>
+        </member>
+        <member name="M:WebAppForMORecSys.Models.ItemDomainExtension.Movie.Movie.SetAllActors(WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            Loads all possible actors
+            </summary>
+            <param name="context">Database context</param>
+        </member>
         <member name="T:WebAppForMORecSys.Models.Metric">
             <summary>
             Class that represent one metric of recommender system
@@ -2140,96 +2351,6 @@
             User setting of metric variants
             </summary>
         </member>
-        <member name="T:WebAppForMORecSys.Models.Movie">
-            <summary>
-            Class that works like Item extension so it can be used as movie
-            </summary>
-        </member>
-        <member name="M:WebAppForMORecSys.Models.Movie.GetDirector(WebAppForMORecSys.Models.Item)">
-            <summary>
-            </summary>
-            <param name="movie">Movie the director should be returned for</param>
-            <returns>Movie director</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Models.Movie.GetActors(WebAppForMORecSys.Models.Item)">
-            <summary>
-            </summary>
-            <param name="movie">Movie the actors should be returned searched for</param>
-            <returns>Movie actors</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Models.Movie.GetReleaseDate(WebAppForMORecSys.Models.Item)">
-            <summary>
-            </summary>
-            <param name="movie">Movie the release date should be returned for</param>
-            <returns>Release date of the movie</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Models.Movie.GetGenres(WebAppForMORecSys.Models.Item)">
-            <summary>
-            </summary>
-            <param name="movie">Movie the genres should be returned searched for</param>
-            <returns>Movie genres</returns>
-        </member>
-        <member name="F:WebAppForMORecSys.Models.Movie.AllGenres">
-            <summary>
-            Contains all genres that are used for movies
-            </summary>
-        </member>
-        <member name="F:WebAppForMORecSys.Models.Movie.AllDirectors">
-            <summary>
-            Contains directors of all of the movies in database
-            </summary>
-        </member>
-        <member name="F:WebAppForMORecSys.Models.Movie.AllActors">
-            <summary>
-            Contains actors of all of the movies in database
-            </summary>
-        </member>
-        <member name="M:WebAppForMORecSys.Models.Movie.GetPossibleItems(Microsoft.EntityFrameworkCore.DbSet{WebAppForMORecSys.Models.Item},WebAppForMORecSys.Models.User,System.String,System.String,System.String,System.String[],System.String,System.String,System.String)">
-            <summary>
-            Filter items according to parameters and returns the result.
-            </summary>
-            <param name="allItems">Link to all items stored in the database</param>
-            <param name="user">User that searched for the specified movies</param>
-            <param name="search">Text search on name of the movie</param>
-            <param name="director">Searched director</param>
-            <param name="actor">Searched actor</param>
-            <param name="genres">Searched genres</param>
-            <param name="type">Type of search - text search on name / detailed filter</param>
-            <param name="releasedateto">Latest searched release date</param>
-            <param name="releasedatefrom">Earliest searched release date</param>
-            <returns>Items filtered by the parameters</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Models.Movie.FilterByMovieFilter(WebAppForMORecSys.Models.User,Microsoft.EntityFrameworkCore.DbSet{WebAppForMORecSys.Models.Item},System.String,System.String,System.String[],System.String,System.String)">
-            <summary>
-            Filter items according to parameters in detailed filter and returns the result.
-            </summary>
-            <param name="allItems">Link to all items stored in the database</param>
-            <param name="user">User that searched for the specified movies</param>
-            <param name="director">Searched director</param>
-            <param name="actor">Searched actor</param>
-            <param name="genres">Searched genres</param>
-            <param name="releasedateto">Latest searched release date</param>
-            <param name="releasedatefrom">Earliest searched release date</param>
-            <returns>Items filtered by the parameters of detailed filter</returns>
-        </member>
-        <member name="M:WebAppForMORecSys.Models.Movie.SetAllGenres(WebAppForMORecSys.Data.ApplicationDbContext)">
-            <summary>
-            Loads all possible genres
-            </summary>
-            <param name="context">Database context</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Models.Movie.SetAllDirectors(WebAppForMORecSys.Data.ApplicationDbContext)">
-            <summary>
-            Loads all possible directors
-            </summary>
-            <param name="context">Database context</param>
-        </member>
-        <member name="M:WebAppForMORecSys.Models.Movie.SetAllActors(WebAppForMORecSys.Data.ApplicationDbContext)">
-            <summary>
-            Loads all possible actors
-            </summary>
-            <param name="context">Database context</param>
-        </member>
         <member name="T:WebAppForMORecSys.Models.Question">
             <summary>
             Question used in user study
@@ -2275,6 +2396,21 @@
             Section that question belongs to
             </summary>
         </member>
+        <member name="T:WebAppForMORecSys.Models.TypeOfAnswer">
+            <summary>
+            Variants of answer types
+            </summary>
+        </member>
+        <member name="T:WebAppForMORecSys.Models.AgreeScale">
+            <summary>
+            Used likert scale
+            </summary>
+        </member>
+        <member name="T:WebAppForMORecSys.Models.AgreeScaleExtensions">
+            <summary>
+            Extension class with ToFriendlyString for enum AgreeScale
+            </summary>
+        </member>
         <member name="M:WebAppForMORecSys.Models.AgreeScaleExtensions.ToFriendlyString(WebAppForMORecSys.Models.AgreeScale)">
             <summary>
             </summary>
@@ -2309,6 +2445,11 @@
         <member name="P:WebAppForMORecSys.Models.QuestionAct.Act">
             <summary>
             Needed act 
+            </summary>
+        </member>
+        <member name="T:WebAppForMORecSys.Models.QuestionSection">
+            <summary>
+            Section of questions
             </summary>
         </member>
         <member name="P:WebAppForMORecSys.Models.QuestionSection.Id">
@@ -2486,7 +2627,7 @@
             All user's interactions
             </summary>
         </member>
-        <member name="F:WebAppForMORecSys.Models.User.account">
+        <member name="F:WebAppForMORecSys.Models.User.Account">
             <summary>
             Account of this user if he has one
             </summary>
@@ -2634,6 +2775,36 @@
         <member name="P:WebAppForMORecSys.Models.UserAnswer.Answer">
             <summary>
             Set if type of the answer is Options
+            </summary>
+        </member>
+        <member name="T:WebAppForMORecSys.Models.UserMetricVariants">
+            <summary>
+            Represents current user choice of variant of the metric
+            </summary>
+        </member>
+        <member name="P:WebAppForMORecSys.Models.UserMetricVariants.Id">
+            <summary>
+            Unique ID of the user choice of metric variant
+            </summary>
+        </member>
+        <member name="P:WebAppForMORecSys.Models.UserMetricVariants.UserID">
+            <summary>
+             ID of user with selected variant
+            </summary>
+        </member>
+        <member name="P:WebAppForMORecSys.Models.UserMetricVariants.MetricVariantID">
+            <summary>
+            ID of selected variant
+            </summary>
+        </member>
+        <member name="P:WebAppForMORecSys.Models.UserMetricVariants.User">
+            <summary>
+             User with selected variant
+            </summary>
+        </member>
+        <member name="P:WebAppForMORecSys.Models.UserMetricVariants.MetricVariant">
+            <summary>
+            Selected variant
             </summary>
         </member>
         <member name="M:WebAppForMORecSys.Models.UserMetricVariants.SetRandomMetricVariants(WebAppForMORecSys.Models.User,System.Collections.Generic.List{System.Collections.Generic.List{System.Object}},WebAppForMORecSys.Data.ApplicationDbContext)">
@@ -3013,6 +3184,27 @@
             <param name="actor">New blocked value for property actor. Used with multiple block rule creation.</param>
             <param name="genres">New blocked value for property genres. Used with multiple block rule creation.</param>
         </member>
+        <member name="T:WebAppForMORecSys.RequestHandlers.RecommenderCaller">
+            <summary>
+            This class contains method that calls the Recommender API
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.RequestHandlers.RecommenderCaller.client">
+            <summary>
+            Http client used for sending requests
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.RequestHandlers.RecommenderCaller.GetRecommendations(System.Int32[],System.Int32[],System.Int32[],System.Int32,System.String,System.String[],System.Int32[])">
+            <summary>
+            Gets recommendations - Calling Recommender API
+            </summary>
+            <param name="whitelist">List with possible item IDs. Empty if user havent search for anything.</param>
+            <param name="blacklist">List with IDs of blocked items by user.</param>
+            <param name="metricsimportance">Each metrics importance. The number should be percentage</param>
+            <param name="userId">For which user the recommendations should be</param>
+            <param name="rsURI">URI of Recommender API</param>
+            <returns>List of recommendations with their metrics contribution score</returns>
+        </member>
         <member name="T:WebAppForMORecSys.Settings.AddBlockRuleView">
             <summary>
             Possibilities on type of new block rules addition
@@ -3021,6 +3213,11 @@
         <member name="T:WebAppForMORecSys.Settings.ExplanationView">
             <summary>
             Possibilities on type of information seen in explanations
+            </summary>
+        </member>
+        <member name="T:WebAppForMORecSys.Settings.ExplanationViewExtensions">
+            <summary>
+            Extension class with ToFriendlyString for enum ExplanationView
             </summary>
         </member>
         <member name="M:WebAppForMORecSys.Settings.ExplanationViewExtensions.ToFriendlyString(WebAppForMORecSys.Settings.ExplanationView)">
@@ -3034,6 +3231,11 @@
             Possibilities on display of score for metrics in explanations
             </summary>
         </member>
+        <member name="T:WebAppForMORecSys.Settings.MetricContributionScoreViewExtensions">
+            <summary>
+            Extension class with ToFriendlyString for enum MetricContributionScoreView
+            </summary>
+        </member>
         <member name="M:WebAppForMORecSys.Settings.MetricContributionScoreViewExtensions.ToFriendlyString(WebAppForMORecSys.Settings.MetricContributionScoreView)">
             <summary>
             </summary>
@@ -3043,6 +3245,11 @@
         <member name="T:WebAppForMORecSys.Settings.MetricsView">
             <summary>
             Possibilities on type of metrics filter
+            </summary>
+        </member>
+        <member name="T:WebAppForMORecSys.Settings.MetricsViewExtensions">
+            <summary>
+            Extension class with ToFriendlyString for enum MetricsView
             </summary>
         </member>
         <member name="M:WebAppForMORecSys.Settings.MetricsViewExtensions.ToFriendlyString(WebAppForMORecSys.Settings.MetricsView)">
@@ -3057,9 +3264,40 @@
             <param name="metricsView"></param>
             <returns>Name to display for the enum value</returns>
         </member>
+        <member name="T:WebAppForMORecSys.Settings.NewUserSetting">
+            <summary>
+            Class that creates and then returns randomly ordered list of combinations of set parameters 
+            to choose users first set variants
+            </summary>
+        </member>
+        <member name="F:WebAppForMORecSys.Settings.NewUserSetting.rnd">
+            <summary>
+            Instance of random, used by GetLatinSquaresForFirstSetting
+            </summary>
+        </member>
+        <member name="M:WebAppForMORecSys.Settings.NewUserSetting.GetCombinationsForFirstSetting(WebAppForMORecSys.Data.ApplicationDbContext)">
+            <summary>
+            Creates randomly ordered list of combinations of set parameters if not already created
+            </summary>
+            <param name="context">Database conrext</param>
+            <returns>combinations of set parameters</returns>
+        </member>
+        <member name="M:WebAppForMORecSys.Settings.NewUserSetting.AddToAndReturn(System.Collections.Generic.List{System.Object},System.Object)">
+            <summary>
+            Creates new instance of list that is exteded by object
+            </summary>
+            <param name="ls">List to be extended</param>
+            <param name="o">Object that will be add to the end of the list</param>
+            <returns>new instance of list that is exteded by object</returns>
+        </member>
         <member name="T:WebAppForMORecSys.Settings.PreviewExplanationView">
             <summary>
             Possibilities on how is explanation seen in preview of Item
+            </summary>
+        </member>
+        <member name="T:WebAppForMORecSys.Settings.PreviewExplanationViewExtensions">
+            <summary>
+            Extension class with ToFriendlyString for enum PreviewExplanationView
             </summary>
         </member>
         <member name="M:WebAppForMORecSys.Settings.PreviewExplanationViewExtensions.ToFriendlyString(WebAppForMORecSys.Settings.PreviewExplanationView)">

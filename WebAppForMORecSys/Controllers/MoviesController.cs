@@ -18,14 +18,15 @@ using System.Linq;
 using System.Text;
 using System.Web.Razor.Parser.SyntaxTree;
 using WebAppForMORecSys.Areas.Identity.Data;
-using WebAppForMORecSys.Cache;
 using WebAppForMORecSys.Data;
-using WebAppForMORecSys.Helpers;
+using WebAppForMORecSys.Data.Cache;
+using WebAppForMORecSys.Helpers.JSONPropertiesHandlers;
 using WebAppForMORecSys.Helpers.MovielensLoaders;
 using WebAppForMORecSys.Models;
+using WebAppForMORecSys.Models.ItemDomainExtension.Movie;
 using WebAppForMORecSys.Models.ViewModels;
 using WebAppForMORecSys.RequestHandlers;
-using static WebAppForMORecSys.Helpers.MovieJSONPropertiesHandler;
+using static WebAppForMORecSys.Helpers.JSONPropertiesHandlers.MovieJSONPropertiesHandler;
 using static WebAppForMORecSys.Helpers.UserActHelper;
 
 namespace WebAppForMORecSys.Controllers

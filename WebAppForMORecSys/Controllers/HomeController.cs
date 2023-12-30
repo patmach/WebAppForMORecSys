@@ -6,17 +6,17 @@ using WebAppForMORecSys.Models;
 using Microsoft.AspNetCore.Identity;
 using WebAppForMORecSys.Areas.Identity.Data;
 using WebAppForMORecSys.Settings;
-using WebAppForMORecSys.Helpers;
 using WebAppForMORecSys.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using WebAppForMORecSys.Cache;
 using System.Text;
 using System.Drawing;
 using System;
 using Newtonsoft.Json.Linq;
 using Microsoft.IdentityModel.Tokens;
 using System.IO;
+using WebAppForMORecSys.Helpers.JSONPropertiesHandlers;
+using WebAppForMORecSys.Data.Cache;
 
 namespace WebAppForMORecSys.Controllers
 {

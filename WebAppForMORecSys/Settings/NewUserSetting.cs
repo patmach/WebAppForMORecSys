@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using WebAppForMORecSys.Data;
-using WebAppForMORecSys.Settings;
 
-namespace WebAppForMORecSys.Helpers
+namespace WebAppForMORecSys.Settings
 {
     /// <summary>
     /// Class that creates and then returns randomly ordered list of combinations of set parameters 
@@ -45,7 +44,7 @@ namespace WebAppForMORecSys.Helpers
                 foreach (var list in lists)
                 {
                     // cross join the current result with each member of the next list
-                    latinSquares = latinSquares.SelectMany(ls => list, (ls, o) => AddToAndReturn(ls, o)).ToList();
+                    latinSquares = latinSquares.SelectMany(ls => list, (ls, o) => ls.AddToAndReturn(o)).ToList();
                 }
                 latinSquares = latinSquares.OrderBy(ls => Guid.NewGuid()).ToList();
                 _combinations = latinSquares;

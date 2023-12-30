@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using WebAppForMORecSys.Areas.Identity.Data;
 using WebAppForMORecSys.Data;
-using WebAppForMORecSys.Helpers;
+using WebAppForMORecSys.Helpers.JSONPropertiesHandlers;
 using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Models

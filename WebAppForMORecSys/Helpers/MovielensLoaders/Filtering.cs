@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using WebAppForMORecSys.Models;
+using WebAppForMORecSys.Models.ItemDomainExtension.Movie;
 
 namespace WebAppForMORecSys.Helpers.MovielensLoaders
 {

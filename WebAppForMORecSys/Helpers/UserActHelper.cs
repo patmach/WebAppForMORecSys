@@ -1,9 +1,9 @@
 ﻿using WebAppForMORecSys.Data;
-using WebAppForMORecSys.Cache;
 using WebAppForMORecSys.Models;
 using WebAppForMORecSys.Models.ViewModels;
 using Microsoft.IdentityModel.Tokens;
 using System.IO;
+using WebAppForMORecSys.Data.Cache;
 
 namespace WebAppForMORecSys.Helpers
 {

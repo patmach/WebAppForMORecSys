@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using NuGet.Packaging;
 using System.Globalization;
 using WebAppForMORecSys.Data;
-using WebAppForMORecSys.Helpers;
+using WebAppForMORecSys.Helpers.JSONPropertiesHandlers;
 using WebAppForMORecSys.Settings;
 
 namespace WebAppForMORecSys.Models.ViewModels

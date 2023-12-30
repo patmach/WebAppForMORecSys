@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebAppForMORecSys.Data;
 using WebAppForMORecSys.Models;
 
-namespace WebAppForMORecSys.Helpers
+namespace WebAppForMORecSys.Data
 {
     /// <summary>
     /// Contains methods that saves entities to the database
