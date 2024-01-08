@@ -39,8 +39,8 @@
         /// <summary>
         /// </summary>
         /// <param name="metricsView"></param>
-        /// <returns>Name to display for the enum value</returns>
-        public static string Manual(this MetricsView metricsView)
+        /// <returns>Explanation on how to use the metrics filter in HELP</returns>
+        public static string Help(this MetricsView metricsView)
         {
             switch (metricsView)
             {

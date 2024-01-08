@@ -9,6 +9,7 @@ using System.IO;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using WebAppForMORecSys.Models.ItemDomainExtension.Movie;
+using WebAppForMORecSys.Data.Cache;
 
 namespace WebAppForMORecSys.Helpers.JSONPropertiesHandlers
 {

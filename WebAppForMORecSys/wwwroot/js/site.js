@@ -3,6 +3,7 @@
 
 // Write your JavaScript code.
 
+
 /** For closing sidebar filter */
 function openNav() {
     var sidebar_width = "25%";
@@ -24,6 +25,7 @@ function closeNav() {
     $("#closefilterbtn")[0].style.display = "none";
     $("#openfilterbtn")[0].style.display = "";
 }
+
 
 /**
  * Sets possible values retrieved from the url for autocompletion of searched text in textbox.

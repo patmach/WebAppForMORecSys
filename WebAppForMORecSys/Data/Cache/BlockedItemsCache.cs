@@ -7,6 +7,7 @@ using WebAppForMORecSys.Controllers;
 using WebAppForMORecSys.Data;
 using Microsoft.EntityFrameworkCore;
 using WebAppForMORecSys.Models;
+using WebAppForMORecSys.Loggers;
 
 namespace WebAppForMORecSys.Data.Cache
 {
@@ -15,6 +16,7 @@ namespace WebAppForMORecSys.Data.Cache
     /// </summary>
     public static class BlockedItemsCache
     {
+
         /// <summary>
         /// Cache object
         /// </summary>
@@ -32,13 +34,16 @@ namespace WebAppForMORecSys.Data.Cache
         /// <returns>Blocked items by user from cache if present or database</returns>
         public static List<int> GetBlockedItemIdsForUser(string userId, ApplicationDbContext context)
         {
-            if (_cache.Contains(userId))
+            lock (_cache)
             {
-                return (List<int>)_cache.Get(userId);
+                if (_cache.Contains(userId))
+                {
+                    return (List<int>)_cache.Get(userId);
+                }
             }
+
             var blockedItemIds = GetBlockedItemIdsFromDatabase(userId, context);
             _cache.Set(userId, blockedItemIds, new CacheItemPolicy { SlidingExpiration = _expiration });
-
             return blockedItemIds;
         }
 
@@ -48,8 +53,12 @@ namespace WebAppForMORecSys.Data.Cache
         /// <param name="userId">Id of user whose record should be removed from cache</param>
         public static void RemoveBlockedItemIdsForUser(string userId)
         {
-            if (_cache.Contains(userId))
-                _cache.Remove(userId);
+            lock (_cache) {
+                if (_cache.Contains(userId))
+                {
+                    _cache.Remove(userId);
+                }
+            }
         }
 
         /// <summary>

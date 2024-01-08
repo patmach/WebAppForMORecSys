@@ -55,7 +55,7 @@ namespace WebAppForMORecSys.Controllers
         /// <returns>The main page of used controller</returns>
         public async Task<IActionResult> Index()
         {
-            return RedirectToAction("Index", SystemParameters.Controller);
+            return RedirectToAction("Index", SystemParameters.DomainController);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace WebAppForMORecSys.Controllers
         /// <returns>The main page of management of user blocks</returns>
         public async Task<IActionResult> UserBlockSettings()
         {
-            return RedirectToAction("UserBlockSettings", SystemParameters.Controller);
+            return RedirectToAction("UserBlockSettings", SystemParameters.DomainController);
         }
 
         /// <summary>

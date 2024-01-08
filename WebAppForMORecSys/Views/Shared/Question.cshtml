@@ -66,7 +66,7 @@
     <script>
         /* Loads preview of random rated item for element with id 'randompreviewofrated'*/
         $('#randompreviewofrated').ready(function() {
-                getRandomPreview('@Url.Action("PreviewOfRandomRated", SystemParameters.Controller, new {questionID = Model.Id})');
+                getRandomPreview('@Url.Action("PreviewOfRandomRated", SystemParameters.DomainController, new {questionID = Model.Id})');
             });
     </script>
 }

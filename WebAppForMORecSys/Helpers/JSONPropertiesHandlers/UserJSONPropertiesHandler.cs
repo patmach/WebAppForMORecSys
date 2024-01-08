@@ -598,9 +598,12 @@ namespace WebAppForMORecSys.Helpers.JSONPropertiesHandlers
         public static List<int> GetRatedAndSeenItems(this User user, ApplicationDbContext context)
         {
             var rated = context.Ratings.Where(r => r.UserID == user.Id).Select(r => r.ItemID).ToList();
-            var seen = context.Interactions.Where(i => i.type == TypeOfInteraction.Click && i.Last > DateTime.Now.AddMinutes(-15)
-            || i.type == TypeOfInteraction.Seen && (i.Last > DateTime.Now.AddMinutes(-5) || i.NumberOfInteractions >= 3))
-                .Select(r => r.ItemID).ToList();
+            var seen = context.Interactions.Where(i => (i.UserID == user.Id) 
+                && ((i.type == TypeOfInteraction.Click && i.Last > DateTime.Now.AddMinutes(-15))
+                    || (i.type == TypeOfInteraction.Seen 
+                        && (i.Last > DateTime.Now.AddMinutes(-5) || i.NumberOfInteractions >= 3))))
+                .Select(i => i.ItemID).ToList();
+
             return rated.Union(seen).ToList();
         }
 

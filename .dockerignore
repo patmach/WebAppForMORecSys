@@ -2,6 +2,7 @@
 **/.dockerignore
 **/.env
 **/.git
+**/.github
 **/.gitignore
 **/.project
 **/.settings
@@ -23,3 +24,5 @@
 **/values.dev.yaml
 LICENSE
 README.md
+Documentation
+Documentation/*

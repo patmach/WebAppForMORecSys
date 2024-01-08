@@ -126,6 +126,7 @@ namespace WebAppForMORecSys.RequestHandlers
         {
             List<int> blacklist = BlockedItemsCache.GetBlockedItemIdsForUser(viewModel.User.Id.ToString(), _context);
             blacklist = blacklist.Union(viewModel.User.GetRatedAndSeenItems(_context)).Union(currentList).ToList();
+
             var recommendations = await RecommenderCaller.GetRecommendations(whitelistIDs.ToArray(), blacklist.ToArray(),
                 viewModel.Metrics.Values.ToArray(), viewModel.User.Id, rs.HTTPUri,
                 viewModel.User.GetMetricVariantCodes(_context, metrics.Select(m => m.Id).ToList()),

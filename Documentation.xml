@@ -2627,41 +2627,6 @@
             Item rated by the user
             </summary>
         </member>
-        <member name="T:WebAppForMORecSys.Models.RecommenderQuery">
-            <summary>
-            Class that repersents data that are used when calling the Recommender API
-            </summary>
-        </member>
-        <member name="P:WebAppForMORecSys.Models.RecommenderQuery.WhiteListItemIDs">
-            <summary>
-            IDs of possible items
-            </summary>
-        </member>
-        <member name="P:WebAppForMORecSys.Models.RecommenderQuery.BlackListItemIDs">
-            <summary>
-            IDs of items that shouldn't be returned
-            </summary>
-        </member>
-        <member name="P:WebAppForMORecSys.Models.RecommenderQuery.CurrentListItemIDs">
-            <summary>
-            IDs of items that are already part of displayed recommendations
-            </summary>
-        </member>
-        <member name="P:WebAppForMORecSys.Models.RecommenderQuery.Count">
-            <summary>
-            Number of items that should be returned
-            </summary>
-        </member>
-        <member name="P:WebAppForMORecSys.Models.RecommenderQuery.Metrics">
-            <summary>
-            Metrics importance specified by user
-            </summary>
-        </member>
-        <member name="P:WebAppForMORecSys.Models.RecommenderQuery.MetricVariantsCodes">
-            <summary>
-            Metric variants used by user
-            </summary>
-        </member>
         <member name="T:WebAppForMORecSys.Models.RecommenderSystem">
             <summary>
             Class that represent recommender system that is used for recommendations
@@ -3325,6 +3290,41 @@
             <param name="rsURI">URI of Recommender API</param>
             <returns>List of recommendations with their metrics contribution score</returns>
         </member>
+        <member name="T:WebAppForMORecSys.RequestHandlers.RecommenderQuery">
+            <summary>
+            Class that repersents data that are used when calling the Recommender API
+            </summary>
+        </member>
+        <member name="P:WebAppForMORecSys.RequestHandlers.RecommenderQuery.WhiteListItemIDs">
+            <summary>
+            IDs of possible items. Empty means all are possible
+            </summary>
+        </member>
+        <member name="P:WebAppForMORecSys.RequestHandlers.RecommenderQuery.BlackListItemIDs">
+            <summary>
+            IDs of items that shouldn't be returned
+            </summary>
+        </member>
+        <member name="P:WebAppForMORecSys.RequestHandlers.RecommenderQuery.CurrentListItemIDs">
+            <summary>
+            IDs of items that are already part of displayed recommendations
+            </summary>
+        </member>
+        <member name="P:WebAppForMORecSys.RequestHandlers.RecommenderQuery.Count">
+            <summary>
+            Number of items that should be returned
+            </summary>
+        </member>
+        <member name="P:WebAppForMORecSys.RequestHandlers.RecommenderQuery.Metrics">
+            <summary>
+            Metrics importance specified by user. Metrics needs to be used in the same order as in the RS
+            </summary>
+        </member>
+        <member name="P:WebAppForMORecSys.RequestHandlers.RecommenderQuery.MetricVariantsCodes">
+            <summary>
+            Metric variants used by user
+            </summary>
+        </member>
         <member name="T:WebAppForMORecSys.Settings.AddBlockRuleView">
             <summary>
             Possibilities on type of new block rules addition
@@ -3378,11 +3378,11 @@
             <param name="metricsView"></param>
             <returns>Name to display for the enum value</returns>
         </member>
-        <member name="M:WebAppForMORecSys.Settings.MetricsViewExtensions.Manual(WebAppForMORecSys.Settings.MetricsView)">
+        <member name="M:WebAppForMORecSys.Settings.MetricsViewExtensions.Help(WebAppForMORecSys.Settings.MetricsView)">
             <summary>
             </summary>
             <param name="metricsView"></param>
-            <returns>Name to display for the enum value</returns>
+            <returns>Explanation on how to use the metrics filter in HELP</returns>
         </member>
         <member name="T:WebAppForMORecSys.Settings.NewUserSetting">
             <summary>
@@ -3431,7 +3431,7 @@
             Class that contains system default settings
             </summary>
         </member>
-        <member name="P:WebAppForMORecSys.Settings.SystemParameters.Controller">
+        <member name="P:WebAppForMORecSys.Settings.SystemParameters.DomainController">
             <summary>
             Name of used controller
             </summary>

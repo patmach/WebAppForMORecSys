@@ -14,7 +14,7 @@ namespace WebAppForMORecSys.Settings
         /// <summary>
         /// Name of used controller
         /// </summary>
-        public static string Controller { get; set; } = "Movies";
+        public static string DomainController { get; set; } = "Movies";
 
         /// <summary>
         /// Length of list of recommendatins returned by RS
@@ -29,7 +29,7 @@ namespace WebAppForMORecSys.Settings
         /// <summary>
         /// Displayed name of web app
         /// </summary>
-        public static string Name { get => Controller; }
+        public static string Name { get => DomainController; }
 
         /// <summary>
         /// Default type of metrics filter

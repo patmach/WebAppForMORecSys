@@ -1,4 +1,4 @@
-﻿namespace WebAppForMORecSys.Models
+﻿namespace WebAppForMORecSys.RequestHandlers
 {
     /// <summary>
     /// Class that repersents data that are used when calling the Recommender API
@@ -6,7 +6,7 @@
     public class RecommenderQuery
     {
         /// <summary>
-        /// IDs of possible items
+        /// IDs of possible items. Empty means all are possible
         /// </summary>
         public int[] WhiteListItemIDs { get; set; } = new int[0];
 
@@ -26,7 +26,7 @@
         public int? Count { get; set; }
 
         /// <summary>
-        /// Metrics importance specified by user
+        /// Metrics importance specified by user. Metrics needs to be used in the same order as in the RS
         /// </summary>
         public int[] Metrics { get; set; } = new int[0];
 

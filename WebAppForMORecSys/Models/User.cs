@@ -90,7 +90,7 @@ namespace WebAppForMORecSys.Models
         /// </exception>
         public IQueryable<Item> GetAllBlockedItems(DbSet<Item> allItems)
         {
-            if (SystemParameters.Controller == "Movies")
+            if (SystemParameters.DomainController == "Movies")
             {
                 return this.ComputeAllBlockedMovies(allItems);
             }

@@ -4,7 +4,7 @@
 @model WebAppForMORecSys.Models.ViewModels.MainViewModel
 @{
     ViewData["Title"] = "Home Page";
-    string controller = WebAppForMORecSys.Settings.SystemParameters.Controller;
+    string controller = WebAppForMORecSys.Settings.SystemParameters.DomainController;
     int index = 0;
     Metric[] metricsArr = Model.Metrics.Keys.ToArray();
     var loadMoreURLArguments = new

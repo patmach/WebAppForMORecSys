@@ -2,7 +2,7 @@
 @using WebAppForMORecSys.Settings
 @model WebAppForMORecSys.Models.ViewModels.MainViewModel
 @{
-    string controller = WebAppForMORecSys.Settings.SystemParameters.Controller;
+    string controller = WebAppForMORecSys.Settings.SystemParameters.DomainController;
     int index = 0;
     Metric[] metricsArr = Model.Metrics.Keys.ToArray();
 }
@@ -29,7 +29,7 @@
     /* Sets user calibration profile inside all explanations to the elements with class 'calibrationprofile_span' */
     document.addEventListener("DOMContentLoaded", function (event) {
         $.ajax({
-            url: '@Url.Action("GetUserProfileForCalibration", SystemParameters.Controller)',
+            url: '@Url.Action("GetUserProfileForCalibration", SystemParameters.DomainController)',
             cache: false,
             success: function (data) {
                 $('.calibrationprofile_span').html(data);

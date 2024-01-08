@@ -54,9 +54,12 @@ namespace WebAppForMORecSys.Data.Cache
         /// <returns>Acts done by user</returns>
         public static List<int> GetActs(string userId, ApplicationDbContext context)
         {
-            if (_cache.Contains(userId))
+            lock (_cache)
             {
-                return (List<int>)_cache.Get(userId);
+                if (_cache.Contains(userId))
+                {
+                    return (List<int>)_cache.Get(userId);
+                }
             }
             var userActs = GetActsFromDatabase(userId, context);
             _cache.Set(userId, userActs, new CacheItemPolicy { SlidingExpiration = _expiration });
@@ -132,7 +135,6 @@ namespace WebAppForMORecSys.Data.Cache
         {
             if (_savetodbtimer != null)
                 return;
-            string baseAddress = SystemParameters.BaseAddress;
             CallSave();
             _savetodbtimer = new System.Timers.Timer(5 * 60 * 1000);
             _savetodbtimer.Elapsed += new ElapsedEventHandler((sender, e) => CallSave()

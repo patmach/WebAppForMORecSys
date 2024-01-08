@@ -97,7 +97,7 @@
                 metricsContribution.Add(Model.Metrics.Keys.ToList()[j], 55.12 + valueToAdd);
             }
 
-            @await Html.PartialAsync("../"+ SystemParameters.Controller + "/Preview", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution))
+            @await Html.PartialAsync("../"+ SystemParameters.DomainController + "/Preview", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution))
             @await Html.PartialAsync("../Shared/Explanations", new PreviewDetailViewModel(item, Model.User, Model.UserRatings, metricsContribution, variants: Model.UsedVariants))
 
             index++;
@@ -149,7 +149,7 @@
         }
     </div>
     <div style="width:33%;background-color: #0d6efd; margin:auto;" class=" rounded">
-    @await Html.PartialAsync("../"+SystemParameters.Controller + "/CreateBlockRule", 
+    @await Html.PartialAsync("../"+SystemParameters.DomainController + "/CreateBlockRule", 
             new UserBlockRuleViewModel{ CurrentUser=Model.User, Disabled=true})
     </div>
 
