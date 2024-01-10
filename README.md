@@ -6,6 +6,6 @@
   - `Documentation.md`
     - Data model
     - Architecture with description what is where
-  - subdirectory `html`
+  - subdirectory `GeneratedDoc`
     - Generated HTML documentation by doxygen from code documenation comments 
 

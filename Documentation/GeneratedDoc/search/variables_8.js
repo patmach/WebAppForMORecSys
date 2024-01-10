@@ -1,0 +1,7 @@
+var searchData=
+[
+  ['message_0',['Message',['../class_web_app_for_m_o_rec_sys_1_1_models_1_1_view_models_1_1_formular_view_model.html#ae177c522b8baf35b3a7be0cfeb12afd0',1,'WebAppForMORecSys.Models.ViewModels.FormularViewModel.Message'],['../class_web_app_for_m_o_rec_sys_1_1_models_1_1_view_models_1_1_main_view_model.html#a42b36292838b1d685130e64782c4c220',1,'WebAppForMORecSys.Models.ViewModels.MainViewModel.Message'],['../class_web_app_for_m_o_rec_sys_1_1_models_1_1_view_models_1_1_user_block_rule_view_model.html#a21773f6123304ff63e971c868f4e889f',1,'WebAppForMORecSys.Models.ViewModels.UserBlockRuleViewModel.Message']]],
+  ['metricscontribution_1',['MetricsContribution',['../class_web_app_for_m_o_rec_sys_1_1_models_1_1_view_models_1_1_preview_detail_view_model.html#a7796cd845617dba5101bd1363a460cfc',1,'WebAppForMORecSys::Models::ViewModels::PreviewDetailViewModel']]],
+  ['metricsimportancelogger_2',['MetricsImportanceLogger',['../class_web_app_for_m_o_rec_sys_1_1_helpers_1_1_j_s_o_n_properties_handlers_1_1_user_j_s_o_n_properties_handler.html#a58fbeed909b18d13c6c8d64f73ee37be',1,'WebAppForMORecSys::Helpers::JSONPropertiesHandlers::UserJSONPropertiesHandler']]],
+  ['movieidssortedbyratings_3',['movieIDsSortedByRatings',['../class_web_app_for_m_o_rec_sys_1_1_request_handlers_1_1_movie_requests_handler.html#ae0e2e2219608160287fd273b6bc8a747',1,'WebAppForMORecSys::RequestHandlers::MovieRequestsHandler']]]
+];

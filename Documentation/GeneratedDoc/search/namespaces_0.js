@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['webappformorecsys_0',['WebAppForMORecSys',['../namespace_web_app_for_m_o_rec_sys.html',1,'']]],
+  ['webappformorecsys_3a_3aareas_1',['Areas',['../namespace_web_app_for_m_o_rec_sys_1_1_areas.html',1,'WebAppForMORecSys']]],
+  ['webappformorecsys_3a_3aareas_3a_3aidentity_2',['Identity',['../namespace_web_app_for_m_o_rec_sys_1_1_areas_1_1_identity.html',1,'WebAppForMORecSys::Areas']]],
+  ['webappformorecsys_3a_3aareas_3a_3aidentity_3a_3adata_3',['Data',['../namespace_web_app_for_m_o_rec_sys_1_1_areas_1_1_identity_1_1_data.html',1,'WebAppForMORecSys::Areas::Identity']]],
+  ['webappformorecsys_3a_3aareas_3a_3aidentity_3a_3apages_4',['Pages',['../namespace_web_app_for_m_o_rec_sys_1_1_areas_1_1_identity_1_1_pages.html',1,'WebAppForMORecSys::Areas::Identity']]],
+  ['webappformorecsys_3a_3aareas_3a_3aidentity_3a_3apages_3a_3aaccount_5',['Account',['../namespace_web_app_for_m_o_rec_sys_1_1_areas_1_1_identity_1_1_pages_1_1_account.html',1,'WebAppForMORecSys::Areas::Identity::Pages']]],
+  ['webappformorecsys_3a_3aareas_3a_3aidentity_3a_3apages_3a_3aaccount_3a_3amanage_6',['Manage',['../namespace_web_app_for_m_o_rec_sys_1_1_areas_1_1_identity_1_1_pages_1_1_account_1_1_manage.html',1,'WebAppForMORecSys::Areas::Identity::Pages::Account']]],
+  ['webappformorecsys_3a_3acontrollers_7',['Controllers',['../namespace_web_app_for_m_o_rec_sys_1_1_controllers.html',1,'WebAppForMORecSys']]],
+  ['webappformorecsys_3a_3adata_8',['Data',['../namespace_web_app_for_m_o_rec_sys_1_1_data.html',1,'WebAppForMORecSys']]],
+  ['webappformorecsys_3a_3adata_3a_3acache_9',['Cache',['../namespace_web_app_for_m_o_rec_sys_1_1_data_1_1_cache.html',1,'WebAppForMORecSys::Data']]],
+  ['webappformorecsys_3a_3ahelpers_10',['Helpers',['../namespace_web_app_for_m_o_rec_sys_1_1_helpers.html',1,'WebAppForMORecSys']]],
+  ['webappformorecsys_3a_3ahelpers_3a_3ajsonpropertieshandlers_11',['JSONPropertiesHandlers',['../namespace_web_app_for_m_o_rec_sys_1_1_helpers_1_1_j_s_o_n_properties_handlers.html',1,'WebAppForMORecSys::Helpers']]],
+  ['webappformorecsys_3a_3ahelpers_3a_3amovielensloaders_12',['MovielensLoaders',['../namespace_web_app_for_m_o_rec_sys_1_1_helpers_1_1_movielens_loaders.html',1,'WebAppForMORecSys::Helpers']]],
+  ['webappformorecsys_3a_3aloggers_13',['Loggers',['../namespace_web_app_for_m_o_rec_sys_1_1_loggers.html',1,'WebAppForMORecSys']]],
+  ['webappformorecsys_3a_3amigrations_14',['Migrations',['../namespace_web_app_for_m_o_rec_sys_1_1_migrations.html',1,'WebAppForMORecSys']]],
+  ['webappformorecsys_3a_3amodels_15',['Models',['../namespace_web_app_for_m_o_rec_sys_1_1_models.html',1,'WebAppForMORecSys']]],
+  ['webappformorecsys_3a_3amodels_3a_3aitemdomainextension_16',['ItemDomainExtension',['../namespace_web_app_for_m_o_rec_sys_1_1_models_1_1_item_domain_extension.html',1,'WebAppForMORecSys::Models']]],
+  ['webappformorecsys_3a_3amodels_3a_3aitemdomainextension_3a_3amovie_17',['Movie',['../namespace_web_app_for_m_o_rec_sys_1_1_models_1_1_item_domain_extension_1_1_movie.html',1,'WebAppForMORecSys::Models::ItemDomainExtension']]],
+  ['webappformorecsys_3a_3amodels_3a_3aviewmodels_18',['ViewModels',['../namespace_web_app_for_m_o_rec_sys_1_1_models_1_1_view_models.html',1,'WebAppForMORecSys::Models']]],
+  ['webappformorecsys_3a_3arequesthandlers_19',['RequestHandlers',['../namespace_web_app_for_m_o_rec_sys_1_1_request_handlers.html',1,'WebAppForMORecSys']]],
+  ['webappformorecsys_3a_3asettings_20',['Settings',['../namespace_web_app_for_m_o_rec_sys_1_1_settings.html',1,'WebAppForMORecSys']]]
+];

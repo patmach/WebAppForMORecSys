@@ -1,0 +1,7 @@
+var searchData=
+[
+  ['logger_0',['logger',['../class_web_app_for_m_o_rec_sys_1_1_data_1_1_cache_1_1_user_act_cache.html#a1393e2bb68c008b614dcb643b5aed437',1,'WebAppForMORecSys.Data.Cache.UserActCache.logger'],['../class_web_app_for_m_o_rec_sys_1_1_data_1_1_interaction_log_extensions.html#a994d8c429a3acd0eb30c430d49071693',1,'WebAppForMORecSys.Data.InteractionLogExtensions.logger'],['../class_web_app_for_m_o_rec_sys_1_1_data_1_1_rating_log_extension.html#a93b16bfaf482251519fdef8269768c4f',1,'WebAppForMORecSys.Data.RatingLogExtension.logger'],['../class_web_app_for_m_o_rec_sys_1_1_data_1_1_user_answer_log_extension.html#abe5ddce720aa64f22fafef5cbf7c21fb',1,'WebAppForMORecSys.Data.UserAnswerLogExtension.logger'],['../class_web_app_for_m_o_rec_sys_1_1_data_1_1_user_act_suggestion_log_extension.html#aefe5c8aeb473cc7ad1c660cb919398eb',1,'WebAppForMORecSys.Data.UserActSuggestionLogExtension.logger']]],
+  ['loggerblock_1',['loggerBlock',['../class_web_app_for_m_o_rec_sys_1_1_data_1_1_user_j_s_o_n_params_log_extension.html#af1ec6ad76d861b8e4d43dbf4d2d6bc83',1,'WebAppForMORecSys::Data::UserJSONParamsLogExtension']]],
+  ['loggerquery_2',['loggerQuery',['../class_web_app_for_m_o_rec_sys_1_1_data_1_1_recommender_query_log_extensions.html#ae5b9aa98f517cdaae534467b558ea951',1,'WebAppForMORecSys::Data::RecommenderQueryLogExtensions']]],
+  ['loggerunblock_3',['loggerUnblock',['../class_web_app_for_m_o_rec_sys_1_1_data_1_1_user_j_s_o_n_params_log_extension.html#a120ebeecc9ffbd62cb9d393831ac8e1a',1,'WebAppForMORecSys::Data::UserJSONParamsLogExtension']]]
+];
