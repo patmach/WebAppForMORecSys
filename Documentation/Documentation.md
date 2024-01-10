@@ -4,7 +4,7 @@
 
 ### Run
 
-- Set connection string to the database `appsettings.json`
+- Set connection string to the database in the file `appsettings.json`
 
 - Set URI of the recommender in the database in table (table `RecommenderSystems`)
 
@@ -115,7 +115,7 @@ Objective used in recommender system.
 
 ##### MetricVariant
 
-Represent variant of the metric used in recommender system based on which the score of the objective would be computed.
+Represents variant of the metric used in recommender system based on which the score of the objective would be computed.
 
 
 
@@ -141,7 +141,7 @@ Entity of question from the questionnaire of user study. 3 different types of an
 
 ##### Answer
 
-Instance of Answer is one possible answer to Question. Used to questions with Options (specific)  type of answer.
+Instance of Answer is one possible answer to Question. Used for questions with Options (specific)  type of answer.
 
 
 
@@ -177,7 +177,7 @@ Suggestion to the user to make specific action.
 
 ##### QuestionAct
 
-Dependency of question display in the questionnaire on performed action.
+Dependency of question displaying in the questionnaire on performed action.
 
 
 
@@ -209,13 +209,13 @@ Every class belongs to same view (page) and contains all data needed by the View
 
 ##### Views
 
-Views and partial views (pages and their parts) that are displayed to the user. Shared - can be used for any domain, Movies - specific for used movie domain
+Views and partial views (pages and their parts) that are displayed to the user. Shared - can be used for any domain, Movies - specific for usage in movie domain
 
 
 
 ##### Controllers
 
-Controll logic of the application that handles user requests to the app change model and return Views. Divided by Model entity that they work with. HomeController handles request for main pages. MoviesController handles requests specific for movie domain.
+Control logic of the application that handles user requests to the app, changes model and return Views. Divided by Model entity that they work with. HomeController handles request for main pages. MoviesController handles requests specific for movie domain.
 
 
 
@@ -239,7 +239,7 @@ Handles request to recommend items, sends request to the recommender system, pro
 
 ##### Helpers
 
-Contains classes that are used as facade for wokring with JSON properties of user and item. Contains Loader of MovieLens data. 
+Contains classes that are used as facade for working with JSON properties of user and item. Contains Loader of MovieLens data. 
 
 
 
@@ -336,5 +336,5 @@ The web app is made to use multi-objective recommender systems where user can sp
 
   
 
-  ## 
+  
 
